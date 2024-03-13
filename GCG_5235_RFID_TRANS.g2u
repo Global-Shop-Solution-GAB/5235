@@ -1,0 +1,1890 @@
+﻿Program.Sub.Preflight.Start
+V.Global.sFile.Declare(String)
+V.Global.iTagReads.Declare(Long, 0)
+V.Global.iTransactions.Declare(Long, 0)
+V.Global.iSuccessfulTransactions.Declare(Long, 0)
+V.Global.iO90Transactions.Declare(Long, 0)
+V.Global.iJ55Transactions.Declare(Long, 0)
+V.Global.iL01Transactions.Declare(Long, 0)
+V.Global.iJ52Transactions.Declare(Long, 0)
+V.Global.iP10Transactions.Declare(Long, 0)
+V.Global.iS99Transactions.Declare(Long, 0)
+Program.External.Include.Library("2003.lib")
+Program.External.Include.Library("JB0455.lib")
+Program.External.Include.Library("6016.lib")
+V.Global.bError.Declare(Boolean, False)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'GCG_5235_RFID_TRANS.g2u
+'Trey S
+'For Winesburg Chair
+'11/09/2018
+'Modified from GCG_4843_RFID_TRANS.g2u by Don F and Dawn H
+'September 13th, 2019 Modified for King Machine to include labor upload, PO receipts, and Wip 2 FG
+
+F.Intrinsic.Control.Try
+F.ODBC.Connection!Con.OpenCompanyConnection(300)
+F.Intrinsic.Control.CallSub(CreateLogDataTable)
+F.Intrinsic.Control.CallSub(LoadBadRFIDData)
+F.Intrinsic.Control.CallSub(LoadRFIDData)
+F.Intrinsic.Control.CallSub(LoadTransactionSettings)
+F.Intrinsic.Control.CallSub(LoadWorkOrderLockNotificationSettings)
+F.Intrinsic.Control.CallSub(ReserveTransactionIDs)
+F.Intrinsic.Control.CallSub(SplitTable)
+F.Intrinsic.Control.CallSub(LoadExtraData)
+F.Intrinsic.Control.CallSub(UploadTransactions)
+
+F.Intrinsic.Control.CallSub(Exit)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.LoadBadRFIDData.Start
+'load bad RFID data so we can log it
+
+F.Intrinsic.Control.Try
+
+V.Local.sSQL.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sEPC.Declare(String)
+
+F.Data.DataTable.CreateFromSQL("dtRFIDBad", "Con", "select RTRIM(EPC) as EPC, RTRIM(TID) as TID, RTRIM(USER_RFID) as USER_RFID, RTRIM(ANTENNA) as ANTENNA, RTRIM(READERNAME) as READER, RTRIM(TRANS_TYPE) as TRANS from GCG_5235_RFID_OUTPUT where (USER_RFID not like '%:%' and USER_RFID not like '%:%:%') and RTRIM(IsNull(Processed, '')) = ''", True)
+
+F.Intrinsic.Control.If(V.DataTable.dtRFIDBad.RowCount, >, 0)
+	V.Global.iTagReads.Set(V.DataTable.dtRFIDBad.RowCount)
+	F.Data.DataTable.AddColumn("dtRFIDBad", "FAIL_REASON", "String", "RFID data not in correct format.")
+	F.Intrinsic.Control.CallSub(AddTransactionLog, "TRANSACTION", "LOAD")
+	F.Data.DataTable.AddColumn("dtRFIDBad", "FAILED", "String", "F")
+	F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtRFIDBad.RowCount--, 1)
+		V.Local.sEPC.Set(V.DataTable.dtRFIDBad(V.Local.iCounter).EPC!FieldValTrim)
+		F.Intrinsic.String.Build("update GCG_5235_RFID_OUTPUT set PROCESSED = 'F' where EPC = '{0}' and ANTENNA = '{1}' and READERNAME = '{2}'", V.Local.sEPC.PSQLFriendly, V.DataTable.dtRFIDBad(V.Local.iCounter).ANTENNA!FieldValTrim, V.DataTable.dtRFIDBad(V.Local.iCounter).READER!FieldValTrim, V.Local.sSQL)
+		F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+	F.Intrinsic.Control.Next(V.Local.iCounter)
+F.Intrinsic.Control.EndIf
+
+F.Data.DataTable.Close("dtRFIDBad")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadBadRFIDData.End
+
+Program.Sub.LoadRFIDData.Start
+F.Intrinsic.Control.Try
+
+V.Local.sSQL.Declare(String)
+V.Local.iCounter.Declare(Long)
+
+'load the RFID scans to be processed
+F.Data.DataTable.CreateFromSQL("dtRFIDRaw", "Con", "select RTRIM(EPC) as EPC, RTRIM(TID) as TID, RTRIM(USER_RFID) as USER_RFID, RTRIM(ANTENNA) as ANTENNA, RTRIM(READERNAME) as READER, RTRIM(TRANS_TYPE) as TRANS, RTRIM(PROCESSED) PROCESSED_ORIGINAL from GCG_5235_RFID_OUTPUT where (USER_RFID like '%:%' or USER_RFID like '%:%:%') and (RTRIM(IsNull(Processed, '')) = '' or RTRIM(IsNull(Processed, '')) = 'L')", True)
+
+'if nothing to process, exit
+F.Intrinsic.Control.If(V.DataTable.dtRFIDRaw.RowCount, =, 0)
+	F.Data.DataTable.Close("dtRFIDRaw")
+	F.Intrinsic.Control.CallSub(Exit)
+F.Intrinsic.Control.EndIf
+
+'Mark records being processed so if they don't get flagged as Y we know they failed
+F.Data.DataTable.AddColumn("dtRFIDRaw", "Failed", "String", "F")
+F.Data.DataTable.AddExpressionColumn("dtRFIDRaw", "PREVIOUSLY_LOCKED", "Boolean", "IIF(IsNull([PROCESSED_ORIGINAL], '') = 'L', True, False)")
+
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtRFIDRaw.RowCount--, 1)
+	F.Intrinsic.String.Build("update GCG_5235_RFID_OUTPUT set PROCESSED = 'F' where EPC = '{0}' and ANTENNA = '{1}' and READERNAME = '{2}'", V.DataTable.dtRFIDRaw(V.Local.iCounter).EPC!FieldValTrim, V.DataTable.dtRFIDRaw(V.Local.iCounter).ANTENNA!FieldValTrim, V.DataTable.dtRFIDRaw(V.Local.iCounter).READER!FieldValTrim, V.Local.sSQL)
+	F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Intrinsic.Math.Add(V.Global.iTagReads, V.DataTable.dtRFIDRaw.RowCount, V.Global.iTagReads)
+V.Global.iTransactions.Set(V.DataTable.dtRFIDRaw.RowCount)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadRFIDData.End
+
+Program.Sub.LoadWorkOrderLockNotificationSettings.Start
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.sContents.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sFilter.Declare(String)
+V.Local.bExists.Declare(Boolean, False)
+V.Local.sFile.Declare(String)
+
+F.Data.DataTable.AddColumn("dtRFID", "WORK_ORDER_LOCK_NOTIFICATIONS", "Boolean", False)
+F.Data.DataTable.AddColumn("dtRFID", "WORK_ORDER_LOCK_NOTIFICATIONS_SENDER", "String", "")
+F.Data.DataTable.AddColumn("dtRFID", "WORK_ORDER_LOCK_NOTIFICATIONS_RECIPIENTS", "String", "")
+
+F.Data.DataView.Create("dtRFID", "dvRFIDDistinct", 22, "TRANS = 'J52' or TRANS = 'J55'", "")
+F.Data.DataView.ToDataTableDistinct("dtRFID", "dvRFIDDistinct", "dtRfidWorkOrderLock", "ANTENNA*!*READER*!*TRANS")
+
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtRFIDWorkOrderLock.RowCount--, 1)
+	
+	F.Intrinsic.String.Build("{0}-{1}-{2}", V.DataTable.dtRFIDWorkOrderLock(V.Local.iCounter).ANTENNA!FieldValTrim, V.DataTable.dtRFIDWorkOrderLock(V.Local.iCounter).READER!FieldValTrim, V.DataTable.dtRFIDWorkOrderLock(V.Local.iCounter).TRANS!FieldValTrim, V.Local.sFile)
+	F.Intrinsic.File.MakeFilenameFriendly(V.Local.sFile, V.Local.sFile)
+	
+	F.Intrinsic.String.Build("{0}\Custom\5235\{1}\Work Order Lock Notifications\{2}.dat", V.Caller.GlobalDir, V.Caller.CompanyCode, V.Local.sFile, V.Local.sPath)
+	F.Intrinsic.File.Exists(V.Local.sPath, V.Local.bExists)
+	F.Intrinsic.Control.If(V.Local.bExists)
+		F.Intrinsic.File.File2String(V.Local.sPath, V.Local.sContents)
+		F.Intrinsic.String.Split(V.Local.sContents, V.Ambient.NewLine, V.Local.sContents)
+		F.Intrinsic.Control.If(V.Local.sContents.UBound, =, 2)
+			F.Intrinsic.String.Build("ANTENNA = '{0}' and READER = '{1}' and TRANS = '{2}'", V.DataTable.dtRFIDWorkOrderLock(V.Local.iCounter).ANTENNA!FieldValTrim, V.DataTable.dtRFIDWorkOrderLock(V.Local.iCounter).READER!FieldValTrim, V.DataTable.dtRFIDWorkOrderLock(V.Local.iCounter).TRANS!FieldValTrim, V.Local.sFilter)
+			F.Data.DataView.SetFilter("dtRFID", "dvRFIDDistinct", V.Local.sFilter)
+			F.Data.DataView.SetValue("dtRFID", "dvRFIDDistinct", -1, "WORK_ORDER_LOCK_NOTIFICATIONS", V.Local.sContents(0), "WORK_ORDER_LOCK_NOTIFICATIONS_SENDER", V.Local.sContents(1), "WORK_ORDER_LOCK_NOTIFICATIONS_RECIPIENTS", V.Local.sContents(2))
+		F.Intrinsic.Control.EndIf
+		V.Local.sContents.Redim(0, 0)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Data.DataView.Close("dtRFID", "dvRFIDDistinct")
+F.Data.DataTable.Close("dtRFIDWorkOrderLock")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadWorkOrderLockNotificationSettings.End
+
+Program.Sub.LoadTransactionSettings.Start
+'load the transactions set in the maintenance program
+
+F.Intrinsic.Control.Try
+
+V.Local.sColumns.Declare(String)
+
+F.Data.DataTable.CreateFromSQL("dtTransactionSettings", "Con", "select RTRIM(ANTENNA) as ANTENNA, RTRIM(READER) as READER, RTRIM(TX_CODE) as TRANS, RTRIM(TOLOC) as TOLOC, RTRIM(TOBIN) as TOBIN, RTRIM(WC) as WC, PRINT_FLAG, RTRIM(PRINTER) as PRINTER, RTRIM(EXTRA_OPTION) EXTRA_OPTION, RTRIM(API_URL) API_URL, DEVICE_ID, RED_PORT, YELLOW_PORT, GREEN_PORT, BUZZER_PORT from GCG_5235_RFID_MAINT where ENABLED = 1", True)
+
+F.Data.DataTable.AddExpressionColumn("dtTransactionSettings", "PRINT", "STRING", "IIF([PRINT_FLAG] = 'TRUE', 1, 0)")
+V.Local.sColumns.Set("B.ANTENNA*!*B.READER*!*A.TRANS*!*A.TOLOC*!*A.TOBIN*!*A.WC*!*A.PRINT*!*A.PRINTER*!*A.EXTRA_OPTION*!*B.EPC*!*B.TID*!*B.USER_RFID*!*A.PRINT_FLAG*!*B.PROCESSED_ORIGINAL*!*B.PREVIOUSLY_LOCKED*!*A.API_URL*!*A.DEVICE_ID*!*A.RED_PORT*!*A.YELLOW_PORT*!*A.GREEN_PORT*!*A.BUZZER_PORT")
+F.Data.Linq.Join("RightJoin", "DataTable", "dtTransactionSettings*!*A", "DataTable", "dtRFIDRaw*!*B", "A.ANTENNA = B.ANTENNA and A.TRANS = B.TRANS and A.READER = B.READER", V.Local.sColumns, "", "", "", "dtRFIDPreCheck", True)
+
+F.Data.DataView.Create("dtRFIDPreCheck", "dvValid", 22, "IsNull([ANTENNA], '') <> '' and IsNull([READER], '') <> '' and IsNull([TRANS], '') <> ''", "")
+F.Data.DataView.ToDataTable("dtRFIDPreCheck", "dvValid", "dtRFID", True)
+F.Data.DataView.SetFilter("dtRFIDPreCheck", "dvValid", "IsNull([ANTENNA], '') = '' or IsNull([READER], '') = '' or IsNull([TRANS], '') = ''")
+F.Data.DataView.ToDataTable("dtRFIDPreCheck", "dvValid", "dtInvalid", True)
+F.Data.DataView.Close("dtRFIDPreCheck", "dvValid")
+F.Data.DataTable.Close("dtRFIDPreCheck")
+
+'log failed transactions
+F.Data.DataTable.AddColumn("dtInvalid", "FAIL_REASON", "String", "Transaction not enabled for this Antenna/Reader combination.")
+F.Intrinsic.Control.CallSub(AddTransactionLog, "TRANSACTION", "SETTINGS")
+F.Data.DataTable.Close("dtInvalid")
+
+F.Data.DataTable.Close("dtRFIDRaw")
+
+F.Intrinsic.Control.If(V.DataTable.dtRFID.RowCount, =, 0)
+	F.Data.DataTable.Close("dtRFID")
+	F.Intrinsic.Control.CallSub(Exit)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadTransactionSettings.End
+
+Program.Sub.ReserveTransactionIDs.Start
+F.Intrinsic.Control.Try
+
+'Reserve a block of transaction IDs
+
+V.Local.iTXID.Declare(Long, 0)
+
+F.ODBC.Connection!con.ExecuteAndReturn("Select top 1 trans_id from v_wireless_line order by trans_id desc", V.Local.iTXID)
+F.Intrinsic.Math.Add(V.Local.iTXID, 1, V.Local.iTXID)
+
+F.Data.DataTable.AddColumn("dtRFID","TXID","String")
+F.Data.DataTable.AddColumn("dtRFID", "SEQ", "STRING", "0000")
+
+'only need to do this for the transactions still using wirepoll
+F.Data.DataView.Create("dtRFID", "dvWirepoll", 22, "[TRANS] in ('O90', 'J55')", "")
+F.Data.DataView.SetSeries("dtRFID", "dvWirepoll", "TXID", V.Local.iTXID, 1)
+Function.Data.DataTable.SetValueFormat("dtRFID", -1, "TXID", "TXID", "000000000")
+F.Data.DataView.ToDataTable("dtRFID", "dvWirepoll", "dtWirepoll")
+F.Data.DataView.Close("dtRFID", "dvWirepoll")
+
+F.Data.DataTable.SaveToDB("dtWirepoll", "Con", "WIRELESS_LINE", "", 128, "TXID@!@TRANS_ID*!*SEQ@!@SEQ")
+F.Data.DataTable.SaveToDB("dtRFID", "Con", "GCG_5235_RFID_OUTPUT", "EPC*!*ANTENNA*!*READER", 256, "EPC@!@EPC*!*TID@!@TID*!*TXID@!@WIRELESS_ID*!*ANTENNA@!@ANTENNA*!*READER@!@READERNAME")
+
+F.Data.DataTable.Close("dtWirepoll")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.ReserveTransactionIDs.End
+
+Program.Sub.SplitTable.Start
+'create tables from the main table based on transaction type
+
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+V.Local.sTemp.Declare(String)
+V.Local.iLength.Declare(Long)
+V.Local.sQuantityTemp.Declare(String)
+V.Local.sField.Declare(String)
+
+'split out user_rfid values
+F.Data.DataTable.AddColumn("dtRFID", "LOT", "STRING")
+F.Data.DataTable.AddColumn("dtRFID", "QTY", "FLOAT")
+F.Data.DataTable.AddColumn("dtRFID", "JOB", "String")
+F.Data.DataTable.AddColumn("dtRFID", "SUFFIX", "String")
+F.Data.DataTable.AddColumn("dtRFID", "CRTN_NO", "String")
+F.Data.DataTable.AddColumn("dtRFID", "PLLT_NO", "String")
+F.Data.DataTable.AddColumn("dtRFID", "PCK_NO", "String")
+
+'either in T[LOT]:Q[QUANTITY]
+'or J[JOB]:S[SUFFIX]:Q[QUANTITY]
+'depending on the transaction type
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtRFID.RowCount--, 1)
+	F.Intrinsic.String.Replace(V.DataTable.dtRFID(V.Local.iCounter).USER_RFID!FieldValTrim, "J", "", V.Local.sTemp)
+	F.Intrinsic.String.Replace(V.Local.sTemp, "S", "", V.Local.sTemp)
+	F.Intrinsic.String.Replace(V.Local.sTemp, "Q", "", V.Local.sTemp)
+	F.Intrinsic.String.Replace(V.Local.sTemp, "T", "", V.Local.sTemp)
+	
+	F.Intrinsic.String.Split(V.Local.sTemp, ":", V.Local.sTemp)
+	
+	F.Intrinsic.Control.SelectCase(V.DataTable.dtRFID(V.Local.iCounter).TRANS!FieldValTrim)
+		F.Intrinsic.Control.CaseAny("L01", "P10", "J52")
+			F.Intrinsic.String.RegExReplace(V.Local.sTemp(2), "[^0-9, .]", "", True, False, V.Local.sTemp(2))
+			F.Data.DataTable.SetValue("dtRFID", V.Local.iCounter, "JOB", V.Local.sTemp(0).Trim, "SUFFIX", V.Local.sTemp(1).Trim, "QTY", V.Local.sTemp(2).Trim)
+		F.Intrinsic.Control.CaseAny("J55", "O90")
+			'pad out quantity
+			F.Intrinsic.String.RegExReplace(V.Local.sTemp(1), "[^0-9, .]", "", True, False, V.Local.sTemp(1))
+			V.Local.sField.Set("LOT")			
+			F.Data.DataTable.SetValue("dtRFID", V.Local.iCounter, V.Local.sField, V.Local.sTemp(0).Trim, "QTY", V.Local.sTemp(1).Trim)
+		F.Intrinsic.Control.Case("S99")		
+				'get pallet and carton information
+				F.Intrinsic.Control.If(V.Local.sTemp(0).Left1, =, "C")
+					V.Local.sField.Set("CRTN_NO")
+					F.Intrinsic.Math.Sub(V.Local.sTemp(0).Length, 1, V.Local.iLength)
+					F.Intrinsic.String.Right(V.Local.sTemp(0), V.Local.iLength, V.Local.sTemp(0))
+					f.Intrinsic.String.LPad(v.Local.sTemp(0),"0",8,v.Local.sTemp(0))
+					F.Data.DataTable.SetValue("dtRFID", V.Local.iCounter, V.Local.sField, V.Local.sTemp(0).Trim, "PCK_NO", V.Local.sTemp(1).Trim)
+				F.Intrinsic.Control.ElseIf(V.Local.sTemp(0).Left1, =, "P")
+					V.Local.sField.Set("PLLT_NO")
+					F.Intrinsic.Math.Sub(V.Local.sTemp(0).Length, 1, V.Local.iLength)
+					F.Intrinsic.String.Right(V.Local.sTemp(0), V.Local.iLength, V.Local.sTemp(0))
+					f.Intrinsic.String.LPad(v.Local.sTemp(0),"0",8,v.Local.sTemp(0))
+					F.Data.DataTable.SetValue("dtRFID", V.Local.iCounter, V.Local.sField, V.Local.sTemp(0).Trim, "PCK_NO", V.Local.sTemp(1).Trim)
+				F.Intrinsic.Control.Else
+				'pad out quantity
+				F.Intrinsic.String.RegExReplace(V.Local.sTemp(1), "[^0-9, .]", "", True, False, V.Local.sTemp(1))
+					V.Local.sField.Set("LOT")	
+					F.Data.DataTable.SetValue("dtRFID", V.Local.iCounter, V.Local.sField, V.Local.sTemp(0).Trim, "QTY", V.Local.sTemp(1).Trim)
+				F.Intrinsic.Control.EndIf
+						
+			
+			
+			
+			
+	F.Intrinsic.Control.EndSelect
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Data.DataTable.AddExpressionColumn("dtRFID", "JS", "String", "TRIM(JOB) + '-' + TRIM(SUFFIX)")
+
+'J55 
+F.Data.DataView.Create("dtRFID", "dvJ55", 22, "TRANS = 'J55'", "")
+F.Data.DataView.ToDataTable("dtRFID", "dvJ55", "dtJ55RFID", True)
+F.Data.DataView.Close("dtRFID", "dvJ55")
+
+'O90
+F.Data.DataView.Create("dtRFID", "dvO90", 22, "TRANS = 'O90'", "")
+F.Data.DataView.ToDataTable("dtRFID", "dvO90", "dtO90RFID", True)
+F.Data.DataView.Close("dtRFID", "dvO90")
+
+'J52
+F.Data.DataView.Create("dtRFID", "dvJ52", 22, "TRANS = 'J52'", "")
+F.Data.DataView.ToDataTable("dtRFID", "dvJ52", "dtJ52RFID", True)
+F.Data.DataView.Close("dtRFID", "dvJ52")
+
+'L01
+F.Data.DataView.Create("dtRFID", "dvL01", 22, "TRANS = 'L01'", "")
+F.Data.DataView.ToDataTable("dtRFID", "dvL01", "dtL01RFID", True)
+F.Data.DataView.Close("dtRFID", "dvL01")
+
+'P10
+F.Data.DataView.Create("dtRFID", "dvP10", 22, "TRANS = 'P10'", "")
+F.Data.DataView.ToDataTable("dtRFID", "dvP10", "dtP10RFID", True)
+F.Data.DataView.Close("dtRFID", "dvP10")
+
+'S99
+F.Data.DataView.Create("dtRFID", "dvS99", 22, "TRANS = 'S99'", "")
+F.Data.DataView.ToDataTable("dtRFID", "dvS99", "dtS99RFID", True)
+F.Data.DataView.Close("dtRFID", "dvS99")
+
+F.Data.DataTable.Close("dtRFID")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.SplitTable.End
+
+Program.Sub.LoadExtraData.Start
+'load the extra data needed for each transaction type
+
+F.Intrinsic.Control.Try
+
+'get j55 data (Issue Material), first make sure there are J55 transactions to process, then make sure there are settings for J55 Transactions
+F.Intrinsic.Control.If(V.DataTable.dtJ55RFID.RowCount, >, 0)
+	F.Data.DataView.Create("dtTransactionSettings", "dvJ55TransactionSettings", 22, "TRANS = 'J55'", "")
+	F.Intrinsic.Control.If(V.DataView.dtTransactionSettings!dvJ55TransactionSettings.RowCount, >, 0)
+		F.Intrinsic.Control.CallSub(LoadJ55Data)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("dtJ55RFID")
+
+'get O90 data (bin to bin), first make sure there are O90 transactions to process, then make sure there are settings for O90 Transactions
+F.Intrinsic.Control.If(V.DataTable.dtO90RFID.RowCount, >, 0)
+	F.Data.DataView.Create("dtTransactionSettings", "dvO90TransactionSettings", 22, "TRANS = 'O90'", "")
+	F.Intrinsic.Control.If(V.DataView.dtTransactionSettings!dvO90TransactionSettings.RowCount, >, 0)
+		F.Intrinsic.Control.CallSub(LoadO90Data)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("dtO90RFID")
+
+'get j52 data
+F.Intrinsic.Control.If(V.DataTable.dtJ52RFID.RowCount, >, 0)
+	F.Data.DataView.Create("dtTransactionSettings", "dvJ52TransactionSettings", 22, "TRANS = 'J52'", "")
+	F.Intrinsic.Control.If(V.DataView.dtTransactionSettings!dvJ52TransactionSettings.RowCount, >, 0)
+		F.Intrinsic.Control.CallSub(LoadJ52Data)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("dtJ52RFID")
+
+'get L01 data
+F.Intrinsic.Control.If(V.DataTable.dtL01RFID.RowCount, >, 0)
+	F.Data.DataView.Create("dtTransactionSettings", "dvL01TransactionSettings", 22, "TRANS = 'L01'", "")
+	F.Intrinsic.Control.If(V.DataView.dtTransactionSettings!dvL01TransactionSettings.RowCount, >, 0)
+		F.Intrinsic.Control.CallSub(LoadL01Data)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("dtL01RFID")
+
+'get P10 data
+F.Intrinsic.Control.If(V.DataTable.dtP10RFID.RowCount, >, 0)
+	F.Data.DataView.Create("dtTransactionSettings", "dvP10TransactionSettings", 22, "TRANS = 'P10'", "")
+	F.Intrinsic.Control.If(V.DataView.dtTransactionSettings!dvP10TransactionSettings.RowCount, >, 0)
+		F.Intrinsic.Control.CallSub(LoadP10Data)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("dtP10RFID")
+
+'s99 data
+'we will do this all in the final subroutine for it
+'so leave it open
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadExtraData.End
+
+Program.Sub.LoadJ52Data.Start
+'grab extra data needed for Wip to FG
+
+F.Intrinsic.Control.Try
+
+V.Local.bLot.Declare(Boolean, False)
+V.Local.sJobs.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sLastLot.Declare(String)
+V.Local.iLastLot.Declare(Long)
+V.Local.sPartFilter.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sExtraOption.Declare(String)
+V.Local.sFilter.Declare(String)
+V.Local.iDataViewCounter.Declare(Long)
+V.Local.fSum.Declare(Float)
+
+F.Data.DataTable.Clone("dtJ52RFID", "dtJ52", True)
+F.Data.DataTable.Merge("dtJ52RFID", "dtJ52", False, 2)
+F.Data.DataTable.AddExpressionColumn("dtJ52", "PRINT_CHAR", "String", "IIF([PRINT_FLAG] = 'TRUE', 'Y', 'N')")
+
+'read the SS > Company Options (Advanced) > Manufacturing > Auto Number Lots with Work Order-Suffix in WIP to FG
+F.Global.General.ReadOption(401282, 0, False, V.Local.bLot)
+F.Data.DataTable.AddColumn("dtJ52", "USE_JOB_SUFFIX_AS_LOT", "Boolean", V.Local.bLot)
+F.Global.General.ReadOption(400561, 0, False, 0, V.Local.bLot)
+F.Data.DataTable.AddColumn("dtJ52", "USE_AUTO_LOT", "Boolean", V.Local.bLot)
+F.Intrinsic.Control.If(V.Local.bLot)
+	F.Global.General.ReadOption(400561, 3, False, 1, V.Local.sLastLot)
+	F.Intrinsic.Math.Add(V.Local.sLastLot.Long, 1, V.Local.iLastLot)
+	F.Data.DataTable.AddColumn("dtJ52", "AUTO_LOT_NUMBER", "Long", 0)
+	F.Data.DataTable.SetSeries("dtJ52", "AUTO_LOT_NUMBER", V.Local.iLastLot, 1)
+F.Intrinsic.Control.EndIf
+
+'build job filter
+F.Data.DataView.Create("dtJ52", "dvJ52", 22)
+F.Data.DataView.ToString("dtJ52", "dvJ52", "JS", "***NODELIMITER***", "','", V.Local.sJobs)
+F.Data.DataView.Close("dtJ52", "dvJ52")
+
+'get open quantity
+F.Intrinsic.String.Build("select RTRIM(JOB) + '-' + RTRIM(SUFFIX) JS, QTY_ORDER - QTY_COMPLETED OPEN, RTRIM(PART) PART, DATE_DUE from V_JOB_HEADER where JS in ('{0}')", V.Local.sJobs, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtJobInfo", "Con", V.Local.sSQL)
+
+F.Data.Dictionary.CreateFromDataTable("dictOpen", "dtJobInfo", "JS", "OPEN")
+F.Data.Dictionary.SetDefaultReturn("dictOpen", 0)
+F.Data.DataTable.AddColumn("dtJ52", "OPEN", "Float", 0)
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictOpen", "JS", "OPEN")
+F.Data.Dictionary.Close("dictOpen")
+
+F.Data.Dictionary.CreateFromDataTable("dictPart", "dtJobInfo", "JS", "PART")
+F.Data.Dictionary.SetDefaultReturn("dictPart", "")
+F.Data.DataTable.AddColumn("dtJ52", "PART", "String", "")
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictPart", "JS", "PART")
+F.Data.Dictionary.Close("dictPart")
+
+F.Data.Dictionary.CreateFromDataTable("dictDue", "dtJobInfo", "JS", "DATE_DUE")
+F.Data.Dictionary.SetDefaultReturn("dictDue", "1900-01-01")
+F.Data.DataTable.AddColumn("dtJ52", "DATE_DUE", "Date", "1900-01-01")
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictDue", "JS", "DATE_DUE")
+F.Data.Dictionary.Close("dictDue")
+
+F.Data.DataTable.Close("dtJobInfo")
+
+'get inventory info
+F.Data.DataView.Create("dtJ52", "dvJ52", 22)
+F.Data.DataView.ToString("dtJ52", "dvJ52", "PART", "***NODELIMITER***", "','", V.Local.sPartFilter)
+F.Data.DataView.Close("dtJ52", "dvJ52")
+
+F.Intrinsic.String.Build("select RTRIM(PART) PART, RTRIM(BIN) BIN, RTRIM(STOCK_BIN) STOCK_BIN, RTRIM(UM_INVENTORY) UM, RTRIM(DESCRIPTION) DESCRIPTION from V_INVENTORY_ALL where PART in ('{0}')", V.Local.sPartFilter, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtBins", "Con", V.Local.sSQL)
+
+F.Data.Dictionary.CreateFromDataTable("dictDefaultBin", "dtBins", "PART", "BIN")
+F.Data.Dictionary.SetDefaultReturn("dictDefaultBin", "")
+F.Data.DataTable.AddColumn("dtJ52", "DEFAULT_BIN", "String", "")
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictDefaultBin", "PART", "DEFAULT_BIN")
+F.Data.Dictionary.Close("dictDefaultBin")
+
+F.Data.Dictionary.CreateFromDataTable("dictStockingBin", "dtBins", "PART", "STOCK_BIN")
+F.Data.Dictionary.SetDefaultReturn("dictStockingBin", "")
+F.Data.DataTable.AddColumn("dtJ52", "STOCKING_BIN", "String", "")
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictStockingBin", "PART", "STOCKING_BIN")
+F.Data.Dictionary.Close("dictStockingBin")
+
+F.Data.Dictionary.CreateFromDataTable("dictUM", "dtBins", "PART", "UM")
+F.Data.Dictionary.SetDefaultReturn("dictUM", "")
+F.Data.DataTable.AddColumn("dtJ52", "UM", "String", "")
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictUM", "PART", "UM")
+F.Data.Dictionary.Close("dictUM")
+
+F.Data.Dictionary.CreateFromDataTable("dictDescription", "dtBins", "PART", "DESCRIPTION")
+F.Data.Dictionary.SetDefaultReturn("dictDescription", "")
+F.Data.DataTable.AddColumn("dtJ52", "DESCRIPTION", "String", "")
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictDescription", "PART", "DESCRIPTION")
+F.Data.Dictionary.Close("dictDescription")
+
+F.Data.DataTable.Close("dtBins")
+
+F.Data.DataTable.AddColumn("dtJ52", "BIN_OPTION", "String", "")
+F.Data.DataTable.AddColumn("dtJ52", "OVERRIDE_LABEL_QUANTITY", "Boolean", False)
+F.Data.DataTable.AddColumn("dtJ52", "Close", "String", "")
+
+'override label quantity with WO remaining quantity option
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtJ52.RowCount--, 1)
+	F.Intrinsic.String.Split(V.DataTable.dtJ52(V.Local.iCounter).EXTRA_OPTION!FieldValTrim, "!@#$#@!", V.Local.sExtraOption)
+	F.Data.DataTable.SetValue("dtJ52", V.Local.iCounter, "BIN_OPTION", V.Local.sExtraOption(0))
+	F.Intrinsic.Control.If(V.Local.sExtraOption.UBound, >, 0)
+		F.Data.DataTable.SetValue("dtJ52", V.Local.iCounter, "OVERRIDE_LABEL_QUANTITY", V.Local.sExtraOption(1))
+		F.Intrinsic.Control.If(V.Local.sExtraOption(1))
+			F.Data.DataTable.SetValue("dtJ52", V.Local.iCounter, "QTY", V.DataTable.dtJ52(V.Local.iCounter).OPEN!FieldValFloat)
+		F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.If(V.Local.sExtraOption.UBound, >, 1)
+			F.Data.DataTable.SetValue("dtJ52", V.Local.iCounter, "Close", V.Local.sExtraOption(2))
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+V.Local.sExtraOption.Redim(0, 0)
+
+F.Data.DataTable.AddExpressionColumn("dtJ52", "FINAL_BIN", "String", "IIF([BIN_OPTION] = 'DEFAULT', [DEFAULT_BIN], IIF([BIN_OPTION] = 'STOCKING', [STOCKING_BIN], [TOBIN]))")
+
+'calculate quantities if the same WO is processed more than once
+F.Data.DataView.Create("dtJ52", "dvJ52Quantity", 22)
+F.Data.DataView.ToDataTableDistinct("dtJ52", "dvJ52Quantity", "dtJ52Distinct", "JS")
+F.Data.DataTable.AddColumn("dtJ52", "EXTENDED_QUANTITY", "Float", 0)
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtJ52Distinct.RowCount--, 1)
+	F.Intrinsic.String.Build("[JS] = '{0}'", V.DataTable.dtJ52Distinct(V.Local.iCounter).JS!FieldValTrim, V.Local.sFilter)
+	F.Data.DataView.SetFilter("dtJ52", "dvJ52Quantity", V.Local.sFilter)
+	
+	V.Local.fSum.Set(0)
+	F.Intrinsic.Control.For(V.Local.iDataViewCounter, 0, V.DataView.dtJ52!dvJ52Quantity.RowCount--, 1)
+		F.Intrinsic.Math.Add(V.Local.fSum, V.DataView.dtJ52!dvJ52Quantity(V.Local.iDataViewCounter).QTY!FieldValFloat, V.Local.fSum)
+		F.Data.DataView.SetValue("dtJ52", "dvJ52Quantity", V.Local.iDataViewCounter, "EXTENDED_QUANTITY", V.Local.fSum)
+	F.Intrinsic.Control.Next(V.Local.iDataViewCounter)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+F.Data.DataTable.Close("dtJ52Distinct")
+F.Data.DataView.Close("dtJ52", "dvJ52Quantity")
+
+'set the close flag based on the option, and the quantity on the WO
+F.Data.DataTable.AddExpressionColumn("dtJ52", "COMPLETE", "String", "IIF([CLOSE] = 'Always Close', 'Y', IIF([CLOSE] = 'Do Not Close', 'N', IIF([CLOSE] = 'When Run Quantity is Completed', IIF([OPEN] <= [EXTENDED_QUANTITY], 'Y', 'N'), 'N')))")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadJ52Data.End
+
+Program.Sub.LoadL01Data.Start
+'load all the extra information needed for the labor upload transaction
+
+F.Intrinsic.Control.Try
+
+V.Local.sJobs.Declare(String)
+V.Local.sWCs.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sTemp.Declare(String)
+V.Local.sColumns.Declare(String)
+V.Local.sOutsideJobs.Declare(String)
+V.Local.sFilter.Declare(String)
+
+F.Data.DataTable.AddColumn("dtL01RFID", "Employee", "String", "")
+F.Data.DataTable.AddColumn("dtL01RFID", "Close", "String", "")
+F.Data.DataTable.AddColumn("dtL01RFID", "PO_REQUEST", "Boolean", False)
+
+'split out the extra options
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtL01RFID.RowCount--, 1)
+	F.Intrinsic.String.Split(V.DataTable.dtL01RFID(V.Local.iCounter).EXTRA_OPTION!FieldValTrim, "!@#$#@!", V.Local.sTemp)
+	F.Data.DataTable.SetValue("dtL01RFID", V.Local.iCounter, "Employee", V.Local.sTemp(0).Trim, "Close", V.Local.sTemp(1).Trim, "PO_REQUEST", V.Local.sTemp(2))
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+'build filters
+F.Data.DataView.Create("dtL01RFID", "dvJobs", 22)
+F.Data.DataView.ToString("dtL01RFID", "dvJobs", "JOB*!*SUFFIX", "-", "','", V.Local.sJobs)
+F.Data.DataView.ToString("dtL01RFID", "dvJobs", "WC", "***NODELIMITER***", "','", V.Local.sWCs)
+F.Data.DataView.SetFilter("dtL01RFID", "dvJobs", "[PO_REQUEST] = True")
+F.Data.DataView.ToString("dtL01RFID", "dvJobs", "JOB*!*SUFFIX", "-", "','", V.Local.sOutsideJobs)
+F.Data.DataView.Close("dtL01RFID", "dvJobs")
+
+'grab the extra data we need
+F.Intrinsic.String.Build("select RTRIM(JOB) + '-' + RTRIM(SUFFIX) JS, RTRIM(SEQ) SEQ, UNITS_OPEN, RTRIM(PART) WC from V_JOB_OPERATIONS where LMO = 'L' and WC in ('{0}') and JS in ('{1}')", V.Local.sWCs, V.Local.sJobs, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtL01ExtraData", "Con", V.Local.sSQL)
+
+V.Local.sColumns.Set("A.ANTENNA*!*A.READER*!*A.TRANS*!*A.WC*!*A.EPC*!*A.TID*!*A.JOB*!*A.SUFFIX*!*B.SEQ*!*A.EMPLOYEE*!*A.CLOSE*!*A.QTY*!*A.PO_REQUEST*!*A.JS*!*A.USER_RFID")
+F.Data.Linq.Join("FullJoin", "DataTable", "dtL01RFID*!*A", "DataTable", "dtL01ExtraData*!*B", "A.JS = B.JS and A.WC = B.WC", V.Local.sColumns, "", "", "", "dtL01", True)
+
+F.Intrinsic.String.Build("select RTRIM(JOB) + '-' + RTRIM(SUFFIX) JS, QTY_ORDER - QTY_COMPLETED from V_JOB_HEADER where JS in ('{0}')", V.Local.sJobs, V.Local.sSQL)
+F.Data.Dictionary.CreateFromSQL("dictOpen", "Con", V.Local.sSQL)
+F.Data.Dictionary.SetDefaultReturn("dictOpen", 0)
+F.Data.DataTable.AddColumn("dtL01", "UNITS_OPEN", "Float", 0)
+F.Data.DataTable.FillFromDictionary("dtL01", "dictOpen", "JS", "UNITS_OPEN")
+F.Data.Dictionary.Close("dictOpen")
+
+'loop through and get the next sequences for jobs with the Write Outside PO request on
+F.Data.DataTable.AddColumn("dtL01", "NEXT_OUTSIDE_SEQUENCE", "String", "")
+F.Data.DataTable.AddColumn("dtL01", "OUTSIDE_UNITS", "Float", 0)
+F.Intrinsic.Control.If(V.Local.sOutsideJobs.Trim, !=, "")
+	F.Intrinsic.String.Build("select RTRIM(JOB) + '-' + RTRIM(SUFFIX) JS, RTRIM(SEQ) as SEQ , UNITS_OPEN from V_JOB_OPERATIONS where LMO = 'O' and SEQ < 990000 and JS in ('{0}')", V.Local.sOutsideJobs, V.Local.sSQL)
+	F.Data.DataTable.CreateFromSQL("dtOutside", "Con", V.Local.sSQL)
+	
+	'if there's an outside sequence after this one, use that
+	F.Data.DataView.Create("dtL01", "dvL01", 22, "[PO_REQUEST] = True", "")
+	F.Data.DataView.Create("dtOutside", "dvOutside", 22, "", "SEQ")
+	F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataView.dtL01!dvL01.RowCount--, 1)
+		F.Intrinsic.String.Build("JS = '{0}' and SEQ > '{1}'", V.DataView.dtL01!dvL01(V.Local.iCounter).JS!FieldValTrim, V.DataView.dtL01!dvL01(V.Local.iCounter).SEQ!FieldValTrim, V.Local.sFilter)
+		F.Data.DataView.SetFilter("dtOutside", "dvOutside", V.Local.sFilter)
+		F.Intrinsic.Control.If(V.DataView.dtOutside!dvOutside.RowCount, >, 0)
+			F.Data.DataView.SetValue("dtL01", "dvL01", V.Local.iCounter, "NEXT_OUTSIDE_SEQUENCE", V.DataView.dtOutside!dvOutside(0).SEQ!FieldValTrim, "OUTSIDE_UNITS", V.DataView.dtOutside!dvOutside(0).UNITS_OPEN!FieldValFloat)
+		F.Intrinsic.Control.Else
+			F.Data.DataView.SetValue("dtL01", "dvL01", V.Local.iCounter, "OUTSIDE_REQUEST", False)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Next(V.Local.iCounter)
+	F.Data.DataView.Close("dtL01", "dvL01")
+	F.Data.DataView.Close("dtOutside", "dvOutside")
+	F.Data.DataTable.Close("dtOutside")
+F.Intrinsic.Control.EndIf
+
+'set the close flag based on the option, and the quantity on the WO
+F.Data.DataTable.AddExpressionColumn("dtL01", "CLOSE_FLAG", "String", "IIF([CLOSE] = 'Always Close', 'Y', IIF([CLOSE] = 'Do Not Close', 'N', IIF([CLOSE] = 'When Run Quantity is Completed', IIF([UNITS_OPEN] <= [QTY], 'Y', 'N'), 'N')))")
+
+F.Data.DataTable.Close("dtL01ExtraData")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadL01Data.End
+
+Program.Sub.LoadP10Data.Start
+F.Intrinsic.Control.Try
+
+V.Local.sSQL.Declare(String)
+V.Local.sJobs.Declare(String)
+V.Local.sColumns.Declare(String)
+
+'build job filter
+F.Data.DataView.Create("dtP10RFID", "dvJobs", 22)
+F.Data.DataView.ToString("dtP10RFID", "dvJobs", "JS", "***NODELIMITER***", "','", V.Local.sJobs)
+F.Data.DataView.Close("dtP10RFID", "dvJobs")
+
+'get PO info
+F.Intrinsic.String.Build("select RTRIM(JOB) + '-' + RTRIM(SUFFIX) as JS, RTRIM(JOB) JOB, RTRIM(SUFFIX) SUFFIX, RTRIM(SEQUENCE) SEQ, RTRIM(PURCHASE_ORDER) PO, LEFT(RECORD_NO, 3) LINE, RTRIM(REQUIRES_INSP) as REQUIRES_INSPECTION, QTY_ORDER - QTY_RECEIVED as QUANTITY_OPEN, COST from V_PO_LINES where JS in ('{0}') and FLAG_RECV_CLOSE <> 'Y'", V.Local.sJobs, V.Local.sSQL)
+
+F.Data.DataTable.CreateFromSQL("dtPOs", "Con", V.Local.sSQL)
+
+V.Local.sColumns.Set("A.ANTENNA*!*A.READER*!*A.TRANS*!*A.EPC*!*A.TID*!*A.JOB*!*A.SUFFIX*!*B.SEQ*!*B.QUANTITY_OPEN*!*A.QTY*!*A.EXTRA_OPTION as RECEIVE_TO*!*B.PO*!*B.LINE*!*B.REQUIRES_INSPECTION*!*B.COST*!*A.USER_RFID")
+F.Data.Linq.Join("LeftJoin", "DataTable", "dtP10RFID*!*A", "DataTable", "dtPOs*!*B", "A.JS = B.JS", V.Local.sColumns, "", "", "", "dtP10", True)
+F.Data.DataTable.Close("dtPOs")
+
+F.Data.DataTable.AddExpressionColumn("dtP10", "INSPECTION", "String", "IIF([RECEIVE_TO] = 'JOB', 'N', IIF([RECEIVE_TO] = 'INSPECTION', 'Y', IIF([REQUIRES_INSPECTION] = 'Y', 'Y', 'N')))")
+F.Data.DataTable.AddExpressionColumn("dtP10", "CLOSE", "String", "IIF([QTY] >= [QUANTITY_OPEN], 'Y', 'N')")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadP10Data.End
+
+Program.Sub.LoadJ55Data.Start
+'get j55 data (Issue Material)
+
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+V.Local.sFilter.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sColumns.Declare(String)
+v.Local.sPart.Declare(String)
+
+F.Data.DataTable.AddExpressionColumn("dtJ55RFID", "ONLY_ISSUE_FROM_DASHBOARD", Boolean, "IIF(TRIM(IsNull([EXTRA_OPTION], '')) = '', False, IIF(TRIM([EXTRA_OPTION]) = 'True', True, False))")
+
+'build lot filter
+F.Data.DataView.Create("dtJ55RFID", "dvLot", 22, "[LOT] <> ''", "")
+F.Data.DataView.ToString("dtJ55RFID", "dvLot", "LOT", "***NODELIMITER***", "','", V.Local.sFilter)
+
+'get part data
+'might need to split out rev
+'lots should be unique
+F.Intrinsic.String.Build("select distinct RTRIM(PART) as PART, RTRIM(LOCATION) as LOC, RTRIM(LOT) as LOT, RTRIM(BIN) as BIN, RTRIM(HEAT) as HEAT, RTRIM(SERIAL_NUMBER) as SERIAL, QUANTITY QTY from V_ITEM_MASTER where LOT in ('{0}')", V.Local.sFilter, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtJ55Lot", "Con", V.Local.sSQL)
+
+'build WC filter
+F.Data.DataView.ToString("dtTransactionSettings", "dvJ55TransactionSettings", "WC", "***NODELIMITER***", "','", V.Local.sFilter)
+
+'get JOBs based on WC, should only be one per WC, currently not checking that
+F.Intrinsic.String.Build("select distinct RTRIM(WORKCENTER) as WC, RTRIM(JOB) as JOB, RTRIM(SUFFIX) as SUFFIX, RTRIM(JOB) + '-' +  RTRIM(SUFFIX) as JS, RTRIM(SEQ) as SEQ from V_JOBS_IN_PROCESS_G where WC in ('{0}')", V.Local.sFilter, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtJ55Jobs", "Con", V.Local.sSQL)
+
+'build the job filter
+F.Data.DataView.Create("dtJ55Jobs", "dvJobs", 22)
+F.Data.DataView.ToString("dtJ55Jobs", "dvJobs", "JS", "***NODELIMITER***", "','", V.Local.sFilter)
+F.Data.DataView.Close("dtJ55Jobs", "dvJobs")
+
+'get the appropriate material sequences
+F.Intrinsic.String.Build("select RTRIM(PART) as PART, RTRIM(SEQ) as MATSEQ, RTRIM(JOB) as JOB, RTRIM(SUFFIX) as SUFFIX, RTRIM(JOB) + '-' +  RTRIM(SUFFIX) as JS from V_JOB_OPERATIONS where LMO = 'M' and JS in ('{0}') and SEQ < '990000' and PART <> '' group by JOB, SUFFIX, PART, MATSEQ",V.Local.sFilter,V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtJ55MatSeq", "Con", V.Local.sSQL)
+
+'link it all up
+V.Local.sColumns.Set("A.ANTENNA*!*A.READER*!*A.TRANS*!*A.EPC*!*A.TID*!*A.TXID*!*A.SEQ*!*A.PRINT*!*A.PRINTER*!*B.LOT*!*B.LOC*!*B.BIN*!*B.PART*!*B.HEAT*!*B.SERIAL*!*D.JOB*!*D.SUFFIX*!*E.MATSEQ*!*D.SEQ as JOBSEQ*!*A.QTY*!*A.USER_RFID*!*A.WC*!*A.PREVIOUSLY_LOCKED*!*A.WORK_ORDER_LOCK_NOTIFICATIONS*!*A.WORK_ORDER_LOCK_NOTIFICATIONS_SENDER*!*A.WORK_ORDER_LOCK_NOTIFICATIONS_RECIPIENTS*!*A.ONLY_ISSUE_FROM_DASHBOARD")
+F.Data.Linq.Join("LeftJoin", "DataView", "dtJ55RFID", "dvLot*!*A", "DataTable", "dtJ55Lot*!*B", "A.Lot = B.Lot", "DataTable", "dtJ55Jobs*!*D", "A.WC = D.WC", "DataTable", "dtJ55MatSeq*!*E", "D.JOB = E.JOB and D.SUFFIX = E.SUFFIX", V.Local.sColumns, "", "", "", "dtJ55", True)
+
+'Close extra datatables
+F.Data.DataView.Close("dtJ55RFID", "dvLot")
+F.Data.DataTable.Close("dtJ55Lot")
+F.Data.DataTable.Close("dtJ55Jobs")
+F.Data.DataTable.Close("dtJ55MatSeq")
+
+F.Intrinsic.Control.CallSub(BackUpDataTable, "DataTable", "dtJ55", "Type", "LoadJ55Data DataTables", "Name", "dtJ55", "DataView", "", "Project", "5235")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadJ55Data.End
+
+Program.Sub.LoadO90Data.Start
+'get O90 data (bin to bin)
+
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+V.Local.sFilter.Declare(String)
+V.Local.sSQL.Declare(String)
+
+'build lot filter
+F.Data.DataView.Create("dtO90RFID", "dvLot", 22)
+F.Data.DataView.ToString("dtO90RFID", "dvLot", "LOT", "***NODELIMITER***", "','", V.Local.sFilter)
+F.Data.DataView.Close("dtO90RFID", "dvLot")
+
+'get part data
+'might need to split out rev
+'lots should be unique
+F.Intrinsic.String.Build("select RTRIM(PART) as PART, RTRIM(LOCATION) as LOC, RTRIM(LOT) as LOT, RTRIM(BIN) as BIN, RTRIM(HEAT) as HEAT, RTRIM(SERIAL_NUMBER) as SERIAL from V_ITEM_MASTER where QUANTITY > 0 and LOT in ('{0}')", V.Local.sFilter, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtO90Lot", "Con", V.Local.sSQL)
+
+F.Data.Linq.Join("LeftJoin", "DataTable", "dtO90RFID*!*B", "DataTable", "dtO90Lot*!*C", "B.LOT = C.Lot", "*", "", "", "", "dtO90", True)
+
+F.Data.DataTable.Close("dtO90Lot")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadO90Data.End
+
+Program.Sub.AddTransactionLog.Start
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+
+F.Intrinsic.Control.If(V.DataTable.dtLog.Exists, =, False)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.SelectCase(V.Args.Transaction)
+	F.Intrinsic.Control.Case("L01")
+		F.Data.DataTable.AddExpressionColumn("dtL01", "CLOSE_BOOLEAN", "Boolean", "IIF([CLOSE_FLAG] = 'Y', True, False)")
+		
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtL01.RowCount--, 1)
+			F.Data.DataTable.AddRow("dtLog", "TIME_TRANSACTION", V.Ambient.Now, "READER", V.DataTable.dtL01(V.Local.iCounter).READER!FieldValTrim, "ANTENNA", V.DataTable.dtL01(V.Local.iCounter).ANTENNA!FieldValTrim, "TRANSACTION_TYPE", V.DataTable.dtL01(V.Local.iCounter).TRANS!FieldValTrim, "RFID_VALUE", V.DataTable.dtL01(V.Local.iCounter).USER_RFID!FieldValTrim, "EPC", V.DataTable.dtL01(V.Local.iCounter).EPC!FieldValTrim, "TID", V.DataTable.dtL01(V.Local.iCounter).TID!FieldValTrim, "JOB", V.DataTable.dtL01(V.Local.iCounter).JOB!FieldValTrim, "SUFFIX", V.DataTable.dtL01(V.Local.iCounter).SUFFIX!FieldValTrim, "SEQ", V.DataTable.dtL01(V.Local.iCounter).SEQ!FieldValTrim, "CLOSE",  V.DataTable.dtL01(V.Local.iCounter).CLOSE_BOOLEAN!FieldVal, "QUANTITY", V.DataTable.dtL01(V.Local.iCounter).QTY!FieldValFloat, "EMPLOYEE", V.DataTable.dtL01(V.Local.iCounter).EMPLOYEE!FieldValTrim, "WORKCENTER", V.DataTable.dtL01(V.Local.iCounter).WC!FieldValTrim, "OUTSIDE_REQUEST", V.DataTable.dtL01(V.Local.iCounter).PO_REQUEST!FieldVal, "OUTSIDE_SEQUENCE", V.DataTable.dtL01(V.Local.iCounter).NEXT_OUTSIDE_SEQUENCE!FieldValTrim, "PRINT", False, "INSPECTION", False, "FAIL_REASON", V.DataTable.dtL01(V.Local.iCounter).FAIL_REASON!FieldValTrim)
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+	
+	F.Intrinsic.Control.Case("J52")
+		F.Data.DataTable.AddExpressionColumn("dtJ52", "CLOSE_BOOLEAN", "Boolean", "IIF([COMPLETE] = 'Y', True, False)")
+		F.Data.DataTable.AddExpressionColumn("dtJ52", "PRINT_BOOLEAN", "Boolean", "IIF([PRINT_CHAR] = 'Y', True, False)")
+		
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtJ52.RowCount--, 1)
+			F.Intrinsic.Control.If(V.DataTable.dtJ52(V.Local.iCounter).WRITE_LOG!FieldVal)
+				F.Data.DataTable.AddRow("dtLog", "TIME_TRANSACTION", V.Ambient.Now, "READER", V.DataTable.dtJ52(V.Local.iCounter).READER!FieldValTrim, "ANTENNA", V.DataTable.dtJ52(V.Local.iCounter).ANTENNA!FieldValTrim, "TRANSACTION_TYPE", V.DataTable.dtJ52(V.Local.iCounter).TRANS!FieldValTrim, "RFID_VALUE", V.DataTable.dtJ52(V.Local.iCounter).USER_RFID!FieldValTrim, "EPC", V.DataTable.dtJ52(V.Local.iCounter).EPC!FieldValTrim, "TID", V.DataTable.dtJ52(V.Local.iCounter).TID!FieldValTrim, "JOB", V.DataTable.dtJ52(V.Local.iCounter).JOB!FieldValTrim, "SUFFIX", V.DataTable.dtJ52(V.Local.iCounter).SUFFIX!FieldValTrim, "CLOSE",  V.DataTable.dtJ52(V.Local.iCounter).CLOSE_BOOLEAN!FieldVal, "QUANTITY", V.DataTable.dtJ52(V.Local.iCounter).QTY!FieldValFloat, "OUTSIDE_REQUEST", False, "PRINT", V.DataTable.dtJ52(V.Local.iCounter).PRINT_BOOLEAN!FieldVal, "INSPECTION", False, "TO_BIN", V.DataTable.dtJ52(V.Local.iCounter).TOBIN!FieldValTrim, "TO_LOT", V.DataTable.dtJ52(V.Local.iCounter).LOT!FieldValTrim, "WIRELESS_ID", V.DataTable.dtJ52(V.Local.iCounter).TXID!FieldValTrim, "FAIL_REASON", V.DataTable.dtJ52(V.Local.iCounter).FAIL_REASON!FieldValTrim, "PART", V.DataTable.dtJ52(V.Local.iCounter).PART!FieldValTrim)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+	
+	F.Intrinsic.Control.Case("J55")
+		F.Data.DataTable.AddExpressionColumn("dtJ55", "QTY_FLOAT", "Float", "IIF([QTY] = 0, 0, [QTY] / 10000)")
+		F.Data.DataTable.AddExpressionColumn("dtJ55", "PRINT_BOOLEAN", "Boolean", "IIF([PRINT] = 1, True, False)")
+
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtJ55.RowCount--, 1)
+			F.Intrinsic.Control.If(V.DataTable.dtJ55(V.Local.iCounter).WRITE_LOG!FieldVal)
+				F.Data.DataTable.AddRow("dtLog", "TIME_TRANSACTION", V.Ambient.Now, "READER", V.DataTable.dtJ55(V.Local.iCounter).READER!FieldValTrim, "ANTENNA", V.DataTable.dtJ55(V.Local.iCounter).ANTENNA!FieldValTrim, "TRANSACTION_TYPE", V.DataTable.dtJ55(V.Local.iCounter).TRANS!FieldValTrim, "RFID_VALUE", V.DataTable.dtJ55(V.Local.iCounter).USER_RFID!FieldValTrim, "EPC", V.DataTable.dtJ55(V.Local.iCounter).EPC!FieldValTrim, "TID", V.DataTable.dtJ55(V.Local.iCounter).TID!FieldValTrim, "JOB", V.DataTable.dtJ55(V.Local.iCounter).JOB!FieldValTrim, "SUFFIX", V.DataTable.dtJ55(V.Local.iCounter).SUFFIX!FieldValTrim, "SEQ", V.DataTable.dtJ55(V.Local.iCounter).JOBSEQ!FieldValTrim, "CLOSE", False, "QUANTITY", V.DataTable.dtJ55(V.Local.iCounter).QTY_FLOAT!FieldValFloat, "WORKCENTER", V.DataTable.dtJ55(V.Local.iCounter).WC!FieldValTrim, "PRINT", V.DataTable.dtJ55(V.Local.iCounter).PRINT_BOOLEAN!FieldVal, "INSPECTION", False, "MATERIAL_SEQUENCE",V.DataTable.dtJ55(V.Local.iCounter).MATSEQ!FieldValTrim, "PART", V.DataTable.dtJ55(V.Local.iCounter).PART!FieldValTrim, "LOC", V.DataTable.dtJ55(V.Local.iCounter).LOC!FieldValTrim, "FROM_LOT", V.DataTable.dtJ55(V.Local.iCounter).LOT!FieldValTrim, "FROM_BIN", V.DataTable.dtJ55(V.Local.iCounter).BIN!FieldValTrim, "FROM_HEAT", V.DataTable.dtJ55(V.Local.iCounter).HEAT!FieldValTrim, "FROM_SERIAL", V.DataTable.dtJ55(V.Local.iCounter).SERIAL!FieldValTrim, "OUTSIDE_REQUEST", False, "WIRELESS_ID", V.DataTable.dtJ55(V.Local.iCounter).TXID!FieldValTrim, "WIRELESS_SEQUENCE", V.DataTable.dtJ55(V.Local.iCounter).SEQ!FieldValTrim, "FAIL_REASON", V.DataTable.dtJ55(V.Local.iCounter).FAIL_REASON!FieldValTrim)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+		
+	F.Intrinsic.Control.Case("O90")
+		F.Data.DataTable.AddExpressionColumn("dtO90", "PRINT_BOOLEAN", "Boolean", "IIF([PRINT] = 1, True, False)")
+	
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtO90.RowCount--, 1)
+			F.Data.DataTable.AddRow("dtLog", "TIME_TRANSACTION", V.Ambient.Now, "READER", V.DataTable.dtO90(V.Local.iCounter).READER!FieldValTrim, "ANTENNA", V.DataTable.dtO90(V.Local.iCounter).ANTENNA!FieldValTrim, "TRANSACTION_TYPE", V.DataTable.dtO90(V.Local.iCounter).TRANS!FieldValTrim, "RFID_VALUE", V.DataTable.dtO90(V.Local.iCounter).USER_RFID!FieldValTrim, "EPC", V.DataTable.dtO90(V.Local.iCounter).EPC!FieldValTrim, "TID", V.DataTable.dtO90(V.Local.iCounter).TID!FieldValTrim, "CLOSE", False, "QUANTITY", V.DataTable.dtO90(V.Local.iCounter).QTY!FieldValFloat, "PRINT", V.DataTable.dtO90(V.Local.iCounter).PRINT_BOOLEAN!FieldVal, "INSPECTION", False, "PART", V.DataTable.dtO90(V.Local.iCounter).PART!FieldValTrim, "LOC", V.DataTable.dtO90(V.Local.iCounter).LOC!FieldValTrim, "FROM_LOT", V.DataTable.dtO90(V.Local.iCounter).LOT!FieldValTrim, "FROM_BIN", V.DataTable.dtO90(V.Local.iCounter).BIN!FieldValTrim, "FROM_HEAT", V.DataTable.dtO90(V.Local.iCounter).HEAT!FieldValTrim, "FROM_SERIAL", V.DataTable.dtO90(V.Local.iCounter).SERIAL!FieldValTrim, "TO_BIN", V.DataTable.dtO90(V.Local.iCounter).TOBIN!FieldValTrim, "TO_LOT", V.DataTable.dtO90(V.Local.iCounter).LOT!FieldValTrim, "TO_LOC", V.DataTable.dtO90(V.Local.iCounter).TOLOC!FieldValTrim, "TO_HEAT", V.DataTable.dtO90(V.Local.iCounter).HEAT!FieldValTrim, "TO_SERIAL", V.DataTable.dtO90(V.Local.iCounter).SERIAL!FieldValTrim, "OUTSIDE_REQUEST", False, "WIRELESS_ID", V.DataTable.dtO90(V.Local.iCounter).TXID!FieldValTrim, "WIRELESS_SEQUENCE", V.DataTable.dtO90(V.Local.iCounter).SEQ!FieldValTrim, "FAIL_REASON", V.DataTable.dtO90(V.Local.iCounter).FAIL_REASON!FieldValTrim)
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+	
+	F.Intrinsic.Control.Case("P10")
+		F.Data.DataTable.AddExpressionColumn("dtP10", "INSPECTION_BOOLEAN", "Boolean", "IIF([INSPECTION] = 'Y', True, False)")
+		F.Data.DataTable.AddExpressionColumn("dtP10", "CLOSE_BOOLEAN", "Boolean", "IIF([CLOSE] = 'Y', True, False)")
+		
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtP10.RowCount--, 1)
+			F.Data.DataTable.AddRow("dtLog", "TIME_TRANSACTION", V.Ambient.Now, "READER", V.DataTable.dtP10(V.Local.iCounter).READER!FieldValTrim, "ANTENNA", V.DataTable.dtP10(V.Local.iCounter).ANTENNA!FieldValTrim, "TRANSACTION_TYPE", V.DataTable.dtP10(V.Local.iCounter).TRANS!FieldValTrim, "RFID_VALUE", V.DataTable.dtP10(V.Local.iCounter).USER_RFID!FieldValTrim, "EPC", V.DataTable.dtP10(V.Local.iCounter).EPC!FieldValTrim, "TID", V.DataTable.dtP10(V.Local.iCounter).TID!FieldValTrim, "JOB", V.DataTable.dtP10(V.Local.iCounter).JOB!FieldValTrim, "SUFFIX", V.DataTable.dtP10(V.Local.iCounter).SUFFIX!FieldValTrim, "SEQ", V.DataTable.dtP10(V.Local.iCounter).SEQ!FieldValTrim, "CLOSE",  V.DataTable.dtP10(V.Local.iCounter).CLOSE_BOOLEAN!FieldVal, "QUANTITY", V.DataTable.dtP10(V.Local.iCounter).QTY!FieldValFloat, "OUTSIDE_REQUEST", False, "PRINT", False, "INSPECTION", V.DataTable.dtP10(V.Local.iCounter).INSPECTION_BOOLEAN!FieldVal, "PO", V.DataTable.dtP10(V.Local.iCounter).PO!FieldValTrim, "PO_LINE", V.DataTable.dtP10(V.Local.iCounter).LINE!FieldValTrim, "PRICE", V.DataTable.dtP10(V.Local.iCounter).COST!FieldValFloat, "FAIL_REASON", V.DataTable.dtP10(V.Local.iCounter).FAIL_REASON!FieldValTrim)
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+		
+	F.Intrinsic.Control.Case("SETTINGS")
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtInvalid.RowCount--, 1)
+			F.Data.DataTable.AddRow("dtLog", "TIME_TRANSACTION", V.Ambient.Now, "READER", V.DataTable.dtInvalid(V.Local.iCounter).READER!FieldValTrim, "ANTENNA", V.DataTable.dtInvalid(V.Local.iCounter).ANTENNA!FieldValTrim, "TRANSACTION_TYPE", V.DataTable.dtInvalid(V.Local.iCounter).TRANS!FieldValTrim, "RFID_VALUE", V.DataTable.dtInvalid(V.Local.iCounter).USER_RFID!FieldValTrim, "EPC", V.DataTable.dtInvalid(V.Local.iCounter).EPC!FieldValTrim, "TID", V.DataTable.dtInvalid(V.Local.iCounter).TID!FieldValTrim, "CLOSE",  False, "OUTSIDE_REQUEST", False, "PRINT", False, "INSPECTION", False, "FAIL_REASON", V.DataTable.dtInvalid(V.Local.iCounter).FAIL_REASON!FieldValTrim)
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+		
+	F.Intrinsic.Control.Case("LOAD")
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtRFIDBad.RowCount--, 1)
+			F.Data.DataTable.AddRow("dtLog", "TIME_TRANSACTION", V.Ambient.Now, "READER", V.DataTable.dtRFIDBad(V.Local.iCounter).READER!FieldValTrim, "ANTENNA", V.DataTable.dtRFIDBad(V.Local.iCounter).ANTENNA!FieldValTrim, "TRANSACTION_TYPE", V.DataTable.dtRFIDBad(V.Local.iCounter).TRANS!FieldValTrim, "RFID_VALUE", V.DataTable.dtRFIDBad(V.Local.iCounter).USER_RFID!FieldValTrim, "EPC", V.DataTable.dtRFIDBad(V.Local.iCounter).EPC!FieldValTrim, "TID", V.DataTable.dtRFIDBad(V.Local.iCounter).TID!FieldValTrim, "CLOSE",  False, "OUTSIDE_REQUEST", False, "PRINT", False, "INSPECTION", False, "FAIL_REASON", V.DataTable.dtRFIDBad(V.Local.iCounter).FAIL_REASON!FieldValTrim)
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+		
+	F.Intrinsic.Control.Case("S99")
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtS99RFID.RowCount--, 1)
+			F.Data.DataTable.AddRow("dtLog", "TIME_TRANSACTION", V.Ambient.Now, "READER", V.DataTable.dtS99RFID(V.Local.iCounter).READER!FieldValTrim, "ANTENNA", V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim, "TRANSACTION_TYPE", V.DataTable.dtS99RFID(V.Local.iCounter).TRANS!FieldValTrim, "RFID_VALUE", V.DataTable.dtS99RFID(V.Local.iCounter).USER_RFID!FieldValTrim, "EPC", V.DataTable.dtS99RFID(V.Local.iCounter).EPC!FieldValTrim, "TID", V.DataTable.dtS99RFID(V.Local.iCounter).TID!FieldValTrim, "QUANTITY", V.DataTable.dtS99RFID(V.Local.iCounter).QTY!FieldValFloat, "FAIL_REASON", V.DataTable.dtS99RFID(V.Local.iCounter).FAIL_REASON!FieldValTrim, "RESULT", V.DataTable.dtS99RFID(V.Local.iCounter).RESULT!FieldValTrim, "FROM_LOT", V.DataTable.dtS99RFID(V.Local.iCounter).LOT!FieldValTrim, "MATCH_TYPE", V.DataTable.dtS99RFID(V.Local.iCounter).MATCH_TYPE!FieldValTrim, "PALLET", V.DataTable.dtS99RFID(V.Local.iCounter).PALLET!FieldValTrim, "CARTON", V.DataTable.dtS99RFID(V.Local.iCounter).CARTON!FieldValTrim, "LOAD", V.DataTable.dtS99RFID(V.Local.iCounter).LOAD!FieldValLong, "LOAD_SEQUENCE", V.DataTable.dtS99RFID(V.Local.iCounter).LOAD_SEQUENCE!FieldValLong, "ORDER_NUMBER", V.DataTable.dtS99RFID(V.Local.iCounter).ORDER_NUMBER!FieldValTrim, "ORDER_LINE", V.DataTable.dtS99RFID(V.Local.iCounter).ORDER_LINE!FieldValTrim, "ORDER_SUFFIX", V.DataTable.dtS99RFID(V.Local.iCounter).ORDER_SUFFIX!FieldValTrim, "PACKING_LIST", V.DataTable.dtS99RFID(V.Local.iCounter).PACKING_LIST!FieldValTrim)
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+		
+F.Intrinsic.Control.EndSelect
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.AddTransactionLog.End
+
+Program.Sub.ProcessL01Transactions.Start
+'use the JB0455 to upload the labor
+
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+V.Local.iQuantity.Declare(Long)
+V.Local.sRet.Declare(String, "")
+V.Local.iTopSequence.Declare(Long, -1)
+V.Local.sFilter.Declare(String)
+
+F.Intrinsic.Control.If(V.DataTable.dtL01.Exists, =, False)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Data.DataTable.AddExpressionColumn("dtL01", "SEQ_TRIM", "String", "IsNull([SEQ], '')")
+F.Data.DataTable.AddColumn("dtL01", "FAIL_REASON", "String", "")
+F.Data.DataView.Create("dtL01", "dvValid", 22, "[SEQ_TRIM] = ''", "")
+F.Data.DataView.SetValue("dtL01", "dvValid", -1, "FAIL_REASON", "No valid labor sequence found for this WC / Job / Suffix combination.")
+F.Data.DataView.SetFilter("dtL01", "dvValid", "[SEQ_TRIM] <> ''")
+
+F.Data.DataView.ToDataTableDistinct("dtL01", "dvValid", "dtDistinctL01", "EPC")
+
+'really need to check if more than one SEQ found
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtDistinctL01.RowCount--, 1)
+	F.Intrinsic.String.Build("[EPC] = '{0}'", V.DataTable.dtDistinctL01(V.Local.iCounter).EPC!FieldValTrim, V.Local.sFilter)
+	F.Data.DataView.SetFilter("dtL01", "dvValid", V.Local.sFilter)
+	
+	F.Intrinsic.Control.If(V.DataView.dtL01!dvValid.RowCount, >, 1)
+		F.Data.DataView.SetValue("dtL01", "dvValid", -1, "FAIL_REASON", "More than one labor sequence found for this WC / Job / Suffix combination.")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+F.Data.DataTable.Close("dtDistinctL01")
+
+F.Data.DataView.SetFilter("dtL01", "dvValid", "[QTY] = 0")
+F.Data.DataView.SetValue("dtL01", "dvValid", -1, "FAIL_REASON", "Quantity of 0 was passed.")
+
+F.Data.DataView.SetFilter("dtL01", "dvValid", "[FAIL_REASON] = ''")
+
+'build the DT
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataView.dtL01!dvValid.RowCount--, 1)
+	F.Intrinsic.Math.Mult(V.DataView.dtL01!dvValid(V.Local.iCounter).QTY!FieldValLong, 10000, V.Local.iQuantity)
+	F.Data.DataTable.AddRow("JB0455", "DATE", V.Ambient.Date.FormatMMDDYY, "EMPLOYEE", V.DataView.dtL01!dvValid(V.Local.iCounter).EMPLOYEE!FieldValTrim, "JOB", V.DataView.dtL01!dvValid(V.Local.iCounter).JOB!FieldValTrim, "SUFFIX", V.DataView.dtL01!dvValid(V.Local.iCounter).SUFFIX!FieldValTrim, "SEQ", V.DataView.dtL01!dvValid(V.Local.iCounter).SEQ!FieldValTrim, "WC", V.DataView.dtL01!dvValid(V.Local.iCounter).WC!FieldValTrim, "HOURS", 0.01, "CLOSED", V.DataView.dtL01!dvValid(V.Local.iCounter).CLOSE_FLAG!FieldValTrim, "INDIRECT", "D", "RATETYPE", "R", "GOODPCS", V.Local.iQuantity)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+'run the upload
+F.Intrinsic.Control.CallSub(JB0455Sync)
+
+'now create the outside PO requests if necessary
+F.Data.DataView.Create("dtL01", "dvOutside", 22, "[PO_REQUEST] = True and [NEXT_OUTSIDE_SEQUENCE] <> '' and [FAIL_REASON] = ''", "")
+F.Intrinsic.Control.If(V.DataView.dtL01!dvOutside.RowCount, >, 0)
+	
+	'create an empty DT with the proper schema
+	F.Data.DataTable.CreateFromSQL("dtOutside", "Con" , "select * from JOBS_IN_PROCESS where JOB = ''")
+	F.Data.DataTable.DeleteRow("dtOutside")
+	F.Data.DataTable.AcceptChanges("dtOutside")
+	
+	'add the appropriate data
+	F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataView.dtL01!dvOutside.RowCount--, 1)
+		
+		F.Data.DataTable.AddRow("dtOutside", "EMPLOYEE", "OUT", "TERMINAL_NO", V.Caller.Terminal, "JOB", V.DataView.dtL01!dvOutside(V.Local.iCounter).JOB!FieldValTrim, "SUFFIX", V.DataView.dtL01!dvOutside(V.Local.iCounter).SUFFIX!FieldValTrim, "SEQUENCE", V.DataView.dtL01!dvOutside(V.Local.iCounter).NEXT_OUTSIDE_SEQUENCE!FieldValTrim, "FLAG_MISC_OPER", "O", "START_TIME", V.Ambient.Time.FormatHH.MM, "DATE_TRANSACTION", V.Ambient.Date.FormatYYMMDD, "QTY_MATL", V.DataView.dtL01!dvOutside(V.Local.iCounter).QTY!FieldValLong, "SUFFIX_DATE", V.Ambient.Date.FormatYYMMDD, "SUFFIX_TIME", V.Ambient.Time.FormatHHMMSS, "SUFFIX_CLOSED", "Q")
+	F.Intrinsic.Control.Next(V.Local.iCounter)
+	
+	'key is EMPLOYEE and SEQUENCE_KEY, so get the max sequence for OUT
+	F.ODBC.Connection!Con.ExecuteAndReturn("select top 1 SEQUENCE_KEY from V_JOBS_IN_PROCESS where EMPLOYEE = 'OUT' order by SEQUENCE_KEY desc", V.Local.sRet)
+	F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF, =, False)
+		V.Local.iTopSequence.Set(V.Local.sRet.Long)
+	F.Intrinsic.Control.EndIf
+	
+	F.Data.DataTable.SetSeries("dtOutside", "SEQUENCE_KEY", V.Local.iTopSequence.++, 1)
+	F.Data.DataTable.SaveToDB("dtOutside", "Con", "JOBS_IN_PROCESS", "EMPLOYEE*!*SEQUENCE_KEY", 128)
+	
+	F.Data.DataTable.Close("dtOutside")
+F.Intrinsic.Control.EndIf
+F.Data.DataView.Close("dtL01", "dvOutside")
+
+'save processed flag
+F.Data.DataView.ToDataTable("dtL01", "dvValid", "dtSaveL01")
+F.Data.DataTable.AddColumn("dtSaveL01", "PROCESSED", "STRING", "Y")
+F.Data.DataTable.SaveToDB("dtSaveL01", "Con", "GCG_5235_RFID_OUTPUT", "EPC*!*ANTENNA*!*READER", 256, "EPC@!@EPC*!*TID@!@TID*!*PROCESSED@!@PROCESSED*!*ANTENNA@!@ANTENNA*!*READER@!@READERNAME")
+F.Intrinsic.Math.Add(V.Global.iSuccessfulTransactions, V.DataTable.dtSaveL01.RowCount, V.Global.iSuccessfulTransactions)
+V.Global.iL01Transactions.Set(V.DataTable.dtSaveL01.RowCount)
+F.Data.DataView.Close("dtL01", "dvValid")
+F.Data.DataTable.Close("dtSaveL01")
+
+'log transactions
+F.Intrinsic.Control.CallSub(AddTransactionLog, "Transaction", "L01")
+
+F.Data.DataTable.Close("dtL01")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessL01Transactions.End
+
+Program.Sub.ProcessJ55Transactions.Start
+'Save J55 Transactions
+
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+V.Local.sFilter.Declare(String)
+V.Local.sSQL.Declare(String)
+
+F.Intrinsic.Control.If(V.DataTable.dtJ55.Exists, =, False)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+'For J55
+'1	Part
+'2	Rev
+'3	Loc
+'4	Qty	(last 4 characters are decimals, so 5 is 50000)
+'5	Lot
+'6	Bin
+'7	Heat
+'8	Serial
+'9	Job
+'10	Suffix
+'11	Seq
+
+'check for dashboard option.
+F.Data.DataTable.AddColumn("dtJ55", "FAIL_REASON", "String", "")
+F.Data.DataView.Create("dtJ55", "dvValid", 22, "[FAIL_REASON] = '' and [ONLY_ISSUE_FROM_DASHBOARD] = True and [EPC] not like '%DSHBRD%'", "")
+F.Data.DataView.SetValue("dtJ55", "dvValid", -1, "FAIL_REASON", "Option to only issue from dashboard on.")
+
+'check if wo is locked
+F.Intrinsic.String.Build("select RTRIM(REC_KEY), Cast(1 as Bit) from V_X_LOCK_FILE where COMPANY = '{0}' and LOCK_TYPE = 'WO'", V.Caller.CompanyCode, V.Local.sSQL)
+F.Data.Dictionary.CreateFromSQL("dictLocked", "Con", V.Local.sSQL)
+F.Data.Dictionary.SetDefaultReturn("dictLocked", False)
+F.Data.DataTable.AddColumn("dtJ55", "LOCKED", "Boolean", False)
+F.Data.DataTable.AddExpressionColumn("dtJ55", "JS", "String", "TRIM(JOB) + '-' + TRIM(SUFFIX)")
+F.Data.DataTable.FillFromDictionary("dtJ55", "dictLocked", "JS", "LOCKED")
+F.Data.Dictionary.Close("dictLocked")
+
+F.Data.DataTable.AddExpressionColumn("dtJ55", "JOB_NULL", "String", "IsNull([JOB], '')")
+
+F.Data.DataView.SetFilter("dtJ55", "dvValid", "[JOB_NULL] = '' and [FAIL_REASON] = ''")
+F.Data.DataView.SetValue("dtJ55", "dvValid", -1, "FAIL_REASON", "No valid Job found on this WC.")
+
+'save locked flag
+F.Data.DataView.SetFilter("dtJ55", "dvValid", "[FAIL_REASON] = '' and [LOCKED] = True")
+F.Data.DataView.SetValue("dtJ55", "dvValid", -1, "FAIL_REASON", "Work order was locked because it is open. Skipping this record for now...")
+F.Data.DataView.SetFilter("dtJ55", "dvValid", "[FAIL_REASON] = 'Work order was locked because it is open. Skipping this record for now...' and [LOCKED] = True")
+F.Data.DataView.ToDataTable("dtJ55", "dvValid", "dtSaveLockedJ55")
+F.Data.DataTable.AddColumn("dtSaveLockedJ55", "PROCESSED", "STRING", "L")
+F.Data.DataTable.SaveToDB("dtSaveLockedJ55", "Con", "GCG_5235_RFID_OUTPUT", "EPC*!*ANTENNA*!*READER", 256, "EPC@!@EPC*!*TID@!@TID*!*PROCESSED@!@PROCESSED*!*ANTENNA@!@ANTENNA*!*READER@!@READERNAME")
+F.Data.DataTable.Close("dtSaveLockedJ55")
+
+'send locked emails
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataView.dtJ55!dvValid.RowCount--, 1)
+	F.Intrinsic.Control.If(V.DataView.dtJ55!dvValid(V.Local.iCounter).WORK_ORDER_LOCK_NOTIFICATIONS!FieldVal)
+		F.Intrinsic.Control.If(V.DataView.dtJ55!dvValid(V.Local.iCounter).PREVIOUSLY_LOCKED!FieldVal, =, False)
+			F.Intrinsic.Control.CallSub(SendLockedEmail, "Reader", V.DataView.dtJ55!dvValid(V.Local.iCounter).Reader!FieldValTrim, "Antenna",  V.DataView.dtJ55!dvValid(V.Local.iCounter).Antenna!FieldValTrim, "Transaction", V.DataView.dtJ55!dvValid(V.Local.iCounter).TRANS!FieldValTrim, "WorkOrder", V.DataView.dtJ55!dvValid(V.Local.iCounter).JS!FieldValTrim, "Sender", V.DataView.dtJ55!dvValid(V.Local.iCounter).WORK_ORDER_LOCK_NOTIFICATIONS_SENDER!FieldValTrim, "Recipients", V.DataView.dtJ55!dvValid(V.Local.iCounter).WORK_ORDER_LOCK_NOTIFICATIONS_RECIPIENTS!FieldValTrim)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Data.DataTable.AddExpressionColumn("dtJ55", "WRITE_LOG", "Boolean", "IIF(PREVIOUSLY_LOCKED = True and LOCKED = True, False, True)")
+
+F.Data.DataView.SetFilter("dtJ55", "dvValid", "[FAIL_REASON] = ''")
+
+F.Data.DataView.ToDataTableDistinct("dtJ55", "dvValid", "dtDistinctJ55", "EPC*!*LOT")
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtDistinctJ55.RowCount--, 1)
+	F.Intrinsic.String.Build("[EPC] = '{0}' and LOT = '{1}'", V.DataTable.dtDistinctJ55(V.Local.iCounter).EPC!FieldValTrim, V.DataTable.dtDistinctJ55(V.Local.iCounter).LOT!FieldValTrim, V.Local.sFilter)
+	F.Data.DataView.SetFilter("dtJ55", "dvValid", V.Local.sFilter)
+	
+	F.Intrinsic.Control.If(V.DataView.dtJ55!dvValid.RowCount, >, 1)
+		F.Data.DataView.SetValue("dtJ55", "dvValid", -1, "FAIL_REASON", "More than one item found for this Lot.")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+F.Data.DataTable.Close("dtDistinctJ55")
+
+F.Data.DataView.SetFilter("dtJ55", "dvValid", "[FAIL_REASON] = ''")
+F.Data.DataView.ToDataTableDistinct("dtJ55", "dvValid", "dtDistinctJ55", "EPC*!*WC")
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtDistinctJ55.RowCount--, 1)
+	F.Intrinsic.String.Build("[EPC] = '{0}' and WC = '{1}'", V.DataTable.dtDistinctJ55(V.Local.iCounter).EPC!FieldValTrim, V.DataTable.dtDistinctJ55(V.Local.iCounter).WC!FieldValTrim, V.Local.sFilter)
+	F.Data.DataView.SetFilter("dtJ55", "dvValid", V.Local.sFilter)
+	
+	F.Intrinsic.Control.If(V.DataView.dtJ55!dvValid.RowCount, >, 1)
+		F.Data.DataView.SetValue("dtJ55", "dvValid", -1, "FAIL_REASON", "More than one Job found on this WC.")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+F.Data.DataTable.Close("dtDistinctJ55")
+
+F.Data.DataView.SetFilter("dtJ55", "dvValid", "[FAIL_REASON] = '' and [QTY] = 0")
+F.Data.DataView.SetValue("dtJ55", "dvValid", -1, "FAIL_REASON", "Quantity of 0 passed.")
+
+F.Data.DataView.SetFilter("dtJ55", "dvValid", "[FAIL_REASON] = ''")
+F.Data.DataView.ToDataTable("dtJ55", "dvValid", "dtJ55Valid")
+
+'save lines
+F.Data.DataTable.SaveToDB("dtJ55Valid", "Con", "WIRELESS_LINE", "TXID*!*SEQ", 256, "TXID@!@TRANS_ID*!*SEQ@!@SEQ*!*TRANS@!@TRANS_TYPE*!*PART@!@FIELD_1*!*LOC@!@FIELD_3*!*QTY@!@FIELD_4*!*LOT@!@FIELD_5*!*BIN@!@FIELD_6*!*HEAT@!@FIELD_7*!*SERIAL@!@FIELD_8*!*JOB@!@FIELD_9*!*SUFFIX@!@FIELD_10*!*MATSEQ@!@FIELD_11")
+
+'save header so it will be processed
+F.Data.DataTable.AddColumn("dtJ55Valid", "USER_ID", "STRING", "5235")
+F.Data.DataTable.SaveToDB("dtJ55Valid", "Con", "WIRELESS_HDR", "TXID", 256, "TXID@!@TRANS_ID*!*TRANS@!@TRANS_TYPE*!*USER_ID@!@USER_ID*!*PRINT@!@USE_LABEL_PRINTER*!*PRINTER@!@DEFAULT_PRINTER*!*PRINTER@!@LABEL_PRINTER")
+
+'Set processed flag
+F.Data.DataTable.AddColumn("dtJ55Valid", "PROCESSED", "STRING", "Y")
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtJ55Valid.RowCount--, 1)
+	F.Intrinsic.String.Build("update GCG_5235_RFID_OUTPUT set PROCESSED = '{3}' where EPC = '{0}' and ANTENNA = '{1}' and READERNAME = '{2}'", V.DataTable.dtJ55Valid(V.Local.iCounter).EPC!FieldValTrim, V.DataTable.dtJ55Valid(V.Local.iCounter).ANTENNA!FieldValTrim, V.DataTable.dtJ55Valid(V.Local.iCounter).READER!FieldValTrim, V.DataTable.dtJ55Valid(V.Local.iCounter).PROCESSED!FieldValTrim, V.Local.sSQL)
+	F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+F.Intrinsic.Math.Add(V.Global.iSuccessfulTransactions, V.DataTable.dtJ55Valid.RowCount, V.Global.iSuccessfulTransactions)
+V.Global.iJ55Transactions.Set(V.DataTable.dtJ55Valid.RowCount)
+
+F.Intrinsic.Control.CallSub(BackUpDataTable, "DataTable", "dtJ55", "Type", "J55 DataTables", "Name", "dtJ55", "DataView", "", "Project", "5235")
+
+'log transactions
+F.Intrinsic.Control.CallSub(AddTransactionLog, "Transaction", "J55")
+
+F.Data.DataTable.Close("dtJ55Valid")
+F.Data.DataTable.Close("dtJ55")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessJ55Transactions.End
+
+Program.Sub.ProcessO90Transactions.Start
+'Save O90 transactions
+
+F.Intrinsic.Control.Try
+
+V.Local.sFilter.Declare(String)
+V.Local.iCounter.Declare(Long)
+
+F.Intrinsic.Control.If(V.DataTable.dtO90.Exists, =, False)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+'1	Part
+'2	From Loc?
+'3	On Hand Quantity (Quantity)
+'4	From Bin
+'5	To Bin
+'6	Lot
+'7	Heat
+'8	Serial
+'9	Gross Weight?
+'10	Tare Weight?
+'11	Reference
+'12	?
+'13	To Loc?
+'14	to lot
+'15 to heat
+'16 to serial
+
+F.Data.DataTable.AddColumn("dtO90", "FAIL_REASON", "String", "")
+F.Data.DataTable.AddExpressionColumn("dtO90", "PART_NULL", "String", "IsNull([PART], '')")
+
+F.Data.DataView.Create("dtO90", "dvValid", 22, "[PART_NULL] = ''", "")
+F.Data.DataView.SetValue("dtO90", "dvValid", -1, "FAIL_REASON", "No valid Part found for this Lot.")
+
+F.Data.DataView.SetFilter("dtO90", "dvValid", "[QTY] = 0")
+F.Data.DataView.SetValue("dtO90", "dvValid", -1, "FAIL_REASON", "Quantity of 0 was passed.")
+
+F.Data.DataView.SetFilter("dtO90", "dvValid", "[FAIL_REASON] = ''")
+
+F.Data.DataView.ToDataTableDistinct("dtO90", "dvValid", "dtDistinctO90", "EPC*!*LOT")
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtDistinctO90.RowCount--, 1)
+	F.Intrinsic.String.Build("[EPC] = '{0}' and LOT = '{1}'", V.DataTable.dtDistinctO90(V.Local.iCounter).EPC!FieldValTrim, V.DataTable.dtDistinctO90(V.Local.iCounter).LOT!FieldValTrim, V.Local.sFilter)
+	F.Data.DataView.SetFilter("dtO90", "dvValid", V.Local.sFilter)
+	
+	F.Intrinsic.Control.If(V.DataView.dtO90!dvValid.RowCount, >, 1)
+		F.Data.DataView.SetValue("dtO90", "dvValid", -1, "FAIL_REASON", "More than one item found for this Lot.")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+F.Data.DataTable.Close("dtDistinctO90")
+
+F.Data.DataView.SetFilter("dtO90", "dvValid", "[FAIL_REASON] = ''")
+F.Data.DataView.ToDataTable("dtO90", "dvValid", "dtValidO90")
+
+'save lines
+F.Data.DataTable.SaveToDB("dtValidO90", "Con", "WIRELESS_LINE", "TXID*!*SEQ", 256, "TXID@!@TRANS_ID*!*SEQ@!@SEQ*!*TRANS@!@TRANS_TYPE*!*PART@!@FIELD_1*!*LOC@!@FIELD_2*!*QTY@!@FIELD_3*!*BIN@!@FIELD_4*!*TOBIN@!@FIELD_5*!*LOT@!@FIELD_6*!*HEAT@!@FIELD_7*!*SERIAL@!@FIELD_8*!*TOLOC@!@FIELD_13*!*LOT@!@FIELD_14*!*HEAT@!@FIELD_15*!*SERIAL@!@FIELD_16")
+
+'save header
+F.Data.DataTable.AddColumn("dtValidO90", "USER_ID", "STRING", "5235")
+F.Data.DataTable.SaveToDB("dtValidO90", "Con", "WIRELESS_HDR", "TXID", 256, "TXID@!@TRANS_ID*!*TRANS@!@TRANS_TYPE*!*USER_ID@!@USER_ID*!*PRINT@!@USE_LABEL_PRINTER*!*PRINTER@!@DEFAULT_PRINTER*!*PRINTER@!@LABEL_PRINTER")
+
+'Set processed flag
+F.Data.DataTable.AddColumn("dtValidO90", "PROCESSED", "STRING", "Y")
+F.Data.DataTable.SaveToDB("dtValidO90", "Con", "GCG_5235_RFID_OUTPUT", "EPC*!*ANTENNA*!*READER", 256, "EPC@!@EPC*!*TID@!@TID*!*PROCESSED@!@PROCESSED*!*ANTENNA@!@ANTENNA*!*READER@!@READERNAME")
+F.Intrinsic.Math.Add(V.Global.iSuccessfulTransactions, V.DataTable.dtValidO90.RowCount, V.Global.iSuccessfulTransactions)
+V.Global.iO90Transactions.Set(V.DataTable.dtValidO90.RowCount)
+
+'log transactions
+F.Intrinsic.Control.CallSub(AddTransactionLog, "Transaction", "O90")
+
+F.Data.DataTable.Close("dtValidO90")
+F.Data.DataTable.Close("dtO90")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessO90Transactions.End
+
+Program.Sub.ProcessP10Transactions.Start
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+V.Local.sSQL.Declare(String)
+V.Local.sPO.Declare(String)
+V.Local.sRecordNo.Declare(String)
+
+F.Intrinsic.Control.If(V.DataTable.dtP10.Exists, =, False)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Data.DataTable.AddColumn("dtP10", "FAIL_REASON", "String", "")
+F.Data.DataTable.AddExpressionColumn("dtP10", "PO_NULL", "String", "IsNull([PO], '')")
+F.Data.DataView.Create("dtP10", "dvValid", 22, "[PO_NULL] = ''", "")
+F.Data.DataView.SetValue("dtP10", "dvValid", -1, "FAIL_REASON", "No valid open PO found for this Job / Suffix / Sequence combination.")
+
+F.Data.DataView.SetFilter("dtP10", "dvValid", "[QTY] = 0")
+F.Data.DataView.SetValue("dtP10", "dvValid", -1, "FAIL_REASON", "Quantity of 0 was passed.")
+
+F.Data.DataView.SetFilter("dtP10", "dvValid", "[FAIL_REASON] = ''")
+
+'add lines to the PO Receipts callwrapper DT
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataView.dtP10!dvValid.RowCount--, 1)
+	F.Data.DataTable.AddRow("6016", "PO", V.DataView.dtP10!dvValid(V.Local.iCounter).PO!FieldValTrim, "LINE", V.DataView.dtP10!dvValid(V.Local.iCounter).LINE!FieldValTrim, "QTY", V.DataView.dtP10!dvValid(V.Local.iCounter).QTY!FieldValFloat, "CLOSED", V.DataView.dtP10!dvValid(V.Local.iCounter).CLOSE!FieldValTrim, "WO", V.DataView.dtP10!dvValid(V.Local.iCounter).JOB!FieldValTrim, "WOSuffix", V.DataView.dtP10!dvValid(V.Local.iCounter).SUFFIX!FieldValTrim, "WOSeq", V.DataView.dtP10!dvValid(V.Local.iCounter).SEQ!FieldValTrim, "RcvToInspection", V.DataView.dtP10!dvValid(V.Local.iCounter).INSPECTION!FieldValTrim, "PRICE", V.DataView.dtP10!dvValid(V.Local.iCounter).COST!FieldValFloat, "RcvdDate", V.Ambient.Date.FormatYYMMDD)
+	
+	F.Intrinsic.Control.If(V.DataView.dtP10!dvValid(V.Local.iCounter).INSPECTION!FieldValTrim, =, "N")
+		V.Local.sPO.Set(V.DataView.dtP10!dvValid(V.Local.iCounter).PO!FieldValTrim)
+		F.Intrinsic.String.LPad(V.DataView.dtP10!dvValid(V.Local.iCounter).LINE!FieldValTrim, "0", 3, V.Local.sRecordNo)
+		F.Intrinsic.String.RPad(V.Local.sRecordNo, "0", 4, V.Local.sRecordNo)
+		F.Intrinsic.String.Build("UPDATE PO_LINES set REQUIRES_INSP = 'N' where PURCHASE_ORDER = '{0}' and RECORD_NO = '{1}'", V.Local.sPO.PSQLFriendly, V.Local.sRecordNo, V.Local.sSQL)
+		F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+'launch the DT
+F.Intrinsic.Control.CallSub(6016Sync)
+
+F.Data.DataView.ToDataTable("dtP10", "dvValid", "dtSaveP10")
+F.Data.DataView.Close("dtP10", "dvValid")
+
+'save processed flag
+F.Data.DataTable.AddColumn("dtSaveP10", "PROCESSED", "STRING", "Y")
+F.Data.DataTable.SaveToDB("dtSaveP10", "Con", "GCG_5235_RFID_OUTPUT", "EPC*!*ANTENNA*!*READER", 256, "EPC@!@EPC*!*TID@!@TID*!*PROCESSED@!@PROCESSED*!*ANTENNA@!@ANTENNA*!*READER@!@READERNAME")
+F.Intrinsic.Math.Add(V.Global.iSuccessfulTransactions, V.DataTable.dtSaveP10.RowCount, V.Global.iSuccessfulTransactions)
+V.Global.iP10Transactions.Set(V.DataTable.dtSaveP10.RowCount)
+F.Data.DataTable.Close("dtSaveP10")
+
+'log transactions
+F.Intrinsic.Control.CallSub(AddTransactionLog, "Transaction", "P10")
+
+F.Data.DataTable.Close("dtP10")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessP10Transactions.End
+
+Program.Sub.ProcessJ52Transactions.Start
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+V.Local.sLot.Declare(String, "")
+V.Local.iCostMethod.Declare(Long)
+V.Local.sCostMethod.Declare(String, "")
+V.Local.sFinalCostMethod.Declare(String)
+V.Local.sSQL.Declare(String)
+
+F.Intrinsic.Control.If(V.DataTable.dtJ52.Exists, =, False)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+'check if job is valid
+F.Data.Dictionary.CreateFromSQL("dictJobs", "Con", "select RTRIM(JOB) + '-' + RTRIM(SUFFIX), Cast(1 as bit) from V_JOB_HEADER where DATE_CLOSED = '1900-01-01'")
+F.Data.DataTable.AddColumn("dtJ52", "VALID_WORK_ORDER", "Boolean", False)
+F.Data.Dictionary.SetDefaultReturn("dictJobs", False)
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictJobs", "JS", "VALID_WORK_ORDER")
+F.Data.Dictionary.Close("dictJobs")
+
+'check if wo is locked
+F.Intrinsic.String.Build("select RTRIM(REC_KEY), Cast(1 as Bit) from V_X_LOCK_FILE where COMPANY = '{0}' and LOCK_TYPE = 'WO'", V.Caller.CompanyCode, V.Local.sSQL)
+F.Data.Dictionary.CreateFromSQL("dictLocked", "Con", V.Local.sSQL)
+F.Data.Dictionary.SetDefaultReturn("dictLocked", False)
+F.Data.DataTable.AddColumn("dtJ52", "LOCKED", "Boolean", False)
+F.Data.DataTable.FillFromDictionary("dtJ52", "dictLocked", "JS", "LOCKED")
+F.Data.Dictionary.Close("dictLocked")
+
+F.Data.DataTable.AddColumn("dtJ52", "FAIL_REASON", "String", "")
+F.Data.DataView.Create("dtJ52", "dvValid", 22, "[FAIL_REASON] = '' and [VALID_WORK_ORDER] = False", "")
+F.Data.DataView.SetValue("dtJ52", "dvValid", -1, "FAIL_REASON", "No valid open work order found.")
+
+F.Data.DataView.SetFilter("dtJ52", "dvValid", "[FAIL_REASON] = '' and [QTY] = 0")
+F.Data.DataView.SetValue("dtJ52", "dvValid", -1, "FAIL_REASON", "Quantity of 0 passed.")
+
+F.Data.DataView.SetFilter("dtJ52", "dvValid", "[FAIL_REASON] = '' and [LOCKED] = True")
+F.Data.DataView.SetValue("dtJ52", "dvValid", -1, "FAIL_REASON", "Work order was locked because it is open. Skipping this record for now...")
+F.Data.DataView.SetFilter("dtJ52", "dvValid", "[FAIL_REASON] = 'Work order was locked because it is open. Skipping this record for now...' and [LOCKED] = True")
+F.Data.DataView.ToDataTable("dtJ52", "dvValid", "dtSaveLockedJ52")
+F.Data.DataTable.AddColumn("dtSaveLockedJ52", "PROCESSED", "STRING", "L")
+F.Data.DataTable.SaveToDB("dtSaveLockedJ52", "Con", "GCG_5235_RFID_OUTPUT", "EPC*!*ANTENNA*!*READER", 256, "EPC@!@EPC*!*TID@!@TID*!*PROCESSED@!@PROCESSED*!*ANTENNA@!@ANTENNA*!*READER@!@READERNAME")
+F.Data.DataTable.Close("dtSaveLockedJ52")
+
+'process locked records
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataView.dtJ52!dvValid.RowCount--, 1)
+	F.Intrinsic.Control.If(V.DataView.dtJ52!dvValid(V.Local.iCounter).WORK_ORDER_LOCK_NOTIFICATIONS!FieldVal)
+		F.Intrinsic.Control.If(V.DataView.dtJ52!dvValid(V.Local.iCounter).PREVIOUSLY_LOCKED!FieldVal, =, False)
+			F.Intrinsic.Control.CallSub(SendLockedEmail, "Reader", V.DataView.dtJ52!dvValid(V.Local.iCounter).Reader!FieldValTrim, "Antenna",  V.DataView.dtJ52!dvValid(V.Local.iCounter).Antenna!FieldValTrim, "Transaction", V.DataView.dtJ52!dvValid(V.Local.iCounter).TRANS!FieldValTrim, "WorkOrder", V.DataView.dtJ52!dvValid(V.Local.iCounter).JS!FieldValTrim, "Sender", V.DataView.dtJ52!dvValid(V.Local.iCounter).WORK_ORDER_LOCK_NOTIFICATIONS_SENDER!FieldValTrim, "Recipients", V.DataView.dtJ52!dvValid(V.Local.iCounter).WORK_ORDER_LOCK_NOTIFICATIONS_RECIPIENTS!FieldValTrim)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Data.DataTable.AddExpressionColumn("dtJ52", "WRITE_LOG", "Boolean", "IIF(PREVIOUSLY_LOCKED = True and LOCKED = True, False, True)")
+
+F.Data.DataView.SetFilter("dtJ52", "dvValid", "IsNull([FAIL_REASON], '') = ''")
+
+'build blank dt for labels
+F.Data.DataTable.CreateFromSQL("dtLabel", "Con", "Select * From Y_SF_WIPTOFG where WO = ''", True)
+F.Data.DataTable.AddColumn("dtLabel", "Printer", "String", "")
+F.Data.DataTable.DeleteRow("dtLabel", -1)
+F.Data.DataTable.AcceptChanges("dtLabel")
+
+F.Global.General.ReadOption(401163, 3, 0, V.Local.iCostMethod)
+F.Intrinsic.Control.SelectCase(V.Local.iCostMethod)
+	F.Intrinsic.Control.Case(1)
+		V.Local.sCostMethod.Set("P")
+	F.Intrinsic.Control.Case(2)
+		V.Local.sCostMethod.Set("E")
+	F.Intrinsic.Control.Case(3)
+		V.Local.sCostMethod.Set("I")
+	F.Intrinsic.Control.Case(4)
+		V.Local.sCostMethod.Set("A")
+	F.Intrinsic.Control.Case(5)
+		V.Local.sCostMethod.Set("R")
+	F.Intrinsic.Control.Case(6)
+		V.Local.sCostMethod.Set("L")
+F.Intrinsic.Control.EndSelect
+
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataView.dtJ52!dvValid.RowCount--, 1)
+	'add tow to the WIP to FG callwrapper DT
+	F.Intrinsic.Control.If(V.DataView.dtJ52!dvValid(V.Local.iCounter).COMPLETE!FieldValTrim, =, "Y")
+		V.Local.sFinalCostMethod.Set("R")
+	F.Intrinsic.Control.Else
+		V.Local.sFinalCostMethod.Set(V.Local.sCostMethod)
+	F.Intrinsic.Control.EndIf
+	
+	F.Data.DataTable.AddRow("2003", "WONum", V.DataView.dtJ52!dvValid(V.Local.iCounter).JOB!FieldValTrim, "WOSuffix", V.DataView.dtJ52!dvValid(V.Local.iCounter).SUFFIX!FieldValTrim, "CloseWO", V.DataView.dtJ52!dvValid(V.Local.iCounter).COMPLETE!FieldValTrim, "Quantity", V.DataView.dtJ52!dvValid(V.Local.iCounter).QTY!FieldValFloat, "PrintLabels", "N", "CostMethod", V.Local.sFinalCostMethod)
+	
+	'if they have a default bin set, add lot/bin records
+	F.Intrinsic.Control.If(V.DataView.dtJ52!dvValid(V.Local.iCounter).FINAL_BIN!FieldValTrim, !=, "")
+		
+		'if they have the option on to use JOB-SUFFIX as lot, do that
+		F.Intrinsic.Control.If(V.DataView.dtJ52!dvValid(V.Local.iCounter).USE_JOB_SUFFIX_AS_LOT!FieldVal)
+			F.Intrinsic.Control.If(V.DataView.dtJ52!dvValid(V.Local.iCounter).SUFFIX!FieldValTrim, =, "")
+				V.Local.sLot.Set(V.DataView.dtJ52!dvValid(V.Local.iCounter).JOB!FieldValTrim)
+			F.Intrinsic.Control.Else
+				F.Intrinsic.String.Build("{0}-{1}", V.DataView.dtJ52!dvValid(V.Local.iCounter).JOB!FieldValTrim, V.DataView.dtJ52!dvValid(V.Local.iCounter).SUFFIX!FieldValTrim, V.Local.sLot)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.ElseIf(V.DataView.dtJ52!dvValid(V.Local.iCounter).USE_AUTO_LOT!FieldVal)
+			F.Intrinsic.String.LPad(V.DataView.dtJ52!dvValid(V.Local.iCounter).AUTO_LOT_NUMBER!FieldValLong, "0", 6, V.Local.sLot)
+		F.Intrinsic.Control.Else
+			V.Local.sLot.Set("")
+		F.Intrinsic.Control.EndIf
+		
+		F.Data.DataTable.SetValue("dtJ52", V.Local.iCounter, "LOT", V.Local.sLot)
+		
+		'add tow to the WIP to FG callwrapper lot/bin DT
+		F.Data.DataTable.AddRow("2003File", "WONum", V.DataView.dtJ52!dvValid(V.Local.iCounter).JOB!FieldValTrim, "WOSuffix", V.DataView.dtJ52!dvValid(V.Local.iCounter).SUFFIX!FieldValTrim, "Bin", V.DataView.dtJ52!dvValid(V.Local.iCounter).FINAL_BIN!FieldValTrim, "SpecificQuantity", V.DataView.dtJ52!dvValid(V.Local.iCounter).QTY!FieldValFloat, "LOT", V.DataView.dtJ52!dvValid(V.Local.iCounter).LOT!FieldValTrim)
+		
+	F.Intrinsic.Control.EndIf
+	
+	'need to add label values here
+	F.Intrinsic.Control.If(V.DataView.dtJ52!dvValid(V.Local.iCounter).PRINT_CHAR!FieldValTrim, =, "Y")
+		F.Data.DataTable.AddRow("dtLabel", "QTY_ON_LABEL", V.DataView.dtJ52!dvValid(V.Local.iCounter).QTY!FieldValFloat, "PART", V.DataView.dtJ52!dvValid(V.Local.iCounter).PART!FieldValTrim, "INV_QTY_REC", V.DataView.dtJ52!dvValid(V.Local.iCounter).QTY!FieldValFloat, "LOT", V.DataView.dtJ52!dvValid(V.Local.iCounter).LOT!FieldValTrim, "Bin", V.DataView.dtJ52!dvValid(V.Local.iCounter).FINAL_BIN!FieldValTrim, "WO", V.DataView.dtJ52!dvValid(V.Local.iCounter).JOB!FieldValTrim, "WO_SUFFIX", V.DataView.dtJ52!dvValid(V.Local.iCounter).SUFFIX!FieldValTrim, "DESCR", V.DataView.dtJ52!dvValid(V.Local.iCounter).DESCRIPTION!FieldValTrim, "INV_UM", V.DataView.dtJ52!dvValid(V.Local.iCounter).UM!FieldValTrim, "WO_DUE_DATE", V.DataView.dtJ52!dvValid(V.Local.iCounter).DATE_DUE!FieldVal, "PRINTER", V.DataView.dtJ52!dvValid(V.Local.iCounter).PRINTER!FieldValTrim)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.CallSub(2003Sync)
+	F.Intrinsic.Control.CallSub(PrintJ52Label)
+	F.Data.DataTable.DeleteRow("2003")
+	F.Data.DataTable.DeleteRow("2003File")
+	F.Data.DataTable.DeleteRow("dtLabel")
+	F.Data.DataTable.AcceptChanges("2003")
+	F.Data.DataTable.AcceptChanges("2003File")
+	F.Data.DataTable.AcceptChanges("dtLabel")
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Data.DataTable.Close("dtLabel")
+
+'save processed flag
+F.Data.DataView.ToDataTable("dtJ52", "dvValid", "dtSaveJ52")
+F.Data.DataTable.AddColumn("dtSaveJ52", "PROCESSED", "STRING", "Y")
+F.Data.DataTable.SaveToDB("dtSaveJ52", "Con", "GCG_5235_RFID_OUTPUT", "EPC*!*ANTENNA*!*READER", 256, "EPC@!@EPC*!*TID@!@TID*!*PROCESSED@!@PROCESSED*!*ANTENNA@!@ANTENNA*!*READER@!@READERNAME")
+F.Intrinsic.Math.Add(V.Global.iSuccessfulTransactions, V.DataTable.dtSaveJ52.RowCount, V.Global.iSuccessfulTransactions)
+V.Global.iJ52Transactions.Set(V.DataTable.dtSaveJ52.RowCount)
+F.Data.DataView.Close("dtJ52", "dvValid")
+F.Data.DataTable.Close("dtSaveJ52")
+
+'log transactions
+F.Intrinsic.Control.CallSub(AddTransactionLog, "Transaction", "J52")
+
+F.Data.DataTable.Close("dtJ52")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessJ52Transactions.End
+
+Program.Sub.PrintJ52Label.Start
+F.Intrinsic.Control.Try
+
+V.Local.iBIRun.Declare(Long)
+V.Local.iBILog.Declare(Long)
+V.Local.iReportID.Declare(Long)
+V.Local.iRet.Declare(Long)
+V.Local.sSQL.Declare(String)
+V.Local.sPath.Declare(String)
+V.Local.sPrinter.Declare(String)
+
+F.Intrinsic.Control.If(V.DataTable.dtLabel.RowCount, <, 1)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+'this is bad as what if different printer on same transaction
+V.Local.sPrinter.Set(V.DataTable.dtLabel(0).PRINTER!FieldValTrim)
+
+F.Global.BI.GetRunID(V.Local.iBIRun)
+
+F.Intrinsic.String.Build("{0}\LABELS\CUSTOM\GCG_5235_WIP_FG_Label.lab", V.Caller.BusintDir, V.Local.sPath)
+F.Global.BI.InitializeReport("RFID Wip to FG Label", V.Local.sPath, V.Local.iReportID)
+
+F.Global.BI.StartLogging(V.Local.iBIRun, V.Local.iReportID, -1, "", V.Local.iBILog)
+
+F.Data.DataTable.SetValue("dtLabel", -1, "RUNID", V.Local.iBIRun, "LOGID", V.Local.iBILog, "LBL_CREATE_DATE", V.Ambient.Date, "LBL_CREATE_TIME", V.Ambient.Time, "USER_ID", V.Caller.User, "WO_SEQ", "999999")
+F.Data.DataTable.SetSeries("dtLabel", "SEQ", 0, 1)
+F.Data.DataTable.SetValueFormat("dtLabel", -1, "SEQ", "SEQ", "00000")
+F.Global.BI.StopLogging(V.Local.iBILog)
+
+F.Global.BI.PrintCodesoftLabelFromDataTable(V.Local.iBIRun, V.Local.iBILog, "dtLabel", V.Local.sPrinter, False)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.PrintJ52Label.End
+
+Program.Sub.UploadTransactions.Start
+'store the transactions in the wireless table to be processed by wirepoll
+'first store the line records
+'then the header records
+
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(ProcessL01Transactions)
+F.Intrinsic.Control.CallSub(ProcessJ55Transactions)
+F.Intrinsic.Control.CallSub(ProcessO90Transactions)
+F.Intrinsic.Control.CallSub(ProcessP10Transactions)
+F.Intrinsic.Control.CallSub(ProcessJ52Transactions)
+F.Intrinsic.Control.CallSub(ProcessS99Transactions)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.UploadTransactions.End
+
+Program.Sub.ProcessS99Transactions.Start
+F.Intrinsic.Control.Try
+
+V.Local.iCounter.Declare(Long)
+V.Local.sSQL.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.iLoad.Declare(Long)
+V.Local.sOrder.Declare(String)
+V.Local.sOrderLine.Declare(String)
+V.Local.sOrderSuffix.Declare(String)
+V.Local.iLoadSeq.Declare(Long)
+V.Local.sField.Declare(String)
+V.Local.sCarton.Declare(String)
+V.Local.sPallet.Declare(String)
+
+F.Data.DataTable.AddColumn("dtS99RFID", "FAIL_REASON", "String", "")
+F.Data.DataTable.AddColumn("dtS99RFID", "RESULT", "String", "")
+F.Data.DataTable.AddColumn("dtS99RFID", "MATCH_TYPE", "String", "")
+F.Data.DataTable.AddColumn("dtS99RFID", "PALLET", "String", "")
+F.Data.DataTable.AddColumn("dtS99RFID", "CARTON", "String", "")
+F.Data.DataTable.AddColumn("dtS99RFID", "LOAD", "Long", 0)
+F.Data.DataTable.AddColumn("dtS99RFID", "LOAD_SEQUENCE", "Long", 0)
+F.Data.DataTable.AddColumn("dtS99RFID", "ORDER_NUMBER", "String", "")
+F.Data.DataTable.AddColumn("dtS99RFID", "ORDER_LINE", "String", "")
+F.Data.DataTable.AddColumn("dtS99RFID", "ORDER_SUFFIX", "String", "")
+F.Data.DataTable.AddColumn("dtS99RFID", "PACKING_LIST", "String", "")
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtS99RFID.RowCount--, 1)
+	
+	'grab the current load on this dock from GCG_5245_RFID_LOAD (reader name = dock name)
+	F.Intrinsic.String.Build("select LOAD from GCG_5235_RFID_LOAD where DOCK = '{0}' and ACTIVE = 1", V.DataTable.dtS99RFID(V.Local.iCounter).READER!FieldValTrim, V.Local.sSQL)
+	F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+	F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF.Not)
+		V.Local.iLoad.Set(V.Local.sRet.Long)
+		F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "LOAD", V.Local.iLoad)
+		
+		'make sure this item is actually on this load
+		'leaving pallet and carton in for now, but not using them
+		F.Intrinsic.Control.If(V.DataTable.dtS99RFID(V.Local.iCounter).PLLT_NO!FieldValTrim, !=, "")
+			'V.Local.sField.Set("PALLET")
+			V.Local.sField.Set("PLLT_NO")
+			F.Intrinsic.String.Build("Select VSQ.ORDER_NO,VSQ.LINE,VSQ.SEQ,LP.LOAD_SEQ,BPD.PLLT_NO,BPD.CRTN_NO,BPD.PCK_NO FROM V_STAGING_QUANTITY VSQ LEFT JOIN LOAD_PLAN LP ON VSQ.ORDER_NO = LP.ORDER_NO AND VSQ.LINE = LP.ORDER_LINE LEFT JOIN V_BOL_PACK_DTL BPD ON VSQ.PCK_NO = BPD.PCK_NO AND VSQ.ORDER_NO = BPD.ORDER_NO AND VSQ.LINE = BPD.ORDER_LINE LEFT JOIN GCG_5235_RFID_LOAD GCG ON LP.LOAD_NO = GCG.LOAD where LOAD = {0} and BPD.{2} = '{1}' and BPD.PCK_NO = '{3}' and ACTIVE = 1 ORDER BY VSQ.LINE;", V.Local.iLoad, V.DataTable.dtS99RFID(V.Local.iCounter).[V.Local.sField]!FieldValTrim, V.Local.sField, V.DataTable.dtS99RFID(V.Local.iCounter).PCK_NO!FieldValTrim,V.Local.sSQL)
+			F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "MATCH_TYPE", "PALLET")
+		F.Intrinsic.Control.ElseIf(V.DataTable.dtS99RFID(V.Local.iCounter).CRTN_NO!FieldValTrim, !=, "")
+			'V.Local.sField.Set("CARTON")
+			V.Local.sField.Set("CRTN_NO")
+			F.Intrinsic.String.Build("Select VSQ.ORDER_NO,VSQ.LINE,VSQ.SEQ,LP.LOAD_SEQ,BPD.PLLT_NO,BPD.CRTN_NO,BPD.PCK_NO FROM V_STAGING_QUANTITY VSQ LEFT JOIN LOAD_PLAN LP ON VSQ.ORDER_NO = LP.ORDER_NO AND VSQ.LINE = LP.ORDER_LINE LEFT JOIN V_BOL_PACK_DTL BPD ON VSQ.PCK_NO = BPD.PCK_NO AND VSQ.ORDER_NO = BPD.ORDER_NO AND VSQ.LINE = BPD.ORDER_LINE LEFT JOIN GCG_5235_RFID_LOAD GCG ON LP.LOAD_NO = GCG.LOAD where LOAD = {0} and BPD.{2} = '{1}' and BPD.PCK_NO = '{3}' and ACTIVE = 1 ORDER BY VSQ.LINE;", V.Local.iLoad, V.DataTable.dtS99RFID(V.Local.iCounter).[V.Local.sField]!FieldValTrim, V.Local.sField, V.DataTable.dtS99RFID(V.Local.iCounter).PCK_NO!FieldValTrim,V.Local.sSQL)
+			F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "MATCH_TYPE", "CARTON")
+		F.Intrinsic.Control.Else
+			V.Local.sField.Set("LOT")
+			F.Intrinsic.String.Build("Select VSQ.ORDER_NO,VSQ.LINE,VSQ.SEQ,LP.LOAD_SEQ,BPD.PLLT_NO,BPD.CRTN_NO,BPD.PCK_NO FROM V_STAGING_QUANTITY VSQ LEFT JOIN LOAD_PLAN LP ON VSQ.ORDER_NO = LP.ORDER_NO AND VSQ.LINE = LP.ORDER_LINE LEFT JOIN V_BOL_PACK_DTL BPD ON VSQ.PCK_NO = BPD.PCK_NO AND VSQ.ORDER_NO = BPD.ORDER_NO AND VSQ.LINE = BPD.ORDER_LINE LEFT JOIN GCG_5235_RFID_LOAD GCG ON LP.LOAD_NO = GCG.LOAD where LOAD = {0} and BPD.{2} = '{1}' and ACTIVE = 1 ORDER BY VSQ.LINE;", V.Local.iLoad, V.DataTable.dtS99RFID(V.Local.iCounter).[V.Local.sField]!FieldValTrim, V.Local.sField,V.Local.sSQL)
+			F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "MATCH_TYPE", "LOT")
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+		F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF.Not)
+			'item was found on this load, check the sequence
+			F.Intrinsic.String.Split(V.Local.sRet, "*!*", V.Local.sRet)
+			V.Local.sOrder.Set(V.Local.sRet(0).Trim)
+			V.Local.sOrderLine.Set(V.Local.sRet(1).Trim)
+			V.Local.sOrderSuffix.Set(V.Local.sRet(2).Trim)
+			V.Local.iLoadSeq.Set(V.Local.sRet(3).Long)
+			
+			F.Intrinsic.Control.If(V.Local.sRet(5).Trim, =, "00000000")
+				V.Local.sCarton.Set("")
+			F.Intrinsic.Control.Else
+				V.Local.sCarton.Set(V.Local.sRet(5).Trim)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.sRet(4).Trim, =, "00000000")
+				V.Local.sPallet.Set("")
+			F.Intrinsic.Control.Else
+				V.Local.sPallet.Set(V.Local.sRet(4).Trim)
+			F.Intrinsic.Control.EndIf
+			
+			F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "PALLET", V.Local.sPallet, "CARTON", V.Local.sCarton, "LOAD_SEQUENCE", V.Local.iLoadSeq, "ORDER_NUMBER", V.Local.sOrder, "ORDER_LINE", V.Local.sOrderLine, "ORDER_SUFFIX", V.Local.sOrderSuffix, "PACKING_LIST", V.Local.sRet(6).Trim)
+			V.Local.sRet.Redim(0, 0)
+
+			F.Intrinsic.Control.If(V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim,=,"BYPASS")
+				F.Intrinsic.String.Build("update BOL_PACK_DTL set SHIP_VALIDATE = 1 where ORDER_NO = '{0}' and ORDER_LINE = '{1}' and ORDER_SEQ = '{2}' and {4} = '{3}'", V.Local.sOrder, V.Local.sOrderLine, V.Local.sOrderSuffix, V.DataTable.dtS99RFID(V.Local.iCounter).[V.Local.sField]!FieldValTrim, V.Local.sField, V.Local.sSQL)
+				F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+				'F.Intrinsic.Control.GoTo("BYPASS")
+			F.Intrinsic.Control.EndIf
+							
+				'now check the order
+				F.Intrinsic.String.Build("select top 1 LOAD_SEQ from LOAD_PLAN A left join BOL_PACK_DTL B on A.ORDER_NO = B.ORDER_NO and A.ORDER_LINE = B.ORDER_LINE and A.ORDER_SUFFIX = B.ORDER_SEQ where LOAD_NO = {0} and SHIP_VALIDATE = 0 order by LOAD_SEQ;", V.Local.iLoad, V.Local.sSQL)
+				F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+				F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF.Not)
+					F.Intrinsic.Control.If(V.Local.sRet.Long, =, V.Local.iLoadSeq)
+						'right load, right order
+						F.Intrinsic.Control.If(V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim,<>,"BYPASS")
+							F.Intrinsic.Control.CallSub(ClearStreamAPICall, "URL", V.DataTable.dtS99RFID(V.Local.iCounter).API_URL!FieldValTrim, "DEVICE", V.DataTable.dtS99RFID(V.Local.iCounter).DEVICE_ID!FieldValLong, "PORT", V.DataTable.dtS99RFID(V.Local.iCounter).GREEN_PORT!FieldValLong, "SECOND_PORT", "")
+						F.Intrinsic.Control.EndIf
+						F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "RESULT", "Item found on this load.")
+					
+						'now update ship validate flag
+						'right now not handling multiple sequences in BOL_PACK_DTL
+						F.Intrinsic.String.Build("update BOL_PACK_DTL set SHIP_VALIDATE = 1 where ORDER_NO = '{0}' and ORDER_LINE = '{1}' and ORDER_SEQ = '{2}' and {4} = '{3}'", V.Local.sOrder, V.Local.sOrderLine, V.Local.sOrderSuffix, V.DataTable.dtS99RFID(V.Local.iCounter).[V.Local.sField]!FieldValTrim, V.Local.sField, V.Local.sSQL)
+						F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+					F.Intrinsic.Control.Else
+						'right load, wrong order
+						F.Intrinsic.Control.If(V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim,<>,"BYPASS")
+							F.Intrinsic.Control.CallSub(ClearStreamAPICall, "URL", V.DataTable.dtS99RFID(V.Local.iCounter).API_URL!FieldValTrim, "DEVICE", V.DataTable.dtS99RFID(V.Local.iCounter).DEVICE_ID!FieldValLong, "PORT", V.DataTable.dtS99RFID(V.Local.iCounter).GREEN_PORT!FieldValLong, "SECOND_PORT", V.DataTable.dtS99RFID(V.Local.iCounter).RED_PORT!FieldValLong)
+						F.Intrinsic.Control.EndIf
+						F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "RESULT", "Item found on this load, but not loaded in the correct sequence.")
+						F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "FAIL_REASON", "Item found on this load, but not loaded in the correct sequence.")
+						'delete from output table so it can process again later
+						F.Intrinsic.String.Build("delete from GCG_5235_RFID_OUTPUT where EPC = '{0}' and ANTENNA = '{1}' and READERNAME = '{2}'", V.DataTable.dtS99RFID(V.Local.iCounter).EPC!FieldValTrim, V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim, V.DataTable.dtS99RFID(V.Local.iCounter).READER!FieldValTrim, V.Local.sSQL)
+						F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+					F.Intrinsic.Control.EndIf
+					
+				F.Intrinsic.Control.Else
+					F.Intrinsic.Control.If(V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim,<>,"BYPASS")
+						F.Intrinsic.Control.CallSub(ClearStreamAPICall, "URL", V.DataTable.dtS99RFID(V.Local.iCounter).API_URL!FieldValTrim, "DEVICE", V.DataTable.dtS99RFID(V.Local.iCounter).DEVICE_ID!FieldValLong, "PORT", V.DataTable.dtS99RFID(V.Local.iCounter).RED_PORT!FieldValLong, "SECOND_PORT", "")
+					F.Intrinsic.Control.EndIf
+					F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "RESULT", "No open items found on this load.")
+					F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "FAIL_REASON", "No open items found on this load.")
+				F.Intrinsic.Control.EndIf
+				
+		F.Intrinsic.Control.Else
+			'item was not found on this load, fail
+			F.Intrinsic.Control.If(V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim,<>,"BYPASS")
+				F.Intrinsic.Control.CallSub(ClearStreamAPICall, "URL", V.DataTable.dtS99RFID(V.Local.iCounter).API_URL!FieldValTrim, "DEVICE", V.DataTable.dtS99RFID(V.Local.iCounter).DEVICE_ID!FieldValLong, "PORT", V.DataTable.dtS99RFID(V.Local.iCounter).RED_PORT!FieldValLong, "SECOND_PORT", "")
+			F.Intrinsic.Control.EndIf
+			F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "RESULT", "Item not found on this load.")
+			F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "FAIL_REASON", "Item not found on this load.")
+			
+			F.Intrinsic.String.Build("delete from GCG_5235_RFID_OUTPUT where EPC = '{0}' and ANTENNA = '{1}' and READERNAME = '{2}'", V.DataTable.dtS99RFID(V.Local.iCounter).EPC!FieldValTrim, V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim, V.DataTable.dtS99RFID(V.Local.iCounter).READER!FieldValTrim, V.Local.sSQL)
+			F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+		F.Intrinsic.Control.EndIf		
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.If(V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim,<>,"BYPASS")
+			F.Intrinsic.Control.CallSub(ClearStreamAPICall, "URL", V.DataTable.dtS99RFID(V.Local.iCounter).API_URL!FieldValTrim, "DEVICE", V.DataTable.dtS99RFID(V.Local.iCounter).DEVICE_ID!FieldValLong, "PORT", V.DataTable.dtS99RFID(V.Local.iCounter).RED_PORT!FieldValLong, "SECOND_PORT", "")
+		F.Intrinsic.Control.EndIf
+		F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "RESULT", "No active load was found on this dock.")
+		F.Data.DataTable.SetValue("dtS99RFID", V.Local.iCounter, "FAIL_REASON", "No active load was found on this dock.")
+	F.Intrinsic.Control.EndIf
+	'F.Intrinsic.Control.Label("BYPASS")
+	'update processed flag
+	F.Intrinsic.String.Build("update GCG_5235_RFID_OUTPUT set PROCESSED = 'Y' where EPC = '{0}' and ANTENNA = '{1}' and READERNAME = '{2}'", V.DataTable.dtS99RFID(V.Local.iCounter).EPC!FieldValTrim, V.DataTable.dtS99RFID(V.Local.iCounter).ANTENNA!FieldValTrim, V.DataTable.dtS99RFID(V.Local.iCounter).READER!FieldValTrim, V.Local.sSQL)
+	F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+	
+	F.Intrinsic.Math.Add(V.Global.iS99Transactions, 1, V.Global.iS99Transactions)
+	F.Intrinsic.Math.Add(V.Global.iSuccessfulTransactions, 1, V.Global.iSuccessfulTransactions)
+	
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+'log transactions
+F.Intrinsic.Control.CallSub(AddTransactionLog, "Transaction", "S99")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.ProcessS99Transactions.End
+
+Program.Sub.ClearStreamAPICall.Start
+'makes a clearstream API call
+'pass URL, DEVICE, PORT, SECOND_PORT
+
+F.Intrinsic.Control.Try
+
+V.Local.sURL.Declare(String)
+V.Local.sBody.Declare(String)
+V.Local.sData.Declare(String)
+V.Local.sReturn.Declare(String)
+
+'build API call
+F.Intrinsic.Control.If(V.Args.URL.Right1, !=, "/")
+	F.Intrinsic.String.Build("{0}/", V.Args.URL.Trim, V.Local.sURL)
+F.Intrinsic.Control.Else
+	V.Local.sURL.Set(V.Args.URL.Trim)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.String.Build("{0}device/{1}/gpo", V.Local.sURL, V.Args.Device, V.Local.sURL)
+
+'build post body
+F.Intrinsic.Control.If(V.Args.Second_Port.Trim, =, "")
+	F.Intrinsic.String.Build("{{0}gpos{0}:[{{0}port{0}:{1},{0}on{0}:true}]}", V.Ambient.DblQuote, V.Args.Port, V.Local.sBody)
+F.Intrinsic.Control.Else
+	F.Intrinsic.String.Build("{{0}gpos{0}:[{{0}port{0}:{1},{0}on{0}:true},{{0}port{0}:{2},{0}on{0}:true}]}", V.Ambient.DblQuote, V.Args.Port, V.Args.Second_Port, V.Local.sBody)
+F.Intrinsic.Control.EndIf
+
+'build the expected return
+F.Intrinsic.String.Build("{0}gpos{0}:", V.Ambient.DblQuote, V.Local.sReturn)
+
+F.Communication.REST.Reset
+F.Communication.REST.SetProperty("PostData", V.Local.sBody)
+F.Communication.REST.Post(V.Local.sURL)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.If(V.Ambient.ErrorNumber, =, "999000")
+		F.Communication.REST.GetProperty("TransferredData", V.local.sData)
+		
+		F.Intrinsic.Control.If(V.Local.sData.Left7, =, V.Local.sReturn)
+			'for some reason it throws this error even if successful, so we check here
+			F.Intrinsic.Control.ExitSub
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		V.Local.sData.Set(V.Ambient.ErrorDescription)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Local.sData, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.ClearStreamAPICall.End
+
+Program.Sub.Exit.Start
+F.Intrinsic.Control.Try
+
+V.Local.sMessage.Declare(String)
+
+F.Intrinsic.Control.CallSub(LogTransactions)
+
+'pass transaction info back to watchdog using PID passed in switch
+F.Intrinsic.String.Build("{0}::{1}::{2}::{3}::{4}::{5}::{6}::{7}", V.Global.iTransactions, V.Global.iSuccessfulTransactions, V.Global.iJ55Transactions, V.Global.iO90Transactions, V.Global.iJ52Transactions, V.Global.iL01Transactions, V.Global.iP10Transactions, V.Global.iS99Transactions, V.Local.sMessage)
+F.Intrinsic.IPM.SendMessage(V.Local.sMessage, V.Caller.Switches)
+
+F.Intrinsic.Control.CallSub(CloseDataTables)
+
+F.ODBC.Connection!Con.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.Exit.End
+
+Program.Sub.CloseDataTables.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.If(V.DataTable.dtTransactionSettings.Exists)
+	F.Data.DataTable.Close("dtTransactionSettings")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.CloseDataTables.End
+
+Program.Sub.CheckDirectory.Start
+'check if the given import directories exist
+'create them if they don't
+'pass PATH to check
+
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.bExists.Declare(Boolean)
+
+V.Local.sPath.Set(V.Args.Path)
+F.Intrinsic.File.DirExists(V.Local.sPath, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.File.CreateDir(V.Local.sPath)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckDirectory.End
+
+Program.Sub.ErrorMessage.Start
+'basic error message for replacing catch block
+'this is really just for when printing the message and ending program
+'pass error number, error description, current subroutine
+'optional callback sub, this will be called before ending
+'optional unattended parameters, those subs may not exist if not using them but won't be called
+F.Intrinsic.Control.Try
+
+V.Local.iError.Declare(Long)
+V.Local.sErrorDescription.Declare(String)
+V.Local.sSubroutine.Declare(String)
+V.Local.sError.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sCallback.Declare(String)
+
+V.Local.iError.Set(V.Args.ErrorNumber)
+V.Local.sErrorDescription.Set(V.Args.ErrorDescription)
+V.Local.sSubroutine.Set(V.Args.Subroutine)
+
+'make sure we aren't in an error loop
+F.Intrinsic.Control.If(V.Global.bError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndIf
+V.Global.bError.Set(True)
+
+F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", V.Caller.ScriptFile, V.Ambient.Newline, V.Local.sSubroutine, V.Local.iError, V.Local.sErrorDescription, V.Ambient.GABVersion, V.Local.sError)
+
+F.Intrinsic.Variable.ArgExists("UNATTENDED", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.Control.If(V.Args.UNATTENDED)
+		F.Intrinsic.Control.CallSub(UnattendedErrorMessage, "MESSAGE", V.Local.sError, "PROJECT", V.Args.PROJECT, "PROJECTTITLE", V.Args.PROJECTTITLE, "TASK", V.Args.Task)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Variable.ArgExists("Callback", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	V.Local.sCallback.Set(V.Args.Callback.Trim)
+	F.Intrinsic.Control.CallSub(V.Local.sCallback)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Caller.ScriptFile,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.ErrorMessage.End
+
+Program.Sub.UnattendedErrorMessage.Start
+'send a short error message, add the log
+'pass project ID, project title (for message box title), and error message
+
+F.Intrinsic.Control.Try
+
+V.Local.sMessage.Declare(String)
+
+V.Local.sMessage.Set(V.Args.Message.Trim)
+F.Intrinsic.String.Replace(V.Local.sMessage, V.Ambient.NewLine, ", ", V.Local.sMessage)
+
+F.Intrinsic.UI.InvokeWaitDialog(V.Local.sMessage, V.Args.ProjectTitle)
+F.Intrinsic.UI.Sleep(10)
+F.Intrinsic.UI.CloseWaitDialog
+
+F.Intrinsic.Control.CallSub(AddLog, "Project", V.Args.Project, "TASK", V.Args.Task, "Message", V.Local.sMessage)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.UnattendedErrorMessage.End
+
+Program.Sub.AddLog.Start
+'pass a project #, and a message
+'date and time will be automatically added
+'pass PROJECT (Folder, log name), MESSAGE (what to log)
+
+F.Intrinsic.Control.Try
+
+V.Local.sProject.Declare(String)
+V.Local.sMessage.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sPath.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sContents.Declare(String)
+V.Local.sTask.Declare(String)
+
+V.Local.sProject.Set(V.Args.Project.Trim)
+V.Local.sMessage.Set(V.Args.Message.Trim)
+V.Local.sTask.Set(V.Args.Task)
+
+F.Intrinsic.String.Replace(V.Local.sMessage, V.Ambient.NewLine, ", ", V.Local.sMessage)
+
+F.Intrinsic.File.MakeFilenameFriendly(V.Local.sProject, V.Local.sProject)
+F.Intrinsic.String.Build("{0}\Custom\{1}\Log\", V.Caller.GlobalDir, V.Local.sProject, V.Local.sPath)
+F.Intrinsic.Control.CallSub(CheckDirectory, "Path", V.Local.sPath)
+
+F.Intrinsic.String.Build("{0}\{1}_Log.txt", V.Local.sPath, V.Local.sTask, V.Local.sFile)
+F.Intrinsic.Control.CallSub(CheckFile, "File", V.Local.sFile)
+
+F.Intrinsic.String.Build("{0} {1}: {2}", V.Ambient.Date.FormatYYYY-MM-DD, V.Ambient.Time.Format!HH:NN:SS, V.Local.sMessage, V.Local.sContents)
+F.Intrinsic.File.Append2FileNewLine(V.Local.sFile, V.Local.sContents)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.AddLog.End
+
+Program.Sub.CheckFile.Start
+'check if the given file exists
+'create it if it doesn't
+'pass FILE to check
+
+F.Intrinsic.Control.Try
+
+V.Local.sFile.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sContents.Declare(String)
+
+V.Local.sFile.Set(V.Args.File)
+F.Intrinsic.File.Exists(V.Local.sFile, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.String.Build("{0} {1}: Log Start", V.Ambient.Date.FormatYYYY-MM-DD, V.Ambient.Time.Format!HH:NN:SS, V.Local.sContents)
+	F.Intrinsic.File.String2File(V.Local.sFile, V.Local.sContents)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckFile.End
+
+Program.Sub.LogTransactions.Start
+'save all transactions that made it this far to a logging table
+
+F.Intrinsic.Control.Try
+
+V.Local.sFilter.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sSQL.Declare(String)
+V.Local.sTime.Declare(String)
+V.Local.sRFIDValue.Declare(String)
+V.Local.sEPC.Declare(String)
+V.Local.sTID.Declare(String)
+V.Local.sJob.Declare(String)
+V.Local.sSuffix.Declare(String)
+V.Local.sReader.Declare(String)
+V.Local.sAntenna.Declare(String)
+V.Local.sPart.Declare(String)
+V.Local.sFailReason.Declare(String)
+
+'first need to make sure DATE, TIME, and SEQUENCE are a unique combo
+F.Data.DataTable.AddExpressionColumn("dtLog", "TIME_STRING", "String", "Convert([TIME_TRANSACTION], 'System.String')")
+
+F.Data.DataView.Create("dtLog", "dvLog", 22)
+F.Data.DataView.ToDataTableDistinct("dtLog", "dvLog", "dtDistinctTimes", "TIME_STRING")
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtDistinctTimes.RowCount--, 1)
+	F.Intrinsic.String.Build("TIME_STRING = '{0}'", V.DataTable.dtDistinctTimes(V.Local.iCounter).TIME_STRING!FieldVal, V.Local.sFilter)
+	
+	F.Data.DataView.SetFilter("dtLog", "dvLog", V.Local.sFilter)
+	F.Data.DataView.SetSeries("dtLog", "dvLog", "TRANSACTION_SEQUENCE", 0, 1)
+	
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+'set the fail flag
+F.Data.DataTable.SetValue("dtLog", -1, "FAIL", False)
+F.Data.DataView.SetFilter("dtLog", "dvLog", "[FAIL_REASON] <> ''")
+F.Data.DataView.SetValue("dtLog", "dvLog", -1, "FAIL", True)
+
+F.Data.DataView.Close("dtLog", "dvLog")
+F.Data.DataTable.Close("dtDistinctTimes")
+
+F.Data.DataTable.RemoveColumn("dtLog", "TIME_STRING")
+
+'F.Data.DataTable.SaveToDB("dtLog", "Con", "GCG_5235_LOG", "TIME_TRANSACTION*!*TRANSACTION_SEQUENCE", 128)
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtLog.RowCount--, 1)
+	
+	F.Intrinsic.String.Format(V.DataTable.dtLog(V.Local.iCounter).TIME_TRANSACTION!FieldVal, "YYYY-MM-DD HH:NN:SS.000", V.Local.sTime)
+	
+	V.Local.sReader.Set(V.DataTable.dtLog(V.Local.iCounter).READER!FieldValTrim)
+	V.Local.sAntenna.Set(V.DataTable.dtLog(V.Local.iCounter).ANTENNA!FieldValTrim)
+	V.Local.sRFIDValue.Set(V.DataTable.dtLog(V.Local.iCounter).RFID_VALUE!FieldValTrim)
+	V.Local.sEPC.Set(V.DataTable.dtLog(V.Local.iCounter).EPC!FieldValTrim)
+	V.Local.sTID.Set(V.DataTable.dtLog(V.Local.iCounter).TID!FieldValTrim)
+	V.Local.sJob.Set(V.DataTable.dtLog(V.Local.iCounter).JOB!FieldValTrim)
+	V.Local.sSuffix.Set(V.DataTable.dtLog(V.Local.iCounter).SUFFIX!FieldValTrim)
+	V.Local.sPart.Set(V.DataTable.dtLog(V.Local.iCounter).PART!FieldValTrim)
+	V.Local.sFailReason.Set(V.DataTable.dtLog(V.Local.iCounter).FAIL_REASON!FieldValTrim)
+	
+	F.Intrinsic.String.Build("insert into GCG_5235_LOG (TIME_TRANSACTION, TRANSACTION_SEQUENCE, READER, ANTENNA, TRANSACTION_TYPE, RFID_VALUE, EPC, TID, JOB, SUFFIX, SEQ, CLOSE, PRINT, QUANTITY, TO_BIN, TO_LOT, PO, PO_LINE, INSPECTION, PRICE, EMPLOYEE, WORKCENTER, OUTSIDE_REQUEST, WIRELESS_ID, PART, LOC, FROM_LOT, FROM_BIN, FROM_HEAT, FROM_SERIAL, MATERIAL_SEQUENCE, TO_HEAT, TO_SERIAL, TO_LOC, OUTSIDE_SEQUENCE, WIRELESS_SEQUENCE, FAIL_REASON, FAIL, RESULT, MATCH_TYPE, PALLET, CARTON, LOAD, LOAD_SEQUENCE, ORDER_NUMBER, ORDER_LINE, ORDER_SUFFIX, PACKING_LIST) values ('{0}', {1}, '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', {11}, {12}, {13}, '{14}', '{15}', '{16}', '{17}', {18}, {19}, '{20}', '{21}', {22}, '{23}', '{24}', '{25}', '{26}', '{27}', '{28}', '{29}', '{30}', '{31}', '{32}', '{33}', '{34}', '{35}', '{36}', {37}, '{38}', '{39}', '{40}', '{41}', {42}, {43}, '{44}', '{45}', '{46}', '{47}')", V.Local.sTime, V.DataTable.dtLog(V.Local.iCounter).TRANSACTION_SEQUENCE!FieldValLong, V.Local.sReader.PSQLFriendly, V.Local.sAntenna.PSQLFriendly, V.DataTable.dtLog(V.Local.iCounter).TRANSACTION_TYPE!FieldValTrim, V.Local.sRFIDValue.PSQLFriendly, V.Local.sEPC.PSQLFriendly, V.Local.sTID.PSQLFriendly, V.Local.sJob.PSQLFriendly, V.Local.sSuffix.PSQLFriendly, V.DataTable.dtLog(V.Local.iCounter).SEQ!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).CLOSE!FieldValLong, V.DataTable.dtLog(V.Local.iCounter).PRINT!FieldValLong, V.DataTable.dtLog(V.Local.iCounter).QUANTITY!FieldValFloat, V.DataTable.dtLog(V.Local.iCounter).TO_BIN!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).TO_LOT!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).PO!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).PO_LINE!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).INSPECTION!FieldValLong, V.DataTable.dtLog(V.Local.iCounter).PRICE!FieldValFloat, V.DataTable.dtLog(V.Local.iCounter).EMPLOYEE!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).WORKCENTER!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).OUTSIDE_REQUEST!FieldValLong, V.DataTable.dtLog(V.Local.iCounter).WIRELESS_ID!FieldValTrim, V.Local.sPart.PSQLFriendly, V.DataTable.dtLog(V.Local.iCounter).LOC!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).FROM_LOT!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).FROM_BIN!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).FROM_HEAT!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).FROM_SERIAL!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).MATERIAL_SEQUENCE!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).TO_HEAT!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).TO_SERIAL!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).TO_LOC!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).OUTSIDE_SEQUENCE!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).WIRELESS_SEQUENCE!FieldValTrim, V.Local.sFailReason.PSQLFriendly, V.DataTable.dtLog(V.Local.iCounter).FAIL!FieldValLong, V.DataTable.dtLog(V.Local.iCounter).RESULT!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).MATCH_TYPE!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).PALLET!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).CARTON!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).LOAD!FieldValLong, V.DataTable.dtLog(V.Local.iCounter).LOAD_SEQUENCE!FieldValLong,  V.DataTable.dtLog(V.Local.iCounter).ORDER_NUMBER!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).ORDER_LINE!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).ORDER_SUFFIX!FieldValTrim, V.DataTable.dtLog(V.Local.iCounter).PACKING_LIST!FieldValTrim,  V.Local.sSQL)
+	F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+	
+	F.Intrinsic.Control.CallSub(AddLog, "Project", "5235", "TASK", "Transaction Log Check", "Message", V.Local.sSQL)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Data.DataTable.Close("dtLog")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.LogTransactions.End
+
+Program.Sub.SendLockedEmail.Start
+'pass READER, ANTENNA, TRANSACTION, WorkOrder, Sender, Recipients
+
+F.Intrinsic.Control.Try
+
+V.Local.sSQL.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.sSender.Declare(String)
+V.Local.sRecipients.Declare(String)
+V.Local.sBody.Declare(String)
+V.Local.sSubject.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sRecipientsTemp.Declare(String)
+V.Local.iUser.Declare(Long)
+
+F.Intrinsic.Control.If(V.Args.Sender.Trim, !=, "")
+	F.Intrinsic.Control.If(V.Args.Recipients.Trim, !=, "")
+		F.Intrinsic.String.Build("select RTRIM(USER_ID), RTRIM(WIN_USER_ID), RTRIM(COMP_NAME), RTRIM(PGM), RTRIM(REF), RTRIM(TRMNL) from V_X_LOCK_FILE where COMPANY = '{0}' and LOCK_TYPE = 'WO' and REC_KEY = '{1}'", V.Caller.CompanyCode, V.Args.WorkOrder.Trim, V.Local.sSQL)
+
+		F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+		F.Intrinsic.String.Split(V.Local.sRet, "*!*", V.Local.sRet)
+		V.Local.sRet.RedimPreserve(0, 5)
+		
+		F.Intrinsic.String.Build("{0}*!*{0}", V.Args.Sender, V.Local.sSender)
+		
+		'build recipients
+		F.Intrinsic.String.Split(V.Args.Recipients, ",", V.Local.sRecipientsTemp)
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.Local.sRecipientsTemp.UBound, 1)
+			F.Intrinsic.Control.If(V.Local.sRecipientsTemp(V.Local.iCounter).Trim, !=, "")
+				F.Intrinsic.Control.If(V.Local.sRecipients.Trim, =, "")
+					F.Intrinsic.String.Build("{0}*!*{0}", V.Local.sRecipientsTemp(V.Local.iCounter).Trim, V.Local.sRecipients)
+				F.Intrinsic.Control.Else
+					F.Intrinsic.String.Build("{0}@!@{1}*!*{1}", V.Local.sRecipients, V.Local.sRecipientsTemp(V.Local.iCounter).Trim, V.Local.sRecipients)
+				F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+		V.Local.sRecipientsTemp.Redim(0, 0)
+		
+		'build subject
+		F.Intrinsic.String.Build("RFID Error: Work Order {0} Locked", V.Args.WorkOrder, V.Local.sSubject)
+		
+		'build body
+		F.Intrinsic.String.Build("The RFID transaction could not be completed because the work order is locked by a user. Please make sure this user closes out of the work order so that the transaction can process. {0}{0}Reader: {1}{0}Antenna: {2}{0}Transaction: {3}{0}Work Order: {4}{0}GS User: {5}{0}Windows User: {6}{0}Computer: {7}{0}Program: {8}{0}Menu: {9}{0}Terminal: {10}", V.Ambient.NewLine, V.Args.Reader, V.Args.Antenna, V.Args.Transaction, V.Args.WorkOrder, V.Local.sRet(0), V.Local.sRet(1), V.Local.sRet(2), V.Local.sRet(3), V.Local.sRet(4), V.Local.sRet(5), V.Local.sBody)
+		
+		F.Global.Security.GetUserId(V.Caller.User, V.Caller.CompanyCode, V.Local.iUser)
+		
+		'send email
+		F.Global.Messaging.QueueMessage(V.Caller.CompanyCode, V.Local.iUser, "GCG_5235_RFID_TRANS", V.Local.sSubject, V.Local.sSender, V.Local.sRecipients, V.Local.sBody)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+V.Local.sRet.Redim(0, 0)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.SendLockedEmail.End
+
+Program.Sub.CreateLogDataTable.Start
+F.Intrinsic.Control.Try
+
+F.Data.DataTable.CreateFromSQL("dtLog", "Con", "select * from GCG_5235_LOG where EPC = ''", True)
+F.Data.DataTable.DeleteRow("dtLog")
+F.Data.DataTable.AcceptChanges("dtLog")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Transactions", "Task", "RFID_Transactions")
+F.Intrinsic.Control.EndTry
+Program.Sub.CreateLogDataTable.End
+
+Program.Sub.Comments.Start
+${$5$}$2.0.0.0$}$2
+${$6$}$bstevens$}$20231016134223487$}$3Pg7+K2MGztoXyjxMVZqWaM5g3GOUsSN4ja9PICU7qqmuSmUOweT2jKVD8WCqHWcLVPt3wM2Ye7qABFJfwje8A==
+Program.Sub.Comments.End
