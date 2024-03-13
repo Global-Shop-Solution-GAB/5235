@@ -1,0 +1,2041 @@
+Program.Sub.ScreenSU.Start
+Gui.FAntennaMaint..Create
+Gui.FAntennaMaint..Caption("RFID Settings")
+Gui.FAntennaMaint..Size(22710,8160)
+Gui.FAntennaMaint..MinX(0)
+Gui.FAntennaMaint..MinY(0)
+Gui.FAntennaMaint..Position(0,0)
+Gui.FAntennaMaint..BackColor(-2147483633)
+Gui.FAntennaMaint..MousePointer(0)
+Gui.FAntennaMaint..Event(UnLoad,FAntennaMaint_UnLoad)
+Gui.FAntennaMaint..MaxButton(False)
+Gui.FAntennaMaint..Moveable(False)
+Gui.FAntennaMaint..Sizeable(False)
+Gui.FAntennaMaint.GsGCAntReadList.Create(GsGridControl)
+Gui.FAntennaMaint.GsGCAntReadList.Size(4860,7110)
+Gui.FAntennaMaint.GsGCAntReadList.Position(60,585)
+Gui.FAntennaMaint.GsGCAntReadList.Event(RowCellClick,GsGCAntReadList_RowCellClick)
+Gui.FAntennaMaint.lblCode2.Create(Label,"Reader and Antenna List",True,2265,330,0,75,225,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblCode2.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.lblCode3.Create(Label,"Options for Antenna",True,1845,330,0,5040,225,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblCode3.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.txtAntName.Create(TextBox,"",True,1455,300,0,6930,180,True,0,"Arial",8,-2147483634,2)
+Gui.FAntennaMaint.txtAntName.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.txtAntName.ForeColor(32768)
+Gui.FAntennaMaint.txtAntName.Locked(True)
+Gui.FAntennaMaint.txtAntName.ControlGroup(1)
+Gui.FAntennaMaint.lblCode4.Create(Label,"Parent Reader",True,1380,330,0,8490,225,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblCode4.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.txtReader.Create(TextBox,"",True,1170,300,0,9885,180,True,0,"Arial",8,-2147483634,2)
+Gui.FAntennaMaint.txtReader.ForeColor(32768)
+Gui.FAntennaMaint.txtReader.Locked(True)
+Gui.FAntennaMaint.txtReader.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.txtReader.ControlGroup(1)
+Gui.FAntennaMaint.frameParent.Create(Frame)
+Gui.FAntennaMaint.frameParent.Size(17490,7110)
+Gui.FAntennaMaint.frameParent.Position(5040,585)
+Gui.FAntennaMaint.frameParent.Enabled(False)
+Gui.FAntennaMaint.frameO90.Create(Frame)
+Gui.FAntennaMaint.frameO90.Enabled(False)
+Gui.FAntennaMaint.frameO90.Size(8520,1800)
+Gui.FAntennaMaint.frameO90.Position(105,3045)
+Gui.FAntennaMaint.frameO90.Caption("O90 - Bin to Bin Transaction Options")
+Gui.FAntennaMaint.frameO90.Parent("frameParent")
+Gui.FAntennaMaint.cmdPrinterBrowserO90.Create(Button)
+Gui.FAntennaMaint.cmdPrinterBrowserO90.Enabled(False)
+Gui.FAntennaMaint.cmdPrinterBrowserO90.Size(375,330)
+Gui.FAntennaMaint.cmdPrinterBrowserO90.Position(7320,555)
+Gui.FAntennaMaint.cmdPrinterBrowserO90.Parent("frameO90")
+Gui.FAntennaMaint.cmdPrinterBrowserO90.Caption("^")
+Gui.FAntennaMaint.cmdPrinterBrowserO90.Event(Click,cmdPrinterBrowserO90_Click)
+Gui.FAntennaMaint.txtPrinterO90.Create(TextBox,"",True,1590,300,0,5655,570,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtPrinterO90.Parent("frameO90")
+Gui.FAntennaMaint.txtPrinterO90.Locked(True)
+Gui.FAntennaMaint.txtPrinterO90.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblPrinterO90.Create(Label,"Select Printer",True,1065,255,0,4260,660,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblPrinterO90.Parent("frameO90")
+Gui.FAntennaMaint.chkPrintO90.Create(CheckBox)
+Gui.FAntennaMaint.chkPrintO90.Size(3135,255)
+Gui.FAntennaMaint.chkPrintO90.Position(4260,270)
+Gui.FAntennaMaint.chkPrintO90.Parent("frameO90")
+Gui.FAntennaMaint.chkPrintO90.Caption("Print Bin to Bin Labels?")
+Gui.FAntennaMaint.chkPrintO90.Event(Click,CheckPrinterClicked)
+Gui.FAntennaMaint.txtToBinO90.Create(TextBox,"",True,1530,300,0,300,570,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtToBinO90.Parent("frameO90")
+Gui.FAntennaMaint.txtToBinO90.Locked(True)
+Gui.FAntennaMaint.txtToBinO90.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblToBin3.Create(Label,"To Bin",True,2370,255,0,165,330,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblToBin3.Parent("frameO90")
+Gui.FAntennaMaint.cmdBinBrowserO90.Create(Button)
+Gui.FAntennaMaint.cmdBinBrowserO90.Size(375,315)
+Gui.FAntennaMaint.cmdBinBrowserO90.Position(1920,570)
+Gui.FAntennaMaint.cmdBinBrowserO90.Parent("frameO90")
+Gui.FAntennaMaint.cmdBinBrowserO90.Caption("^")
+Gui.FAntennaMaint.cmdBinBrowserO90.Event(Click,cmdBinBrowserO90_Click)
+Gui.FAntennaMaint.lblSenderO90.Create(Label,"Sender Email ID",True,1245,255,0,4260,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblSenderO90.Parent("frameO90")
+Gui.FAntennaMaint.chkNotifyO90.Create(CheckBox)
+Gui.FAntennaMaint.chkNotifyO90.Size(6870,300)
+Gui.FAntennaMaint.chkNotifyO90.Position(165,960)
+Gui.FAntennaMaint.chkNotifyO90.Parent("frameO90")
+Gui.FAntennaMaint.chkNotifyO90.Caption("Failure Notification")
+Gui.FAntennaMaint.chkNotifyO90.Event(Click,chkNotifyO90_Click)
+Gui.FAntennaMaint.txtSenderO90.Create(TextBox,"",True,2040,300,0,5655,1290,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtSenderO90.Parent("frameO90")
+Gui.FAntennaMaint.txtSenderO90.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtSenderO90.Event(Change,ChangesMade)
+Gui.FAntennaMaint.txtNotifyO90.Create(TextBox,"",True,2040,300,0,1920,1290,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtNotifyO90.Parent("frameO90")
+Gui.FAntennaMaint.txtNotifyO90.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtNotifyO90.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblNotifyO90.Create(Label,"Recipient Email ID",True,1575,255,0,300,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblNotifyO90.Parent("frameO90")
+Gui.FAntennaMaint.lblO90W.Create(Label,"!",False,210,300,0,2310,645,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblO90W.Parent("frameO90")
+Gui.FAntennaMaint.lblO90W.ForeColor(255)
+Gui.FAntennaMaint.lblWarningNotifyO90.Create(Label,"!",False,210,300,0,3960,1380,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningNotifyO90.Parent("frameO90")
+Gui.FAntennaMaint.lblWarningNotifyO90.ForeColor(255)
+Gui.FAntennaMaint.lblO90P.Create(Label,"!",False,210,300,0,7710,645,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblO90P.Parent("frameO90")
+Gui.FAntennaMaint.lblO90P.ForeColor(255)
+Gui.FAntennaMaint.lblWarningSenderO90.Create(Label,"!",False,210,300,0,7725,1335,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningSenderO90.Parent("frameO90")
+Gui.FAntennaMaint.lblWarningSenderO90.ForeColor(255)
+Gui.FAntennaMaint.frameJ55.Create(Frame)
+Gui.FAntennaMaint.frameJ55.Size(8520,2100)
+Gui.FAntennaMaint.frameJ55.Position(105,510)
+Gui.FAntennaMaint.frameJ55.Caption("J55 - Issue To WIP Transaction Options")
+Gui.FAntennaMaint.frameJ55.Enabled(False)
+Gui.FAntennaMaint.frameJ55.Parent("frameParent")
+Gui.FAntennaMaint.txtWCJ55.Create(TextBox,"",True,1530,300,0,300,570,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtWCJ55.Parent("frameJ55")
+Gui.FAntennaMaint.txtWCJ55.Locked(True)
+Gui.FAntennaMaint.txtWCJ55.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblToBin2.Create(Label,"Work Center",True,2370,255,0,165,330,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblToBin2.Parent("frameJ55")
+Gui.FAntennaMaint.chkNotifyJ55.Create(CheckBox)
+Gui.FAntennaMaint.chkNotifyJ55.Size(6870,300)
+Gui.FAntennaMaint.chkNotifyJ55.Position(165,960)
+Gui.FAntennaMaint.chkNotifyJ55.Parent("frameJ55")
+Gui.FAntennaMaint.chkNotifyJ55.Caption("Failure Notification")
+Gui.FAntennaMaint.chkNotifyJ55.Event(Click,chkNotifyJ55_Click)
+Gui.FAntennaMaint.lblNotifyJ55.Create(Label,"Recipient Email ID",True,1575,255,0,300,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblNotifyJ55.Parent("frameJ55")
+Gui.FAntennaMaint.txtNotifyJ55.Create(TextBox,"",True,2040,300,0,1920,1290,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtNotifyJ55.Parent("frameJ55")
+Gui.FAntennaMaint.txtNotifyJ55.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtNotifyJ55.Event(Change,ChangesMade)
+Gui.FAntennaMaint.chkPrintJ55.Create(CheckBox)
+Gui.FAntennaMaint.chkPrintJ55.Size(3135,255)
+Gui.FAntennaMaint.chkPrintJ55.Position(4260,270)
+Gui.FAntennaMaint.chkPrintJ55.Parent("frameJ55")
+Gui.FAntennaMaint.chkPrintJ55.Caption("Print Issue Labels?")
+Gui.FAntennaMaint.chkPrintJ55.Event(Click,CheckPrinterClicked)
+Gui.FAntennaMaint.lblSenderJ55.Create(Label,"Sender Email ID",True,1245,255,0,4260,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblSenderJ55.Parent("frameJ55")
+Gui.FAntennaMaint.txtSenderJ55.Create(TextBox,"",True,2040,300,0,5655,1290,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtSenderJ55.Parent("frameJ55")
+Gui.FAntennaMaint.txtSenderJ55.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtSenderJ55.Event(Change,ChangesMade)
+Gui.FAntennaMaint.txtPrinterJ55.Create(TextBox,"",True,1590,300,0,5655,570,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtPrinterJ55.Parent("frameJ55")
+Gui.FAntennaMaint.txtPrinterJ55.Locked(True)
+Gui.FAntennaMaint.txtPrinterJ55.Event(Change,ChangesMade)
+Gui.FAntennaMaint.cmdPrinterBrowserJ55.Create(Button)
+Gui.FAntennaMaint.cmdPrinterBrowserJ55.Enabled(False)
+Gui.FAntennaMaint.cmdPrinterBrowserJ55.Size(375,330)
+Gui.FAntennaMaint.cmdPrinterBrowserJ55.Position(7320,555)
+Gui.FAntennaMaint.cmdPrinterBrowserJ55.Parent("frameJ55")
+Gui.FAntennaMaint.cmdPrinterBrowserJ55.Caption("^")
+Gui.FAntennaMaint.cmdPrinterBrowserJ55.Event(Click,cmdPrinterBrowserJ55_Click)
+Gui.FAntennaMaint.cmdWorkcenterBrowserJ55.Create(Button)
+Gui.FAntennaMaint.cmdWorkcenterBrowserJ55.Size(375,315)
+Gui.FAntennaMaint.cmdWorkcenterBrowserJ55.Position(1920,570)
+Gui.FAntennaMaint.cmdWorkcenterBrowserJ55.Parent("frameJ55")
+Gui.FAntennaMaint.cmdWorkcenterBrowserJ55.Caption("^")
+Gui.FAntennaMaint.cmdWorkcenterBrowserJ55.Event(Click,cmdWorkcenterBrowserJ55_Click)
+Gui.FAntennaMaint.lblPrinterJ55.Create(Label,"Select Printer",True,1065,255,0,4260,660,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblPrinterJ55.Parent("frameJ55")
+Gui.FAntennaMaint.lblJ55P.Create(Label,"!",False,210,300,0,7710,630,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblJ55P.Parent("frameJ55")
+Gui.FAntennaMaint.lblJ55P.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.lblJ55P.ForeColor(255)
+Gui.FAntennaMaint.lblWarningNotifyJ55.Create(Label,"!",False,210,300,0,3990,1350,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningNotifyJ55.Parent("frameJ55")
+Gui.FAntennaMaint.lblWarningNotifyJ55.ForeColor(255)
+Gui.FAntennaMaint.lblWarningSenderJ55.Create(Label,"!",False,210,300,0,7725,1350,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningSenderJ55.Parent("frameJ55")
+Gui.FAntennaMaint.lblWarningSenderJ55.ForeColor(255)
+Gui.FAntennaMaint.lblJ55W.Create(Label,"!",False,210,300,0,2310,630,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblJ55W.Parent("frameJ55")
+Gui.FAntennaMaint.lblJ55W.ForeColor(255)
+Gui.FAntennaMaint.cmdJ55WOLockNotifications.Create(Button)
+Gui.FAntennaMaint.cmdJ55WOLockNotifications.Size(1860,375)
+Gui.FAntennaMaint.cmdJ55WOLockNotifications.Position(5835,1650)
+Gui.FAntennaMaint.cmdJ55WOLockNotifications.Parent("frameJ55")
+Gui.FAntennaMaint.cmdJ55WOLockNotifications.Caption("WO Lock Notifications")
+Gui.FAntennaMaint.cmdJ55WOLockNotifications.Event(Click,cmdJ55WOLockNotifications_Click)
+Gui.FAntennaMaint.chkJ55OnlyIssueFromDashboard.Create(CheckBox)
+Gui.FAntennaMaint.chkJ55OnlyIssueFromDashboard.Size(3135,255)
+Gui.FAntennaMaint.chkJ55OnlyIssueFromDashboard.Position(165,1680)
+Gui.FAntennaMaint.chkJ55OnlyIssueFromDashboard.Parent("frameJ55")
+Gui.FAntennaMaint.chkJ55OnlyIssueFromDashboard.Caption("Only Issue From Dashboard")
+Gui.FAntennaMaint.chkJ55OnlyIssueFromDashboard.Event(Click,ChangesMade)
+Gui.FAntennaMaint.frameJ52.Create(Frame)
+Gui.FAntennaMaint.frameJ52.Size(8520,2145)
+Gui.FAntennaMaint.frameJ52.Position(8790,510)
+Gui.FAntennaMaint.frameJ52.Caption("J52 - WIP to FG Transaction Options")
+Gui.FAntennaMaint.frameJ52.Enabled(False)
+Gui.FAntennaMaint.frameJ52.Parent("frameParent")
+Gui.FAntennaMaint.txtToBinJ52.Create(TextBox,"",True,1530,300,0,300,570,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtToBinJ52.Parent("frameJ52")
+Gui.FAntennaMaint.txtToBinJ52.Locked(True)
+Gui.FAntennaMaint.txtToBinJ52.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblToBin.Create(Label,"Default WIP to FG Bin",True,2370,255,0,165,330,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblToBin.Parent("frameJ52")
+Gui.FAntennaMaint.cmdBinBrowserJ52.Create(Button)
+Gui.FAntennaMaint.cmdBinBrowserJ52.Size(375,315)
+Gui.FAntennaMaint.cmdBinBrowserJ52.Position(1920,570)
+Gui.FAntennaMaint.cmdBinBrowserJ52.Parent("frameJ52")
+Gui.FAntennaMaint.cmdBinBrowserJ52.Caption("^")
+Gui.FAntennaMaint.cmdBinBrowserJ52.Event(Click,cmdBinBrowserJ52_Click)
+Gui.FAntennaMaint.lblPrinterJ52.Create(Label,"Select Printer",True,1065,255,0,4260,660,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblPrinterJ52.Parent("frameJ52")
+Gui.FAntennaMaint.txtPrinterJ52.Create(TextBox,"",True,1590,300,0,5655,570,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtPrinterJ52.Parent("frameJ52")
+Gui.FAntennaMaint.txtPrinterJ52.Locked(True)
+Gui.FAntennaMaint.txtPrinterJ52.Event(Change,ChangesMade)
+Gui.FAntennaMaint.cmdPrinterBrowserJ52.Create(Button)
+Gui.FAntennaMaint.cmdPrinterBrowserJ52.Size(375,330)
+Gui.FAntennaMaint.cmdPrinterBrowserJ52.Position(7320,555)
+Gui.FAntennaMaint.cmdPrinterBrowserJ52.Parent("frameJ52")
+Gui.FAntennaMaint.cmdPrinterBrowserJ52.Caption("^")
+Gui.FAntennaMaint.cmdPrinterBrowserJ52.Event(Click,cmdPrinterBrowserJ52_Click)
+Gui.FAntennaMaint.cmdPrinterBrowserJ52.Enabled(False)
+Gui.FAntennaMaint.chkPrintJ52.Create(CheckBox)
+Gui.FAntennaMaint.chkPrintJ52.Size(3135,255)
+Gui.FAntennaMaint.chkPrintJ52.Position(4260,270)
+Gui.FAntennaMaint.chkPrintJ52.Parent("frameJ52")
+Gui.FAntennaMaint.chkPrintJ52.Caption("Print WIP to FG Labels?")
+Gui.FAntennaMaint.chkPrintJ52.Event(Click,CheckPrinterClicked)
+Gui.FAntennaMaint.lblNotifyJ52.Create(Label,"Recipient Email ID",True,1575,255,0,300,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblNotifyJ52.Parent("frameJ52")
+Gui.FAntennaMaint.txtNotifyJ52.Create(TextBox,"",True,2040,300,0,1920,1290,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtNotifyJ52.Parent("frameJ52")
+Gui.FAntennaMaint.txtNotifyJ52.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtNotifyJ52.Event(Change,ChangesMade)
+Gui.FAntennaMaint.chkNotifyJ52.Create(CheckBox)
+Gui.FAntennaMaint.chkNotifyJ52.Size(1800,300)
+Gui.FAntennaMaint.chkNotifyJ52.Position(165,960)
+Gui.FAntennaMaint.chkNotifyJ52.Parent("frameJ52")
+Gui.FAntennaMaint.chkNotifyJ52.Caption("Failure Notification")
+Gui.FAntennaMaint.chkNotifyJ52.Event(Click,chkNotifyJ52_Click)
+Gui.FAntennaMaint.txtSenderJ52.Create(TextBox,"",True,2040,300,0,5655,1290,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtSenderJ52.Parent("frameJ52")
+Gui.FAntennaMaint.txtSenderJ52.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtSenderJ52.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblSenderJ52.Create(Label,"Sender Email ID",True,1245,255,0,4260,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblSenderJ52.Parent("frameJ52")
+Gui.FAntennaMaint.lblJ52W.Create(Label,"!",False,210,300,0,2310,645,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblJ52W.Parent("frameJ52")
+Gui.FAntennaMaint.lblJ52W.ForeColor(255)
+Gui.FAntennaMaint.lblWarningNotifyJ52.Create(Label,"!",False,210,300,0,3990,1365,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningNotifyJ52.Parent("frameJ52")
+Gui.FAntennaMaint.lblWarningNotifyJ52.ForeColor(255)
+Gui.FAntennaMaint.lblWarningSenderJ52.Create(Label,"!",False,210,300,0,7710,1350,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningSenderJ52.Parent("frameJ52")
+Gui.FAntennaMaint.lblWarningSenderJ52.ForeColor(255)
+Gui.FAntennaMaint.lblJ52P.Create(Label,"!",False,210,300,0,7710,630,True,2,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblJ52P.Parent("frameJ52")
+Gui.FAntennaMaint.lblJ52P.ForeColor(255)
+Gui.FAntennaMaint.chkDefaultBin.Create(CheckBox)
+Gui.FAntennaMaint.chkDefaultBin.Size(1515,360)
+Gui.FAntennaMaint.chkDefaultBin.Position(2505,255)
+Gui.FAntennaMaint.chkDefaultBin.Parent("frameJ52")
+Gui.FAntennaMaint.chkDefaultBin.Caption("Default Bin")
+Gui.FAntennaMaint.chkDefaultBin.Event(Click,chkDefaultBin_Click)
+Gui.FAntennaMaint.chkStockingBin.Create(CheckBox)
+Gui.FAntennaMaint.chkStockingBin.Size(1515,360)
+Gui.FAntennaMaint.chkStockingBin.Position(2505,585)
+Gui.FAntennaMaint.chkStockingBin.Parent("frameJ52")
+Gui.FAntennaMaint.chkStockingBin.Caption("Stocking Bin")
+Gui.FAntennaMaint.chkStockingBin.Event(Click,chkStockingBin_Click)
+Gui.FAntennaMaint.chkOverrideLabelQuantity.Create(CheckBox)
+Gui.FAntennaMaint.chkOverrideLabelQuantity.Size(3765,255)
+Gui.FAntennaMaint.chkOverrideLabelQuantity.Position(4260,900)
+Gui.FAntennaMaint.chkOverrideLabelQuantity.Parent("frameJ52")
+Gui.FAntennaMaint.chkOverrideLabelQuantity.Caption("Override Label Quantity with WO Quantity")
+Gui.FAntennaMaint.chkOverrideLabelQuantity.Event(Click,chkOverrideLabelQuantity_Click)
+Gui.FAntennaMaint.lblCloseJ52.Create(Label,"Close",True,555,255,0,165,1800,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblCloseJ52.Parent("frameJ52")
+Gui.FAntennaMaint.ddlCloseJ52.Create(DropDownList)
+Gui.FAntennaMaint.ddlCloseJ52.Size(3225,330)
+Gui.FAntennaMaint.ddlCloseJ52.Position(735,1695)
+Gui.FAntennaMaint.ddlCloseJ52.Parent("frameJ52")
+Gui.FAntennaMaint.ddlCloseJ52.Event(Click,ChangesMade)
+Gui.FAntennaMaint.cmdJ52LockNotifications.Create(Button)
+Gui.FAntennaMaint.cmdJ52LockNotifications.Size(1860,375)
+Gui.FAntennaMaint.cmdJ52LockNotifications.Position(5835,1680)
+Gui.FAntennaMaint.cmdJ52LockNotifications.Parent("frameJ52")
+Gui.FAntennaMaint.cmdJ52LockNotifications.Caption("WO Lock Notifications")
+Gui.FAntennaMaint.cmdJ52LockNotifications.Event(Click,cmdJ52LockNotifications_Click)
+Gui.FAntennaMaint.chkJ52.Create(CheckBox)
+Gui.FAntennaMaint.chkJ52.Size(3510,360)
+Gui.FAntennaMaint.chkJ52.Position(8790,135)
+Gui.FAntennaMaint.chkJ52.Caption("Enable for J52 Transaction")
+Gui.FAntennaMaint.chkJ52.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.chkJ52.Parent("frameParent")
+Gui.FAntennaMaint.chkJ52.Event(Click,ToggleTransactionEnabled)
+Gui.FAntennaMaint.chkJ55.Create(CheckBox)
+Gui.FAntennaMaint.chkJ55.Size(3270,360)
+Gui.FAntennaMaint.chkJ55.Position(105,135)
+Gui.FAntennaMaint.chkJ55.Caption("Enable for J55 Transaction")
+Gui.FAntennaMaint.chkJ55.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.chkJ55.Parent("frameParent")
+Gui.FAntennaMaint.chkJ55.Event(Click,ToggleTransactionEnabled)
+Gui.FAntennaMaint.chkO90.Create(CheckBox)
+Gui.FAntennaMaint.chkO90.Size(3375,360)
+Gui.FAntennaMaint.chkO90.Position(105,2670)
+Gui.FAntennaMaint.chkO90.Caption("Enable for O90 Transaction")
+Gui.FAntennaMaint.chkO90.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.chkO90.Parent("frameParent")
+Gui.FAntennaMaint.chkO90.Event(Click,ToggleTransactionEnabled)
+Gui.FAntennaMaint.chkL01.Create(CheckBox)
+Gui.FAntennaMaint.chkL01.Size(3375,360)
+Gui.FAntennaMaint.chkL01.Position(8850,2670)
+Gui.FAntennaMaint.chkL01.Parent("frameParent")
+Gui.FAntennaMaint.chkL01.Caption("Enable for L01 Transaction")
+Gui.FAntennaMaint.chkL01.Event(Click,ToggleTransactionEnabled)
+Gui.FAntennaMaint.chkL01.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.frameL01.Create(Frame)
+Gui.FAntennaMaint.frameL01.Enabled(False)
+Gui.FAntennaMaint.frameL01.Size(8520,1800)
+Gui.FAntennaMaint.frameL01.Position(8850,3045)
+Gui.FAntennaMaint.frameL01.Parent("frameParent")
+Gui.FAntennaMaint.frameL01.Caption("L01 - Labor Upload Transaction Options")
+Gui.FAntennaMaint.lblWC.Create(Label,"Work Center",True,1020,255,0,165,390,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWC.Parent("frameL01")
+Gui.FAntennaMaint.txtL01Workcenter.Create(TextBox,"",True,1530,300,0,300,630,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtL01Workcenter.Parent("frameL01")
+Gui.FAntennaMaint.txtL01Workcenter.Locked(True)
+Gui.FAntennaMaint.txtL01Workcenter.Event(LostFocus,ChangesMade)
+Gui.FAntennaMaint.cmdWorkcenterBrowserL01.Create(Button)
+Gui.FAntennaMaint.cmdWorkcenterBrowserL01.Size(375,315)
+Gui.FAntennaMaint.cmdWorkcenterBrowserL01.Position(1920,630)
+Gui.FAntennaMaint.cmdWorkcenterBrowserL01.Parent("frameL01")
+Gui.FAntennaMaint.cmdWorkcenterBrowserL01.Caption("^")
+Gui.FAntennaMaint.cmdWorkcenterBrowserL01.Event(Click,cmdWorkcenterBrowserL01_Click)
+Gui.FAntennaMaint.chkNotifyL01.Create(CheckBox)
+Gui.FAntennaMaint.chkNotifyL01.Size(2250,300)
+Gui.FAntennaMaint.chkNotifyL01.Position(165,1035)
+Gui.FAntennaMaint.chkNotifyL01.Parent("frameL01")
+Gui.FAntennaMaint.chkNotifyL01.Caption("Failure Notification")
+Gui.FAntennaMaint.chkNotifyL01.Event(Click,chkNotifyL01_Click)
+Gui.FAntennaMaint.lblNotifyL01.Create(Label,"Recipient Email ID",True,1380,255,0,300,1455,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblNotifyL01.Parent("frameL01")
+Gui.FAntennaMaint.txtNotifyL01.Create(TextBox,"",True,2040,300,0,1920,1365,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtNotifyL01.Parent("frameL01")
+Gui.FAntennaMaint.txtNotifyL01.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtNotifyL01.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblWarningNotifyL01.Create(Label,"!",False,210,300,0,3960,1455,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningNotifyL01.Parent("frameL01")
+Gui.FAntennaMaint.lblWarningNotifyL01.ForeColor(255)
+Gui.FAntennaMaint.lblSenderL01.Create(Label,"Sender Email ID",True,1380,255,0,4260,1455,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblSenderL01.Parent("frameL01")
+Gui.FAntennaMaint.txtSenderL01.Create(TextBox,"",True,2040,300,0,5655,1365,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtSenderL01.Parent("frameL01")
+Gui.FAntennaMaint.txtSenderL01.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtSenderL01.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblWarningSenderL01.Create(Label,"!",False,210,300,0,7725,1410,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningSenderL01.Parent("frameL01")
+Gui.FAntennaMaint.lblWarningSenderL01.ForeColor(255)
+Gui.FAntennaMaint.txtL01Employee.Create(TextBox,"",True,1530,300,0,2625,630,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtL01Employee.Parent("frameL01")
+Gui.FAntennaMaint.txtL01Employee.MaxLength(5)
+Gui.FAntennaMaint.txtL01Employee.Event(LostFocus,txtL01Employee_LostFocus)
+Gui.FAntennaMaint.txtL01Employee.Event(Change,ChangesMade)
+Gui.FAntennaMaint.cmdEmployeeBrowserL01.Create(Button)
+Gui.FAntennaMaint.cmdEmployeeBrowserL01.Size(375,315)
+Gui.FAntennaMaint.cmdEmployeeBrowserL01.Position(4245,630)
+Gui.FAntennaMaint.cmdEmployeeBrowserL01.Parent("frameL01")
+Gui.FAntennaMaint.cmdEmployeeBrowserL01.Caption("^")
+Gui.FAntennaMaint.cmdEmployeeBrowserL01.Event(Click,cmdEmployeeBrowserL01_Click)
+Gui.FAntennaMaint.lblEmployee.Create(Label,"Employee",True,1020,255,0,2520,390,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblEmployee.Parent("frameL01")
+Gui.FAntennaMaint.lblClose.Create(Label,"Close",True,540,255,0,4815,705,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblClose.Parent("frameL01")
+Gui.FAntennaMaint.ddlClose.Create(DropDownList)
+Gui.FAntennaMaint.ddlClose.Size(3030,330)
+Gui.FAntennaMaint.ddlClose.Position(5370,615)
+Gui.FAntennaMaint.ddlClose.Parent("frameL01")
+Gui.FAntennaMaint.ddlClose.Event(Click,ChangesMade)
+Gui.FAntennaMaint.chkPORequest.Create(CheckBox)
+Gui.FAntennaMaint.chkPORequest.Size(4440,360)
+Gui.FAntennaMaint.chkPORequest.Position(4035,150)
+Gui.FAntennaMaint.chkPORequest.Parent("frameL01")
+Gui.FAntennaMaint.chkPORequest.Caption("Write Outside PO Request for Next Outside Sequence")
+Gui.FAntennaMaint.chkPORequest.Event(Click,ChangesMade)
+Gui.FAntennaMaint.chkP10.Create(CheckBox)
+Gui.FAntennaMaint.chkP10.Size(3375,360)
+Gui.FAntennaMaint.chkP10.Position(105,4860)
+Gui.FAntennaMaint.chkP10.Parent("frameParent")
+Gui.FAntennaMaint.chkP10.Caption("Enable for P10 Transaction")
+Gui.FAntennaMaint.chkP10.Event(Click,ToggleTransactionEnabled)
+Gui.FAntennaMaint.chkP10.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.frameP10.Create(Frame)
+Gui.FAntennaMaint.frameP10.Enabled(False)
+Gui.FAntennaMaint.frameP10.Size(8520,1800)
+Gui.FAntennaMaint.frameP10.Position(105,5235)
+Gui.FAntennaMaint.frameP10.Parent("frameParent")
+Gui.FAntennaMaint.frameP10.Caption("P10 - PO Receipts Transaction Options")
+Gui.FAntennaMaint.optP10Inspection.Create(Option)
+Gui.FAntennaMaint.optP10Inspection.Size(2325,255)
+Gui.FAntennaMaint.optP10Inspection.Position(135,435)
+Gui.FAntennaMaint.optP10Inspection.Parent("frameP10")
+Gui.FAntennaMaint.optP10Inspection.Caption("Receive To Inspection")
+Gui.FAntennaMaint.optP10Inspection.ControlGroup(1)
+Gui.FAntennaMaint.optP10Inspection.Event(Click,ChangesMade)
+Gui.FAntennaMaint.optP10Job.Create(Option)
+Gui.FAntennaMaint.optP10Job.Size(1605,255)
+Gui.FAntennaMaint.optP10Job.Position(2460,435)
+Gui.FAntennaMaint.optP10Job.Parent("frameP10")
+Gui.FAntennaMaint.optP10Job.Caption("Receive To Job")
+Gui.FAntennaMaint.optP10Job.ControlGroup(1)
+Gui.FAntennaMaint.optP10Job.Event(Click,ChangesMade)
+Gui.FAntennaMaint.optP10Default.Create(Option)
+Gui.FAntennaMaint.optP10Default.Size(1305,255)
+Gui.FAntennaMaint.optP10Default.Position(4230,435)
+Gui.FAntennaMaint.optP10Default.Parent("frameP10")
+Gui.FAntennaMaint.optP10Default.Caption("Use Default")
+Gui.FAntennaMaint.optP10Default.ControlGroup(1)
+Gui.FAntennaMaint.optP10Default.Event(Click,ChangesMade)
+Gui.FAntennaMaint.chkNotifyP10.Create(CheckBox)
+Gui.FAntennaMaint.chkNotifyP10.Size(2250,300)
+Gui.FAntennaMaint.chkNotifyP10.Position(165,960)
+Gui.FAntennaMaint.chkNotifyP10.Parent("frameP10")
+Gui.FAntennaMaint.chkNotifyP10.Caption("Failure Notification")
+Gui.FAntennaMaint.chkNotifyP10.Event(Click,chkNotifyP10_Click)
+Gui.FAntennaMaint.lblNotifyP10.Create(Label,"Recipient Email ID",True,1380,255,0,300,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblNotifyP10.Parent("frameP10")
+Gui.FAntennaMaint.txtNotifyP10.Create(TextBox,"",True,2040,300,0,1920,1290,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtNotifyP10.Parent("frameP10")
+Gui.FAntennaMaint.txtNotifyP10.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtNotifyP10.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblWarningNotifyP10.Create(Label,"!",False,210,300,0,3960,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningNotifyP10.Parent("frameP10")
+Gui.FAntennaMaint.lblWarningNotifyP10.ForeColor(255)
+Gui.FAntennaMaint.lblSenderP10.Create(Label,"Sender Email ID",True,1380,255,0,4260,1380,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblSenderP10.Parent("frameP10")
+Gui.FAntennaMaint.txtSenderP10.Create(TextBox,"",True,2040,300,0,5655,1290,False,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtSenderP10.Parent("frameP10")
+Gui.FAntennaMaint.txtSenderP10.Event(LostFocus,CheckEmail)
+Gui.FAntennaMaint.txtSenderP10.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblWarningSenderP10.Create(Label,"!",False,210,300,0,7725,1335,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblWarningSenderP10.Parent("frameP10")
+Gui.FAntennaMaint.lblWarningSenderP10.ForeColor(255)
+Gui.FAntennaMaint.frameS99.Create(Frame)
+Gui.FAntennaMaint.frameS99.Enabled(False)
+Gui.FAntennaMaint.frameS99.Size(8520,1800)
+Gui.FAntennaMaint.frameS99.Position(8850,5235)
+Gui.FAntennaMaint.frameS99.Parent("frameParent")
+Gui.FAntennaMaint.frameS99.Caption("S99 - Shipment Loading Validation")
+Gui.FAntennaMaint.lblAPIURl.Create(Label,"Clearstream API URL",True,1695,255,0,135,390,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblAPIURl.Parent("frameS99")
+Gui.FAntennaMaint.txtAPIUrl.Create(TextBox,"",True,5625,300,0,1875,300,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtAPIUrl.Parent("frameS99")
+Gui.FAntennaMaint.txtAPIUrl.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblReaderDeviceID.Create(Label,"Reader Device ID",True,1695,255,0,135,735,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblReaderDeviceID.Parent("frameS99")
+Gui.FAntennaMaint.txtReaderDeviceID.Create(TextBox,"",True,660,300,0,1875,645,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtReaderDeviceID.Parent("frameS99")
+Gui.FAntennaMaint.txtReaderDeviceID.NumericOnly(2)
+Gui.FAntennaMaint.txtReaderDeviceID.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblPortMapping.Create(Label,"Port Mapping",True,1695,255,0,135,1170,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblPortMapping.Parent("frameS99")
+Gui.FAntennaMaint.txtRedPortMap.Create(TextBox,"",True,660,300,0,1875,1425,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtRedPortMap.Parent("frameS99")
+Gui.FAntennaMaint.txtRedPortMap.NumericOnly(2)
+Gui.FAntennaMaint.txtRedPortMap.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblRedPort.Create(Label,"Red",True,495,255,0,1875,1170,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblRedPort.Parent("frameS99")
+Gui.FAntennaMaint.txtYellowPortMap.Create(TextBox,"",True,660,300,0,2640,1425,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtYellowPortMap.Parent("frameS99")
+Gui.FAntennaMaint.txtYellowPortMap.NumericOnly(2)
+Gui.FAntennaMaint.txtYellowPortMap.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblYellowPort.Create(Label,"Yellow",True,645,255,0,2640,1170,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblYellowPort.Parent("frameS99")
+Gui.FAntennaMaint.txtGreenPortMap.Create(TextBox,"",True,660,300,0,3405,1425,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtGreenPortMap.Parent("frameS99")
+Gui.FAntennaMaint.txtGreenPortMap.NumericOnly(2)
+Gui.FAntennaMaint.txtGreenPortMap.Event(Change,ChangesMade)
+Gui.FAntennaMaint.txtBuzzerPortMap.Create(TextBox,"",False,660,300,0,4170,1425,True,0,"Arial",8,-2147483643,1)
+Gui.FAntennaMaint.txtBuzzerPortMap.Parent("frameS99")
+Gui.FAntennaMaint.txtBuzzerPortMap.NumericOnly(2)
+Gui.FAntennaMaint.txtBuzzerPortMap.Event(Change,ChangesMade)
+Gui.FAntennaMaint.lblGreenPortMap.Create(Label,"Green",True,645,255,0,3405,1170,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblGreenPortMap.Parent("frameS99")
+Gui.FAntennaMaint.lblBuzzerPortMap.Create(Label,"Buzzer",False,645,255,0,4170,1170,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblBuzzerPortMap.Parent("frameS99")
+Gui.FAntennaMaint.chkS99.Create(CheckBox)
+Gui.FAntennaMaint.chkS99.Size(3375,360)
+Gui.FAntennaMaint.chkS99.Position(8850,4860)
+Gui.FAntennaMaint.chkS99.Parent("frameParent")
+Gui.FAntennaMaint.chkS99.Caption("Enable for S99 Transaction")
+Gui.FAntennaMaint.chkS99.Event(Click,ToggleTransactionEnabled)
+Gui.FAntennaMaint.chkS99.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.cmdSave.Create(Button)
+Gui.FAntennaMaint.cmdSave.Size(1410,375)
+Gui.FAntennaMaint.cmdSave.Position(20160,150)
+Gui.FAntennaMaint.cmdSave.Caption("Save")
+Gui.FAntennaMaint.cmdSave.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.cmdSave.ControlGroup(1)
+Gui.FAntennaMaint.cmdSave.Event(Click,cmdSave_Click)
+Gui.FAntennaMaint.cmdSave.Enabled(False)
+Gui.FAntennaMaint.cmdRefresh.Create(Button)
+Gui.FAntennaMaint.cmdRefresh.Size(735,375)
+Gui.FAntennaMaint.cmdRefresh.Position(21660,150)
+Gui.FAntennaMaint.cmdRefresh.Caption("REFRESH")
+Gui.FAntennaMaint.cmdRefresh.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.cmdRefresh.Event(Click,cmdRefresh_Click)
+Gui.FAntennaMaint.cmdRefresh.ControlGroup(1)
+Gui.FAntennaMaint.cmdRefresh.Enabled(False)
+Gui.FAntennaMaint.lblLastRead.Create(Label,"Last Read Time: ",True,1815,255,0,11610,270,True,0,"Arial",8,-2147483633,0)
+Gui.FAntennaMaint.lblLastRead.FontStyle(True,False,False,False,False)
+Gui.FAntennaMaint.txtLastRead.Create(TextBox,"",True,4140,300,0,13500,180,True,0,"Arial",8,-2147483643,2)
+Gui.FAntennaMaint.txtLastRead.Locked(True)
+Gui.FormLockNotifications..Create
+Gui.FormLockNotifications..Caption("Lock Notifications")
+Gui.FormLockNotifications..Size(7695,5220)
+Gui.FormLockNotifications..MinX(0)
+Gui.FormLockNotifications..MinY(0)
+Gui.FormLockNotifications..Position(0,0)
+Gui.FormLockNotifications..AlwaysOnTop(True)
+Gui.FormLockNotifications..BackColor(-2147483633)
+Gui.FormLockNotifications..MaxButton(False)
+Gui.FormLockNotifications..MinButton(False)
+Gui.FormLockNotifications..MousePointer(0)
+Gui.FormLockNotifications..Event(UnLoad,FormLockNotifications_UnLoad)
+Gui.FormLockNotifications.lblAntenna.Create(Label,"Antenna",True,795,255,0,75,150,True,0,"Arial",8,-2147483633,0)
+Gui.FormLockNotifications.txtAntenna.Create(TextBox,"",True,1680,300,0,75,360,False,0,"Arial",8,-2147483643,1)
+Gui.FormLockNotifications.lblReader.Create(Label,"Reader",True,1935,255,0,1875,150,True,0,"Arial",8,-2147483633,0)
+Gui.FormLockNotifications.txtReader.Create(TextBox,"",True,1680,300,0,1875,360,False,0,"Arial",8,-2147483643,1)
+Gui.FormLockNotifications.lblTransaction.Create(Label,"Transaction",True,1110,255,0,3675,150,True,0,"Arial",8,-2147483633,0)
+Gui.FormLockNotifications.txtTransaction.Create(TextBox,"",True,705,300,0,3675,360,False,0,"Arial",8,-2147483643,1)
+Gui.FormLockNotifications.chkLockNotifications.Create(CheckBox)
+Gui.FormLockNotifications.chkLockNotifications.Size(2745,360)
+Gui.FormLockNotifications.chkLockNotifications.Position(75,690)
+Gui.FormLockNotifications.chkLockNotifications.Caption("Send WO Locked Notifications")
+Gui.FormLockNotifications.chkLockNotifications.Event(Click,chkLockNotifications_Click)
+Gui.FormLockNotifications.lblSenderEmailAddress.Create(Label,"Sender Email Address",True,1935,255,0,75,1170,True,0,"Arial",8,-2147483633,0)
+Gui.FormLockNotifications.txtSender.Create(TextBox,"",True,7440,300,0,75,1380,True,0,"Arial",8,-2147483643,1)
+Gui.FormLockNotifications.lblRecipientEmailAddress.Create(Label,"Recipient Email Addresses",True,1935,255,0,90,2025,True,0,"Arial",8,-2147483633,0)
+Gui.FormLockNotifications.txtRecipientAddresses.Create(TextboxM)
+Gui.FormLockNotifications.txtRecipientAddresses.Size(7440,2220)
+Gui.FormLockNotifications.txtRecipientAddresses.Position(90,2235)
+Gui.FormLockNotifications.txtRecipientAddresses.ToolTip("Multiple addresses can be delimited by commas.")
+Gui.FormLockNotifications.cmdSaveLockNotifications.Create(Button)
+Gui.FormLockNotifications.cmdSaveLockNotifications.Size(855,375)
+Gui.FormLockNotifications.cmdSaveLockNotifications.Position(6675,4485)
+Gui.FormLockNotifications.cmdSaveLockNotifications.Caption("Save")
+Gui.FormLockNotifications.cmdSaveLockNotifications.Event(Click,cmdSaveLockNotifications_Click)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+V.Global.sAntenna.Declare(String)
+V.Global.bSave.Declare(Boolean,False)
+V.Global.sReader.Declare(String)
+V.Global.bError.Declare(Boolean, False)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'GCG_5235_RFID_MAINT.g2u
+'Originally by Ashwin D
+'Modified by Trey S for Winesburg and King Machine
+'King Machine Modifications: September 10th, 2019
+'This program is a maintenance program for RFID transaction settings
+
+F.Intrinsic.Control.Try
+
+F.ODBC.Connection!con.openconnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+
+F.Intrinsic.Control.CallSub(SetIcon)
+F.Intrinsic.Control.CallSub(CheckAntennaList)
+F.Intrinsic.Control.CallSub(LoadGrid)
+F.Intrinsic.Control.CallSub(LoadCloseDropDown)
+F.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+GUI.FAntennaMaint..Show
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.CheckAntennaList.Start
+F.Intrinsic.Control.Try
+
+F.Data.DataTable.CreateFromSQL("AntList","Con","SELECT distinct Antenna, Reader from GCG_5235_RFID_HDWR where CONCAT(antenna, Reader) not in (Select distinct CONCAT(antenna, Reader) from GCG_5235_RFID_MAINT WHERE TX_CODE = 'J55') ")
+F.Intrinsic.Control.If(V.DataTable.AntList.RowCount,<>,0)
+	F.Data.DataTable.AddColumn("AntList","TX_CODE","String")
+	F.Data.DataTable.SetValue("AntList",-1,"TX_CODE","J55")
+	F.Data.DataTable.AddColumn("AntList","ENABLED","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"ENABLED",False)
+	F.Data.DataTable.AddColumn("AntList","PRINT_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"PRINT_FLAG",False)
+	F.Data.DataTable.AddColumn("AntList","NOTIFY_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"NOTIFY_FLAG",False)
+	F.Data.DataTable.SaveToDB("AntList","Con","GCG_5235_RFID_MAINT","ANTENNA*!*READER*!*TX_CODE",256,"ANTENNA@!@ANTENNA*!*TX_CODE@!@TX_CODE*!*ENABLED@!@ENABLED*!*PRINT_FLAG@!@PRINT_FLAG*!*NOTIFY_FLAG@!@NOTIFY_FLAG*!*READER@!@READER")
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("AntList")
+
+F.Data.DataTable.CreateFromSQL("AntList","Con","SELECT distinct Antenna, Reader from GCG_5235_RFID_HDWR where CONCAT(antenna, Reader) not in (Select distinct CONCAT(antenna, Reader) from GCG_5235_RFID_MAINT WHERE TX_CODE = 'J52') ")
+F.Intrinsic.Control.If(V.DataTable.AntList.RowCount,<>,0)
+	F.Data.DataTable.AddColumn("AntList","TX_CODE","String")
+	F.Data.DataTable.SetValue("AntList",-1,"TX_CODE","J52")
+	F.Data.DataTable.AddColumn("AntList","ENABLED","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"ENABLED",False)
+	F.Data.DataTable.AddColumn("AntList","PRINT_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"PRINT_FLAG",False)
+	F.Data.DataTable.AddColumn("AntList","NOTIFY_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"NOTIFY_FLAG",False)
+	F.Data.DataTable.SaveToDB("AntList","Con","GCG_5235_RFID_MAINT","ANTENNA*!*READER*!*TX_CODE",256,"ANTENNA@!@ANTENNA*!*TX_CODE@!@TX_CODE*!*ENABLED@!@ENABLED*!*PRINT_FLAG@!@PRINT_FLAG*!*NOTIFY_FLAG@!@NOTIFY_FLAG*!*READER@!@READER")
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("AntList")
+
+F.Data.DataTable.CreateFromSQL("AntList","Con","SELECT distinct Antenna, Reader from GCG_5235_RFID_HDWR where CONCAT(antenna, Reader) not in (Select distinct CONCAT(antenna, Reader) from GCG_5235_RFID_MAINT WHERE TX_CODE = 'O90') ")
+F.Intrinsic.Control.If(V.DataTable.AntList.RowCount,<>,0)
+	F.Data.DataTable.AddColumn("AntList","TX_CODE","String")
+	F.Data.DataTable.SetValue("AntList",-1,"TX_CODE","O90")
+	F.Data.DataTable.AddColumn("AntList","ENABLED","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"ENABLED",False)
+	F.Data.DataTable.AddColumn("AntList","PRINT_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"PRINT_FLAG",False)
+	F.Data.DataTable.AddColumn("AntList","NOTIFY_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"NOTIFY_FLAG",False)
+	F.Data.DataTable.SaveToDB("AntList","Con","GCG_5235_RFID_MAINT","ANTENNA*!*READER*!*TX_CODE",256,"ANTENNA@!@ANTENNA*!*TX_CODE@!@TX_CODE*!*ENABLED@!@ENABLED*!*PRINT_FLAG@!@PRINT_FLAG*!*NOTIFY_FLAG@!@NOTIFY_FLAG*!*READER@!@READER")
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("AntList")
+
+F.Data.DataTable.CreateFromSQL("AntList","Con","SELECT distinct Antenna, Reader from GCG_5235_RFID_HDWR where CONCAT(antenna, Reader) not in (Select distinct CONCAT(antenna, Reader) from GCG_5235_RFID_MAINT WHERE TX_CODE = 'L01') ")
+F.Intrinsic.Control.If(V.DataTable.AntList.RowCount,<>,0)
+	F.Data.DataTable.AddColumn("AntList","TX_CODE","String")
+	F.Data.DataTable.SetValue("AntList",-1,"TX_CODE","L01")
+	F.Data.DataTable.AddColumn("AntList","ENABLED","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"ENABLED",False)
+	F.Data.DataTable.AddColumn("AntList","PRINT_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"PRINT_FLAG",False)
+	F.Data.DataTable.AddColumn("AntList","NOTIFY_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"NOTIFY_FLAG",False)
+	F.Data.DataTable.SaveToDB("AntList","Con","GCG_5235_RFID_MAINT","ANTENNA*!*READER*!*TX_CODE",256,"ANTENNA@!@ANTENNA*!*TX_CODE@!@TX_CODE*!*ENABLED@!@ENABLED*!*PRINT_FLAG@!@PRINT_FLAG*!*NOTIFY_FLAG@!@NOTIFY_FLAG*!*READER@!@READER")
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("AntList")
+
+F.Data.DataTable.CreateFromSQL("AntList","Con","SELECT distinct Antenna, Reader from GCG_5235_RFID_HDWR where CONCAT(antenna, Reader) not in (Select distinct CONCAT(antenna, Reader) from GCG_5235_RFID_MAINT WHERE TX_CODE = 'P10') ")
+F.Intrinsic.Control.If(V.DataTable.AntList.RowCount,<>,0)
+	F.Data.DataTable.AddColumn("AntList","TX_CODE","String")
+	F.Data.DataTable.SetValue("AntList",-1,"TX_CODE","P10")
+	F.Data.DataTable.AddColumn("AntList","ENABLED","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"ENABLED",False)
+	F.Data.DataTable.AddColumn("AntList","PRINT_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"PRINT_FLAG",False)
+	F.Data.DataTable.AddColumn("AntList","NOTIFY_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"NOTIFY_FLAG",False)
+	F.Data.DataTable.SaveToDB("AntList","Con","GCG_5235_RFID_MAINT","ANTENNA*!*READER*!*TX_CODE",256,"ANTENNA@!@ANTENNA*!*TX_CODE@!@TX_CODE*!*ENABLED@!@ENABLED*!*PRINT_FLAG@!@PRINT_FLAG*!*NOTIFY_FLAG@!@NOTIFY_FLAG*!*READER@!@READER")
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("AntList")
+
+F.Data.DataTable.CreateFromSQL("AntList","Con","SELECT distinct Antenna, Reader from GCG_5235_RFID_HDWR where CONCAT(antenna, Reader) not in (Select distinct CONCAT(antenna, Reader) from GCG_5235_RFID_MAINT WHERE TX_CODE = 'S99') ")
+F.Intrinsic.Control.If(V.DataTable.AntList.RowCount,<>,0)
+	F.Data.DataTable.AddColumn("AntList","TX_CODE","String")
+	F.Data.DataTable.SetValue("AntList",-1,"TX_CODE","S99")
+	F.Data.DataTable.AddColumn("AntList","ENABLED","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"ENABLED",False)
+	F.Data.DataTable.AddColumn("AntList","PRINT_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"PRINT_FLAG",False)
+	F.Data.DataTable.AddColumn("AntList","NOTIFY_FLAG","BOOLEAN")
+	F.Data.DataTable.SetValue("AntList",-1,"NOTIFY_FLAG",False)
+	F.Data.DataTable.SaveToDB("AntList","Con","GCG_5235_RFID_MAINT","ANTENNA*!*READER*!*TX_CODE",256,"ANTENNA@!@ANTENNA*!*TX_CODE@!@TX_CODE*!*ENABLED@!@ENABLED*!*READER@!@READER*!*PRINT_FLAG@!@PRINT_FLAG*!*NOTIFY_FLAG@!@NOTIFY_FLAG")
+F.Intrinsic.Control.EndIf
+F.Data.DataTable.Close("AntList")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckAntennaList.End
+
+Program.Sub.LoadGrid.Start
+F.Intrinsic.Control.Try
+
+V.Local.bCheck.Declare(Boolean)
+
+GUI.FAntennaMaint..Enabled(False)
+GUI.FAntennaMaint.GsGCAntReadList.SuspendLayout
+
+F.Intrinsic.Control.If(V.DataTable.AntListAct.Exists)
+	F.Intrinsic.Control.If(V.DataView.AntListAct!AntListVw.Exists)
+		F.Data.DataView.Close("AntListAct","AntListVw")
+	F.Intrinsic.Control.EndIf
+	F.Data.DataTable.Close("AntListAct")
+F.Intrinsic.Control.EndIf
+
+F.Data.DataTable.CreateFromSQL("AntListAct","Con","SELECT Distinct Antenna, Reader from GCG_5235_RFID_HDWR order by reader, antenna",True)
+F.Data.DataView.Create("AntListAct","AntListVw",22)
+
+GUI.FAntennaMaint.GsGCAntReadList.AddGridviewFromDataview("gvAntennas","AntListAct","AntListVw")
+
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Antenna","headerforecolor", V.Color.PRI-GSS-00)
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Antenna","headerfontbold", True)
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Antenna","caption","Antenna Name")
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Antenna","readonly", True)
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Antenna","allowedit", False)
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Antenna","MinWidth", 150)
+
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Reader","headerforecolor", V.Color.PRI-GSS-00)
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Reader","headerfontbold", True)
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Reader","caption","Parent Reader")
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Reader","readonly", True)
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Reader","allowedit", False)
+GUI.FAntennaMaint.GsGCAntReadList.SetColumnProperty("gvAntennas","Reader","MinWidth", 150)
+
+GUI.FAntennaMaint.GsGCAntReadList.SetGridviewProperty("gvAntennas","Enableappearanceoddrow",True)
+GUI.FAntennaMaint.GsGCAntReadList.SetGridviewProperty("gvAntennas","OptionsFindAlwaysVisible",True)
+GUI.FAntennaMaint.GsGCAntReadList.SetGridviewProperty("gvAntennas","Showgrouppanel",False)
+
+GUI.FAntennaMaint.GsGCAntReadList.SetGridviewProperty("gvAntennas","OptionsViewShowAutoFilterRow",False)
+
+GUI.FAntennaMaint.GsGCAntReadList.MainView("gvAntennas")
+
+GUI.FAntennaMaint.GsGCAntReadList.ResumeLayout
+GUI.FAntennaMaint..Enabled(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadGrid.End
+
+Program.Sub.GsGCAntReadList_RowCellClick.Start
+F.Intrinsic.Control.Try
+
+V.Local.iCount.Declare(Long)
+V.Local.sSQL.Declare(String)
+V.Local.iX.Declare(Long)
+V.Local.iY.Declare(Long)
+
+F.Intrinsic.Control.If(V.Args.clicks,>,1,"AND",V.Args.button,=,"Left")
+	
+	F.Intrinsic.Control.BlockEvents
+	GUI.FAntennaMaint..Enabled(False)
+	V.Global.sAntenna.Set(V.DataTable.AntListAct(V.Args.RowHandle).Antenna!fieldVal)
+	V.Global.sReader.Set(V.DataTable.AntListAct(V.Args.RowHandle).Reader!fieldVal)
+	GUI.FAntennaMaint.txtAntName.Text(V.Global.sAntenna)
+	GUI.FAntennaMaint.txtReader.Text(V.Global.sReader)
+	F.Intrinsic.Control.CallSub(LoadData)
+	GUI.FAntennaMaint.frameParent.Enabled(True)
+	GUI.FAntennaMaint.cmdSave.Enabled(False)
+	GUI.FAntennaMaint.cmdRefresh.Enabled(False)
+	V.Global.bSave.Set(False)
+
+	F.Intrinsic.Control.UnBlockEvents
+	GUI.FAntennaMaint..Enabled(True)
+	GUI.FAntennaMaint..SetFocus
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.GsGCAntReadList_RowCellClick.End
+
+Program.Sub.LoadData.Start
+F.Intrinsic.Control.Try
+
+V.Local.iCount.Declare(Long)
+V.Local.iflag.Declare(Long)
+V.Local.sTransCode.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.sExtraOption.Declare(String)
+
+F.Intrinsic.Control.CallSub(ClearOptions)
+
+F.Intrinsic.Control.If(V.DataTable.dtAntennaData.Exists,=,True)
+	F.Data.DataTable.Close("dtAntennaData")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.String.Build("Select * from GCG_5235_RFID_MAINT where antenna = '{0}' and READER = '{1}'",V.Global.sAntenna, V.Global.sReader, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtAntennaData","Con",V.Local.sSQL,True)
+
+F.Intrinsic.Control.For(V.Local.iCount,0,V.DataTable.dtAntennaData.RowCount--,1)
+	V.Local.sTransCode.Set(V.DataTable.dtAntennaData(V.Local.iCount).TX_CODE!fieldVal)
+	F.Intrinsic.Control.SelectCase(V.Local.sTransCode)
+		F.Intrinsic.Control.Case("J55")
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).Enabled!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkJ55.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtWCJ55.Text(V.DataTable.dtAntennaData(V.Local.iCount).WC!FieldVal)
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).PRINT_FLAG!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkPrintJ55.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtPrinterJ55.Text(V.DataTable.dtAntennaData(V.Local.iCount).PRINTER!FieldVal)
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).NOTIFY_FLAG!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkNotifyJ55.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtNotifyJ55.Text(V.DataTable.dtAntennaData(V.Local.iCount).REC_EMAILID!FieldVal)
+			GUI.FAntennaMaint.txtSenderJ55.Text(V.DataTable.dtAntennaData(V.Local.iCount).SENDER_EMAILID!FieldVal)
+			F.intrinsic.Control.CallSub(ToggleTransactionEnabled, "CONTROLNAME", "chkJ55")
+			F.Intrinsic.Control.CallSub(CheckPrinterClicked, "CONTROLNAME", "chkPrintJ55")
+			F.intrinsic.Control.CallSub(chkNotifyJ55_Click)
+			
+			'load extra option
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).EXTRA_OPTION!FieldValTrim, !=, "")
+				GUI.FAntennaMaint.chkJ55OnlyIssueFromDashboard.Value(V.DataTable.dtAntennaData(V.Local.iCount).EXTRA_OPTION!FieldValTrim)
+			F.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.Case("J52")
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).Enabled!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkJ52.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtToBinJ52.Text(V.DataTable.dtAntennaData(V.Local.iCount).TOBIN!FieldVal)
+			
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).PRINT_FLAG!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkPrintJ52.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtPrinterJ52.Text(V.DataTable.dtAntennaData(V.Local.iCount).PRINTER!FieldVal)
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).NOTIFY_FLAG!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkNotifyJ52.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtNotifyJ52.Text(V.DataTable.dtAntennaData(V.Local.iCount).REC_EMAILID!FieldVal)
+			GUI.FAntennaMaint.txtSenderJ52.Text(V.DataTable.dtAntennaData(V.Local.iCount).SENDER_EMAILID!FieldVal)
+			
+			F.Intrinsic.String.Split(V.DataTable.dtAntennaData(V.Local.iCount).EXTRA_OPTION!FieldValTrim, "!@#$#@!", V.Local.sExtraOption)
+			F.Intrinsic.Control.If(V.Local.sExtraOption(0), =, "DEFAULT")
+				GUI.FAntennaMaint.chkDefaultBin.Value(True)
+			F.Intrinsic.Control.ElseIf(V.Local.sExtraOption(0), =, "STOCKING")
+				GUI.FAntennaMaint.chkStockingBin.Value(True)
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.sExtraOption.UBound, >, 0)
+				GUI.FAntennaMaint.chkOverrideLabelQuantity.Value(V.Local.sExtraOption(1))
+			F.Intrinsic.Control.EndIf
+			
+			F.Intrinsic.Control.If(V.Local.sExtraOption.UBound, >, 1)
+				GUI.FAntennaMaint.ddlCloseJ52.Text(V.Local.sExtraOption(2).Trim)
+			F.Intrinsic.Control.EndIf
+			
+			F.intrinsic.Control.CallSub(ToggleTransactionEnabled, "CONTROLNAME", "chkJ52")
+			F.Intrinsic.Control.CallSub(CheckPrinterClicked, "CONTROLNAME", "chkPrintJ52")
+			F.intrinsic.Control.CallSub(chkNotifyJ52_Click)
+		
+		F.Intrinsic.Control.Case("O90")
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).Enabled!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkO90.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtToBinO90.Text(V.DataTable.dtAntennaData(V.Local.iCount).TOBIN!FieldVal)
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).PRINT_FLAG!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkPrintO90.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtPrinterO90.Text(V.DataTable.dtAntennaData(V.Local.iCount).PRINTER!FieldVal)
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).NOTIFY_FLAG!FieldVal,=,"True")
+				V.Local.iflag.Set(1)
+			F.Intrinsic.Control.Else
+				V.Local.iflag.Set(0)
+			F.Intrinsic.Control.EndIf
+			GUI.FAntennaMaint.chkNotifyO90.Value(V.Local.iflag)
+			GUI.FAntennaMaint.txtNotifyO90.Text(V.DataTable.dtAntennaData(V.Local.iCount).REC_EMAILID!FieldVal)
+			GUI.FAntennaMaint.txtSenderO90.Text(V.DataTable.dtAntennaData(V.Local.iCount).SENDER_EMAILID!FieldVal)
+			F.intrinsic.Control.CallSub(ToggleTransactionEnabled, "CONTROLNAME", "chkO90")
+			F.Intrinsic.Control.CallSub(CheckPrinterClicked, "CONTROLNAME", "chkPrintO90")
+			F.intrinsic.Control.CallSub(chkNotifyO90_Click)
+			
+		F.Intrinsic.Control.Case("L01")
+			GUI.FAntennaMaint.chkL01.Value(V.DataTable.dtAntennaData(V.Local.iCount).ENABLED!FieldVal)
+			GUI.FAntennaMaint.txtL01Workcenter.Text(V.DataTable.dtAntennaData(V.Local.iCount).WC!FieldValTrim)
+			GUI.FAntennaMaint.chkNotifyL01.Value(V.DataTable.dtAntennaData(V.Local.iCount).NOTIFY_FLAG!FieldVal)
+			GUI.FAntennaMaint.txtNotifyL01.Text(V.DataTable.dtAntennaData(V.Local.iCount).REC_EMAILID!FieldValTrim)
+			GUI.FAntennaMaint.txtSenderL01.Text(V.DataTable.dtAntennaData(V.Local.iCount).SENDER_EMAILID!FieldValTrim)
+			
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).EXTRA_OPTION!FieldValTrim, !=, "")
+				F.Intrinsic.String.Split(V.DataTable.dtAntennaData(V.Local.iCount).EXTRA_OPTION!FieldValTrim, "!@#$#@!", V.Local.sExtraOption)
+				F.Intrinsic.Control.If(V.Local.sExtraOption.UBound, >=, 2)
+					GUI.FAntennaMaint.txtL01Employee.Text(V.Local.sExtraOption(0).Trim)
+					GUI.FAntennaMaint.ddlClose.Text(V.Local.sExtraOption(1).Trim)
+					GUI.FAntennaMaint.chkPORequest.Value(V.Local.sExtraOption(2))
+				F.Intrinsic.Control.EndIf
+				
+			F.Intrinsic.Control.EndIf
+			
+			F.intrinsic.Control.CallSub(ToggleTransactionEnabled, "CONTROLNAME", "chkL01")
+			F.intrinsic.Control.CallSub(chkNotifyL01_Click)
+			
+		F.Intrinsic.Control.Case("P10")
+			GUI.FAntennaMaint.chkP10.Value(V.DataTable.dtAntennaData(V.Local.iCount).ENABLED!FieldVal)
+			GUI.FAntennaMaint.chkNotifyP10.Value(V.DataTable.dtAntennaData(V.Local.iCount).NOTIFY_FLAG!FieldVal)
+			GUI.FAntennaMaint.txtNotifyP10.Text(V.DataTable.dtAntennaData(V.Local.iCount).REC_EMAILID!FieldValTrim)
+			GUI.FAntennaMaint.txtSenderP10.Text(V.DataTable.dtAntennaData(V.Local.iCount).SENDER_EMAILID!FieldValTrim)
+			F.intrinsic.Control.CallSub(ToggleTransactionEnabled, "CONTROLNAME", "chkP10")
+			F.intrinsic.Control.CallSub(chkNotifyP10_Click)
+			
+			F.Intrinsic.Control.If(V.DataTable.dtAntennaData(V.Local.iCount).EXTRA_OPTION!FieldValTrim, =, "INSPECTION")
+				GUI.FAntennaMaint.optP10Inspection.Value(1)
+			F.Intrinsic.Control.ElseIf(V.DataTable.dtAntennaData(V.Local.iCount).EXTRA_OPTION!FieldValTrim, =, "JOB")
+				GUI.FAntennaMaint.optP10Job.Value(1)
+			F.Intrinsic.Control.Else
+				GUI.FAntennaMaint.optP10Default.Value(1)
+			F.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.Case("S99")
+			GUI.FAntennaMaint.chkS99.Value(V.DataTable.dtAntennaData(V.Local.iCount).ENABLED!FieldVal)
+			F.intrinsic.Control.CallSub(ToggleTransactionEnabled, "CONTROLNAME", "chkS99")
+			
+			GUI.FAntennaMaint.txtAPIUrl.Text(V.DataTable.dtAntennaData(V.Local.iCount).API_URL!FieldValTrim)
+			GUI.FAntennaMaint.txtReaderDeviceID.Text(V.DataTable.dtAntennaData(V.Local.iCount).DEVICE_ID!FieldValTrim)
+			GUI.FAntennaMaint.txtRedPortMap.Text(V.DataTable.dtAntennaData(V.Local.iCount).RED_PORT!FieldValTrim)
+			GUI.FAntennaMaint.txtYellowPortMap.Text(V.DataTable.dtAntennaData(V.Local.iCount).YELLOW_PORT!FieldValTrim)
+			GUI.FAntennaMaint.txtGreenPortMap.Text(V.DataTable.dtAntennaData(V.Local.iCount).GREEN_PORT!FieldValTrim)
+			GUI.FAntennaMaint.txtBuzzerPortMap.Text(V.DataTable.dtAntennaData(V.Local.iCount).BUZZER_PORT!FieldValTrim)
+			
+		F.Intrinsic.Control.CaseElse
+			F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndSelect
+	
+F.Intrinsic.Control.Next(V.Local.iCount)
+
+GUI.FAntennaMaint..Enabled(True)
+
+'update last read date/time
+F.Intrinsic.String.Build("Select DATEANDTIME from GCG_5235_RFID_HDWR where antenna = '{0}' and READER = '{1}'", V.Global.sAntenna, V.Global.sReader, V.Local.sSQL)
+F.ODBC.Connection!con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+GUI.FAntennaMaint.txtLastRead.Text(V.Local.sRet.Trim)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadData.End
+
+Program.Sub.cmdSave_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.bJ55.Declare(Boolean)
+V.Local.bJ52.Declare(Boolean)
+V.Local.bO90.Declare(Boolean)
+V.Local.bCheck.Declare(Boolean)
+V.Local.bSend.Declare(Boolean)
+V.Local.bRec.Declare(Boolean)
+V.Local.sEmailID.Declare(String)
+V.Local.sExtraOption.Declare(String)
+
+'check and save J55 Options
+GUI.FAntennaMaint..Enabled(False)
+F.Data.DataView.Create("dtAntennaData","J55VW",22,"TX_CODE = 'J55'","")
+F.Intrinsic.control.If(V.Screen.FAntennaMaint!chkJ55.CheckedAsBoolean,=,True)
+	F.intrinsic.Control.If(V.Screen.FAntennaMaint!txtWCJ55.Text.trim,=,"")
+		GUI.FAntennaMaint.lblJ55W.Visible(True)
+		V.Local.bJ55.Set(True)
+	F.Intrinsic.Control.Else
+		F.Data.DataView.SetValue("dtAntennaData","J55VW",-1,"ENABLED",True,"WC",V.Screen.FAntennaMaint!txtWCJ55.Text)
+		F.Data.DataTable.AcceptChanges("dtAntennaData")
+		GUI.FAntennaMaint.lblJ55W.Visible(False)
+		
+		F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkPrintJ55.CheckedAsBoolean,=,True)
+			F.intrinsic.Control.If(V.Screen.FAntennaMaint!txtPrinterJ55.Text.trim,=,"")
+				GUI.FAntennaMaint.lblJ55P.Visible(True)
+				V.Local.bJ55.Set(True)
+			F.Intrinsic.Control.Else
+				F.Data.DataView.SetValue("dtAntennaData","J55VW",-1,"PRINT_FLAG",True,"PRINTER",V.Screen.FAntennaMaint!txtPrinterJ55.Text)
+				F.Data.DataTable.AcceptChanges("dtAntennaData")
+				GUI.FAntennaMaint.lblJ55P.Visible(False)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			F.Data.DataView.SetValue("dtAntennaData","J55VW",-1,"PRINT_FLAG",False)
+		F.Intrinsic.Control.EndIf
+		
+		F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkNotifyJ55.CheckedAsBoolean,=,True)
+			V.Local.bRec.Set(False)
+			V.Local.bSend.Set(False)
+			V.Local.bCheck.Set(False)
+			V.Local.sEmailID.Set(V.Screen.FAntennaMaint!txtNotifyJ55.Text)
+			F.Global.Messaging.IsAddressValid(V.Local.sEmailID.Trim,V.Local.bCheck)
+			F.intrinsic.Control.If(V.Local.bCheck,=,False)
+				gui.FAntennaMaint.lblWarningNotifyJ55.Visible(True)
+				V.Local.bJ55.Set(True)
+				V.Local.bRec.Set(True)
+			F.Intrinsic.Control.EndIf
+			V.Local.bCheck.Set(False)
+			V.Local.sEmailID.Set(V.Screen.FAntennaMaint!txtSenderJ55.Text)
+			F.Global.Messaging.IsAddressValid(V.Local.sEmailID.Trim,V.Local.bCheck)
+			F.intrinsic.Control.If(V.Local.bCheck,=,False)
+				gui.FAntennaMaint.lblWarningSenderJ55.Visible(True)
+				V.Local.bJ55.Set(True)
+				V.Local.bSend.Set(True)
+			F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.If(V.Local.bRec,=,False,"and",V.Local.bSend,=,False)
+				F.Data.DataView.SetValue("dtAntennaData","J55VW",-1,"NOTIFY_FLAG",True,"REC_EMAILID",V.Screen.FAntennaMaint!txtNotifyJ55.Text,"SENDER_EMAILID",V.Screen.FAntennaMaint!txtSenderJ55.Text)
+				F.Data.DataTable.AcceptChanges("dtAntennaData")
+				gui.FAntennaMaint.lblWarningSenderJ55.Visible(False)
+				gui.FAntennaMaint.lblWarningNotifyJ55.Visible(False)
+			F.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.Else
+			F.Data.DataView.SetValue("dtAntennaData","J55VW",-1,"NOTIFY_FLAG",False)
+		F.Intrinsic.Control.EndIf
+		
+		'extra options
+		V.Local.sExtraOption.Set(V.Screen.FAntennaMaint!chkJ55OnlyIssueFromDashboard.CheckedAsBoolean)
+		F.Data.DataView.SetValue("dtAntennaData","J55VW",-1, "EXTRA_OPTION", V.Local.sExtraOption)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	F.Data.DataView.SetValue("dtAntennaData","J55VW",-1,"Enabled",False)
+F.Intrinsic.Control.EndIf
+F.Data.Dataview.Close("dtAntennaData","J55VW")
+
+'check and save J52 Options
+F.Data.DataView.Create("dtAntennaData","J52VW",22,"TX_CODE = 'J52'","")
+F.Intrinsic.control.If(V.Screen.FAntennaMaint!chkJ52.CheckedAsBoolean,=,True)
+	F.Data.DataView.SetValue("dtAntennaData","J52VW",-1,"ENABLED",True,"TOBIN",V.Screen.FAntennaMaint!txtToBinJ52.Text)
+	F.Data.DataTable.AcceptChanges("dtAntennaData")
+	GUI.FAntennaMaint.lblJ52W.Visible(False)
+	
+	'extra options
+	F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkDefaultBin.CheckedAsBoolean)
+		V.Local.sExtraOption.Set("DEFAULT")
+	F.Intrinsic.Control.ElseIf(V.Screen.FAntennaMaint!chkStockingBin.CheckedAsBoolean)
+		V.Local.sExtraOption.Set("STOCKING")
+	F.Intrinsic.Control.Else
+		V.Local.sExtraOption.Set("")
+	F.Intrinsic.Control.EndIf
+	
+	'save override flag
+	F.Intrinsic.String.Build("{0}!@#$#@!{1}", V.Local.sExtraOption, V.Screen.FAntennaMaint!chkOverrideLabelQuantity.CheckedAsBoolean, V.Local.sExtraOption)
+	
+	'save close option
+	F.Intrinsic.String.Build("{0}!@#$#@!{1}", V.Local.sExtraOption, V.Screen.FAntennaMaint!ddlCloseJ52.Text.Trim, V.Local.sExtraOption)
+	
+	F.Data.DataView.SetValue("dtAntennaData","J52VW",-1, "EXTRA_OPTION", V.Local.sExtraOption)
+	F.Data.DataTable.AcceptChanges("dtAntennaData")
+	
+	F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkPrintJ52.CheckedAsBoolean,=,True)
+		F.intrinsic.Control.If(V.Screen.FAntennaMaint!txtPrinterJ52.Text.trim,=,"")
+			GUI.FAntennaMaint.lblJ52P.Visible(True)
+			V.Local.bJ52.Set(True)
+		F.Intrinsic.Control.Else
+			F.Data.DataView.SetValue("dtAntennaData","J52VW",-1,"PRINT_FLAG",True,"PRINTER",V.Screen.FAntennaMaint!txtPrinterJ52.Text)
+			F.Data.DataTable.AcceptChanges("dtAntennaData")
+			GUI.FAntennaMaint.lblJ52P.Visible(False)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		F.Data.DataView.SetValue("dtAntennaData","J52VW",-1,"PRINT_FLAG",False)
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkNotifyJ52.CheckedAsBoolean,=,True)
+		V.Local.bRec.Set(False)
+		V.Local.bSend.Set(False)
+		V.Local.bCheck.Set(False)
+		V.Local.sEmailID.Set(V.Screen.FAntennaMaint!txtNotifyJ52.Text)
+		F.Global.Messaging.IsAddressValid(V.Local.sEmailID.Trim,V.Local.bCheck)
+		F.intrinsic.Control.If(V.Local.bCheck,=,False)
+			gui.FAntennaMaint.lblWarningNotifyJ52.Visible(True)
+			V.Local.bJ52.Set(True)
+			V.Local.bRec.Set(True)
+		F.Intrinsic.Control.EndIf
+		V.Local.bCheck.Set(False)
+		V.Local.sEmailID.Set(V.Screen.FAntennaMaint!txtSenderJ52.Text)
+		F.Global.Messaging.IsAddressValid(V.Local.sEmailID.Trim,V.Local.bCheck)
+		F.intrinsic.Control.If(V.Local.bCheck,=,False)
+			gui.FAntennaMaint.lblWarningSenderJ52.Visible(True)
+			V.Local.bJ52.Set(True)
+			V.Local.bSend.Set(True)
+		F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.If(V.Local.bRec,=,False,"and",V.Local.bSend,=,False)
+			F.Data.DataView.SetValue("dtAntennaData","J52VW",-1,"NOTIFY_FLAG",True,"REC_EMAILID",V.Screen.FAntennaMaint!txtNotifyJ52.Text,"SENDER_EMAILID",V.Screen.FAntennaMaint!txtSenderJ52.Text)
+			F.Data.DataTable.AcceptChanges("dtAntennaData")
+			gui.FAntennaMaint.lblWarningSenderJ52.Visible(False)
+			gui.FAntennaMaint.lblWarningNotifyJ52.Visible(False)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		F.Data.DataView.SetValue("dtAntennaData","J52VW",-1,"NOTIFY_FLAG",False)
+	F.Intrinsic.Control.EndIf
+	
+F.Intrinsic.Control.Else
+	F.Data.DataView.SetValue("dtAntennaData","J52VW",-1,"Enabled",False)
+F.Intrinsic.Control.EndIf
+F.Data.Dataview.Close("dtAntennaData","J52VW")
+
+'check and save O90 Options
+F.Data.DataView.Create("dtAntennaData","O90VW",22,"TX_CODE = 'O90'","")
+F.Intrinsic.control.If(V.Screen.FAntennaMaint!chkO90.CheckedAsBoolean,=,True)
+	F.intrinsic.Control.If(V.Screen.FAntennaMaint!txtToBinO90.Text.trim,=,"")
+		GUI.FAntennaMaint.lblO90W.Visible(True)
+		V.Local.bO90.Set(True)
+	F.Intrinsic.Control.Else
+		F.Data.DataView.SetValue("dtAntennaData","O90VW",-1,"ENABLED",True,"TOBIN",V.Screen.FAntennaMaint!txtToBinO90.Text)
+		F.Data.DataTable.AcceptChanges("dtAntennaData")
+		GUI.FAntennaMaint.lblO90W.Visible(False)
+		F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkPrintO90.CheckedAsBoolean,=,True)
+			F.intrinsic.Control.If(V.Screen.FAntennaMaint!txtPrinterO90.Text.trim,=,"")
+				GUI.FAntennaMaint.lblO90P.Visible(True)
+			F.Intrinsic.Control.Else
+				F.Data.DataView.SetValue("dtAntennaData","O90VW",-1,"PRINT_FLAG",True,"PRINTER",V.Screen.FAntennaMaint!txtPrinterO90.Text)
+				F.Data.DataTable.AcceptChanges("dtAntennaData")
+				GUI.FAntennaMaint.lblO90P.Visible(False)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			F.Data.DataView.SetValue("dtAntennaData","O90VW",-1,"PRINT_FLAG",False)
+		F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkNotifyO90.CheckedAsBoolean,=,True)
+			V.Local.bRec.Set(False)
+			V.Local.bSend.Set(False)
+			V.Local.bCheck.Set(False)
+			V.Local.sEmailID.Set(V.Screen.FAntennaMaint!txtNotifyO90.Text)
+			F.Global.Messaging.IsAddressValid(V.Local.sEmailID.Trim,V.Local.bCheck)
+			F.intrinsic.Control.If(V.Local.bCheck,=,False)
+				gui.FAntennaMaint.lblWarningNotifyO90.Visible(True)
+				V.Local.bO90.Set(True)
+				V.Local.bRec.Set(True)
+			F.Intrinsic.Control.EndIf
+			V.Local.bCheck.Set(False)
+			V.Local.sEmailID.Set(V.Screen.FAntennaMaint!txtSenderO90.Text)
+			F.Global.Messaging.IsAddressValid(V.Local.sEmailID.Trim,V.Local.bCheck)
+			F.intrinsic.Control.If(V.Local.bCheck,=,False)
+				gui.FAntennaMaint.lblWarningSenderO90.Visible(True)
+				V.Local.bO90.Set(True)
+				V.Local.bSend.Set(True)
+			F.Intrinsic.Control.EndIf
+			F.Intrinsic.Control.If(V.Local.bRec,=,False,"and",V.Local.bSend,=,False)
+				F.Data.DataView.SetValue("dtAntennaData","O90VW",-1,"NOTIFY_FLAG",True,"REC_EMAILID",V.Screen.FAntennaMaint!txtNotifyO90.Text,"SENDER_EMAILID",V.Screen.FAntennaMaint!txtSenderO90.Text)
+				F.Data.DataTable.AcceptChanges("dtAntennaData")
+				gui.FAntennaMaint.lblWarningSenderO90.Visible(False)
+				gui.FAntennaMaint.lblWarningNotifyO90.Visible(False)
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Else
+			F.Data.DataView.SetValue("dtAntennaData","O90VW",-1,"NOTIFY_FLAG",False)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	F.Data.DataView.SetValue("dtAntennaData","O90VW",-1,"Enabled",False)
+F.Intrinsic.Control.EndIf
+F.Data.Dataview.Close("dtAntennaData","O90VW")
+
+'save L01 settings
+F.Data.DataView.Create("dtAntennaData", "dvL01", 22, "[TX_CODE] = 'L01'", "")
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkL01.CheckedAsBoolean)
+	F.Intrinsic.Control.If(V.Screen.FAntennaMaint!txtL01Employee.Text.Trim, =, "", OR, V.Screen.FAntennaMaint!txtL01Workcenter.Text.Trim, =, "")
+		F.Intrinsic.UI.Msgbox("Please select an employee and a WC for the L01 Labor Transaction.")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.Intrinsic.String.Build("{0}!@#$#@!{1}!@#$#@!{2}", V.Screen.FAntennaMaint!txtL01Employee.Text.Trim, V.Screen.FAntennaMaint!ddlClose.Text.Trim, V.Screen.FAntennaMaint!chkPORequest.CheckedAsBoolean, V.Local.sExtraOption)
+F.Data.DataView.SetValue("dtAntennaData", "dvL01", -1, "ENABLED", V.Screen.FAntennaMaint!chkL01.CheckedAsBoolean, "WC", V.Screen.FAntennaMaint!txtL01Workcenter.Text.Trim, "NOTIFY_FLAG", V.Screen.FAntennaMaint!chkNotifyL01.CheckedAsBoolean, "REC_EMAILID", V.Screen.FAntennaMaint!txtNotifyL01.Text.Trim, "SENDER_EMAILID", V.Screen.FAntennaMaint!txtSenderL01.Text.Trim, "EXTRA_OPTION", V.Local.sExtraOption)
+F.Data.DataView.Close("dtAntennaData", "dvL01")
+
+'save P10 settings
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!optP10Default.Value, !=, 1)
+	F.Intrinsic.Control.If(V.Screen.FAntennaMaint!optP10Inspection.Value)
+		V.Local.sExtraOption.Set("INSPECTION")
+	F.Intrinsic.Control.Else
+		V.Local.sExtraOption.Set("JOB")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	V.Local.sExtraOption.Set("")
+F.Intrinsic.Control.EndIf
+
+F.Data.DataView.Create("dtAntennaData", "dvP10", 22, "[TX_CODE] = 'P10'", "")
+F.Data.DataView.SetValue("dtAntennaData", "dvP10", -1, "ENABLED", V.Screen.FAntennaMaint!chkP10.CheckedAsBoolean, "NOTIFY_FLAG", V.Screen.FAntennaMaint!chkNotifyP10.CheckedAsBoolean, "REC_EMAILID", V.Screen.FAntennaMaint!txtNotifyP10.Text.Trim, "SENDER_EMAILID", V.Screen.FAntennaMaint!txtSenderP10.Text.Trim, "EXTRA_OPTION", V.Local.sExtraOption)
+F.Data.DataView.Close("dtAntennaData", "dvP10")
+
+'save S99 settings
+F.Data.DataView.Create("dtAntennaData", "dvS99", 22, "[TX_CODE] = 'S99'", "")
+F.Data.DataView.SetValue("dtAntennaData", "dvS99", -1, "ENABLED", V.Screen.FAntennaMaint!chkS99.CheckedAsBoolean, "API_URL", V.Screen.FAntennaMaint!txtAPIUrl.Text.Trim)
+
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!txtBuzzerPortMap.Text.Trim, !=, "")
+	F.Data.DataView.SetValue("dtAntennaData", "dvS99", -1, "BUZZER_PORT", V.Screen.FAntennaMaint!txtBuzzerPortMap.Text.Trim)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!txtReaderDeviceID.Text.Trim, !=, "")
+	F.Data.DataView.SetValue("dtAntennaData", "dvS99", -1, "DEVICE_ID", V.Screen.FAntennaMaint!txtReaderDeviceID.Text.Trim)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!txtRedPortMap.Text.Trim, !=, "")
+	F.Data.DataView.SetValue("dtAntennaData", "dvS99", -1, "RED_PORT", V.Screen.FAntennaMaint!txtRedPortMap.Text.Trim)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!txtYellowPortMap.Text.Trim, !=, "")
+	F.Data.DataView.SetValue("dtAntennaData", "dvS99", -1, "YELLOW_PORT", V.Screen.FAntennaMaint!txtYellowPortMap.Text.Trim)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!txtGreenPortMap.Text.Trim, !=, "")
+	F.Data.DataView.SetValue("dtAntennaData", "dvS99", -1, "GREEN_PORT", V.Screen.FAntennaMaint!txtGreenPortMap.Text.Trim)
+F.Intrinsic.Control.EndIf
+	
+F.Data.DataView.Close("dtAntennaData", "dvS99")
+
+F.Data.DataTable.SaveToDB("dtAntennaData","Con","GCG_5235_RFID_MAINT","ANTENNA*!*TX_CODE*!*READER",256,"ANTENNA@!@ANTENNA*!*TX_CODE@!@TX_CODE*!*ENABLED@!@ENABLED*!*TOLOC@!@TOLOC*!*TOBIN@!@TOBIN*!*WC@!@WC*!*PRINT_FLAG@!@PRINT_FLAG*!*PRINTER@!@PRINTER*!*NOTIFY_FLAG@!@NOTIFY_FLAG*!*REC_EMAILID@!@REC_EMAILID*!*SENDER_EMAILID@!@SENDER_EMAILID*!*READER@!@READER*!*EXTRA_OPTION@!@EXTRA_OPTION*!*API_URL@!@API_URL*!*DEVICE_ID@!@DEVICE_ID*!*RED_PORT@!@RED_PORT*!*YELLOW_PORT@!@YELLOW_PORT*!*GREEN_PORT@!@GREEN_PORT*!*BUZZER_PORT@!@BUZZER_PORT")
+
+GUI.FAntennaMaint..Enabled(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdSave_Click.End
+
+Program.Sub.FAntennaMaint_Unload.Start
+F.Intrinsic.Control.Try
+
+F.ODBC.Connection!con.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.FAntennaMaint_Unload.End
+
+Program.Sub.cmdBinBrowserJ52_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sError.Declare(String)
+V.Local.sSql.Declare(String)
+V.local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+V.Local.iOpt.Declare(Long)
+V.Local.sRet.Declare(String)
+
+'create browser
+V.Local.sSql.Set("select BIN, LOCATION, BIN_DESCRIPTION AS DESCRIPTION FROM V_BIN_MASTER")
+F.Intrinsic.String.Split("BIN*!*LOCATION*!*DESCRIPTION","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("300*!*300*!*600","*!*",V.Local.iWidths)
+F.Intrinsic.UI.Browser("Select Bin","CON",V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+
+'handle return
+F.Intrinsic.Control.If(V.Local.sRet,=,"***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No Bin Selected")
+F.Intrinsic.Control.else
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.local.sRet)
+	GUI.FAntennaMaint.txtToBinJ52.Text(V.Local.sRet(0))
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdBinBrowserJ52_Click.End
+
+Program.Sub.cmdBinBrowserO90_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sError.Declare(String)
+V.Local.sSql.Declare(String)
+V.local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+V.Local.iOpt.Declare(Long)
+V.Local.sRet.Declare(String)
+
+'create browser
+V.Local.sSql.Set("select BIN, LOCATION, BIN_DESCRIPTION AS DESCRIPTION FROM V_BIN_MASTER")
+F.Intrinsic.String.Split("BIN*!*LOCATION*!*DESCRIPTION","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("300*!*300*!*600","*!*",V.Local.iWidths)
+F.Intrinsic.UI.Browser("Select Bin","CON",V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+
+'handle return
+F.Intrinsic.Control.If(V.Local.sRet,=,"***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No Bin Selected")
+F.Intrinsic.Control.else
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.local.sRet)
+	GUI.FAntennaMaint.txtToBinO90.Text(V.Local.sRet(0))
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdBinBrowserO90_Click.End
+
+Program.Sub.cmdPrinterBrowserO90_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sError.Declare(String)
+V.Local.sSql.Declare(String)
+V.local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+V.Local.iOpt.Declare(Long)
+V.Local.sRet.Declare(String)
+
+F.ODBC.Connection!comm.openconnection(V.Ambient.Ccon,V.Ambient.Cuser,V.Ambient.Cpass)
+
+'create browser
+V.Local.sSql.Set("select PRINTERNAME AS PRINTER, SENTINELALIAS AS ALIAS from SERVER_PRINTERS where SENTINELALIAS > ''")
+F.Intrinsic.String.Split("PRINTER*!*ALIAS","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("600*!*600","*!*",V.Local.iWidths)
+F.Intrinsic.UI.Browser("Select Printer","COMM",V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+
+'handle return
+F.Intrinsic.Control.If(V.Local.sRet,=,"***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No Printer Selected")
+F.Intrinsic.Control.else
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.local.sRet)
+	GUI.FAntennaMaint.txtPrinterO90.Text(V.Local.sRet(1))
+F.Intrinsic.Control.EndIf
+
+F.ODBC.Connection!comm.Close
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdPrinterBrowserO90_Click.End
+
+Program.Sub.cmdPrinterBrowserJ52_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sError.Declare(String)
+V.Local.sSql.Declare(String)
+V.local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+V.Local.iOpt.Declare(Long)
+V.Local.sRet.Declare(String)
+
+F.ODBC.Connection!comm.openconnection(V.Ambient.Ccon,V.Ambient.Cuser,V.Ambient.Cpass)
+
+'create browser
+V.Local.sSql.Set("select PRINTERNAME AS PRINTER, SENTINELALIAS AS ALIAS from SERVER_PRINTERS where SENTINELALIAS > ''")
+F.Intrinsic.String.Split("PRINTER*!*ALIAS","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("600*!*600","*!*",V.Local.iWidths)
+F.Intrinsic.UI.Browser("Select Printer","COMM",V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+
+'handle return
+F.Intrinsic.Control.If(V.Local.sRet,=,"***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No Printer Selected")
+F.Intrinsic.Control.else
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.local.sRet)
+	GUI.FAntennaMaint.txtPrinterJ52.Text(V.Local.sRet(1))
+F.Intrinsic.Control.EndIf
+
+F.ODBC.Connection!comm.Close
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdPrinterBrowserJ52_Click.End
+
+Program.Sub.cmdPrinterBrowserJ55_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sError.Declare(String)
+V.Local.sSql.Declare(String)
+V.local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+V.Local.iOpt.Declare(Long)
+V.Local.sRet.Declare(String)
+
+F.ODBC.Connection!comm.openconnection(V.Ambient.Ccon,V.Ambient.Cuser,V.Ambient.Cpass)
+
+'create browser
+V.Local.sSql.Set("select PRINTERNAME AS PRINTER, SENTINELALIAS AS ALIAS from SERVER_PRINTERS where SENTINELALIAS > ''")
+F.Intrinsic.String.Split("PRINTER*!*ALIAS","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("600*!*600","*!*",V.Local.iWidths)
+F.Intrinsic.UI.Browser("Select Printer","COMM",V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+
+'handle return
+F.Intrinsic.Control.If(V.Local.sRet,=,"***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No Printer Selected")
+F.Intrinsic.Control.else
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.local.sRet)
+	GUI.FAntennaMaint.txtPrinterJ55.Text(V.Local.sRet(1))
+F.Intrinsic.Control.EndIf
+
+F.ODBC.Connection!comm.Close
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdPrinterBrowserJ55_Click.End
+
+Program.Sub.cmdWorkcenterBrowserJ55_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sError.Declare(String)
+V.Local.sSql.Declare(String)
+V.local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+V.Local.iOpt.Declare(Long)
+V.Local.sRet.Declare(String)
+
+'create browser
+V.Local.sSql.Set("select MACHINE, WC_DEPT AS DEPARTMENT, WC_NAME AS DESCRIPTION FROM WORKCENTERS")
+F.Intrinsic.String.Split("MACHINE*!*DEPARTMENT*!*DESCRIPTION","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("300*!*300*!*600","*!*",V.Local.iWidths)
+F.Intrinsic.UI.Browser("Select Bin","CON",V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+
+'handle return
+F.Intrinsic.Control.If(V.Local.sRet,=,"***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No Work Center Selected")
+F.Intrinsic.Control.else
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.local.sRet)
+	GUI.FAntennaMaint.txtWCJ55.Text(V.Local.sRet(0))
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdWorkcenterBrowserJ55_Click.End
+
+Program.Sub.chkNotifyO90_Click.Start
+F.Intrinsic.Control.Try
+
+GUI.FAntennaMaint.cmdSave.Enabled(True)
+GUI.FAntennaMaint.cmdRefresh.Enabled(True)
+
+GUI.FAntennaMaint.txtNotifyO90.Enabled(V.Screen.FAntennaMaint!chkNotifyO90.CheckedAsBoolean)
+GUI.FAntennaMaint.txtSenderO90.Enabled(V.Screen.FAntennaMaint!chkNotifyO90.CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkNotifyO90_Click.End
+
+Program.Sub.chkNotifyJ52_Click.Start
+F.Intrinsic.Control.Try
+
+GUI.FAntennaMaint.cmdSave.Enabled(True)
+GUI.FAntennaMaint.cmdRefresh.Enabled(True)
+
+GUI.FAntennaMaint.txtNotifyJ52.Enabled(V.Screen.FAntennaMaint!chkNotifyJ52.CheckedAsBoolean)
+GUI.FAntennaMaint.txtSenderJ52.Enabled(V.Screen.FAntennaMaint!chkNotifyJ52.CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkNotifyJ52_Click.End
+
+Program.Sub.chkNotifyJ55_Click.Start
+F.Intrinsic.Control.Try
+
+GUI.FAntennaMaint.cmdSave.Enabled(True)
+GUI.FAntennaMaint.cmdRefresh.Enabled(True)
+
+GUI.FAntennaMaint.txtNotifyJ55.Enabled(V.Screen.FAntennaMaint!chkNotifyJ55.CheckedAsBoolean)
+GUI.FAntennaMaint.txtSenderJ55.Enabled(V.Screen.FAntennaMaint!chkNotifyJ55.CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkNotifyJ55_Click.End
+
+Program.Sub.CheckPrinterClicked.Start
+F.Intrinsic.Control.Try
+
+V.Local.sControl.Declare(String)
+
+GUI.FAntennaMaint.cmdSave.Enabled(True)
+GUI.FAntennaMaint.cmdRefresh.Enabled(True)
+
+F.Intrinsic.String.Replace(V.Args.CONTROLNAME, "chkPrint", "txtPrinter", V.Local.sControl)
+GUI.FAntennaMaint.[V.Local.sControl].Enabled(V.Screen.FAntennaMaint![V.Args.CONTROLNAME].CheckedAsBoolean)
+F.Intrinsic.String.Replace(V.Local.sControl, "txtPrinter", "cmdPrinterBrowser", V.Local.sControl)
+GUI.FAntennaMaint.[V.Local.sControl].Enabled(V.Screen.FAntennaMaint![V.Args.CONTROLNAME].CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckPrinterClicked.End
+
+Program.Sub.ChangesMade.Start
+F.Intrinsic.Control.Try
+
+GUI.FAntennaMaint.cmdSave.Enabled(True)
+GUI.FAntennaMaint.cmdRefresh.Enabled(True)
+V.Global.bSave.Set(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.ChangesMade.End
+
+Program.Sub.CheckEmail.Start
+F.Intrinsic.Control.Try
+
+V.Local.sControl.Declare(String)
+V.Local.bCheck.Declare(Boolean)
+
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint![V.Args.CONTROLNAME].Text.Trim, =, "")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Global.Messaging.IsAddressValid(V.Screen.FAntennaMaint![V.Args.CONTROLNAME].Text.Trim, V.Local.bCheck)
+
+F.Intrinsic.String.Replace(V.Args.CONTROLNAME, "txt", "lblWarning", V.Local.sControl)
+GUI.FAntennaMaint.[V.Local.sControl].Visible(V.Local.bCheck.Not)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckEmail.End
+
+Program.Sub.HideWarnings.Start
+F.Intrinsic.Control.Try
+
+gui.FAntennaMaint.lblWarningNotifyO90.Visible(False)
+gui.FAntennaMaint.lblWarningSenderO90.Visible(False)
+GUI.FAntennaMaint.lblO90W.Visible(False)
+GUI.FAntennaMaint.lblO90P.Visible(False)
+
+gui.FAntennaMaint.lblWarningNotifyJ55.Visible(False)
+gui.FAntennaMaint.lblWarningSenderJ55.Visible(False)
+GUI.FAntennaMaint.lblJ55W.Visible(False)
+GUI.FAntennaMaint.lblJ55P.Visible(False)
+
+gui.FAntennaMaint.lblWarningNotifyJ52.Visible(False)
+gui.FAntennaMaint.lblWarningSenderJ52.Visible(False)
+GUI.FAntennaMaint.lblJ52W.Visible(False)
+GUI.FAntennaMaint.lblJ55P.Visible(False)
+
+gui.FAntennaMaint.lblWarningNotifyL01.Visible(False)
+gui.FAntennaMaint.lblWarningSenderL01.Visible(False)
+
+gui.FAntennaMaint.lblWarningNotifyP10.Visible(False)
+gui.FAntennaMaint.lblWarningSenderP10.Visible(False)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.HideWarnings.End
+
+Program.Sub.cmdRefresh_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.iRet.Declare(Long)
+
+GUI.FAntennaMaint..Enabled(False)
+F.Intrinsic.UI.Msgbox("Refreshing the Options will clear any unsaved data and reload the data from the database. Do you wish to continue?","Refresh Options?",4,V.Local.iret)
+F.Intrinsic.Control.If(V.Local.iRet,=,7)
+	GUI.FAntennaMaint..Enabled(True)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.CallSub(ClearOptions)
+
+GUI.FAntennaMaint..Enabled(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdRefresh_Click.End
+
+Program.Sub.ClearHeader.Start
+F.Intrinsic.Control.Try
+
+V.Global.sAntenna.Set("")
+V.Global.sReader.Set("")
+
+GUI.FAntennaMaint.txtAntName.Text("")
+GUI.FAntennaMaint.txtReader.Text("")
+GUI.FAntennaMaint.cmdSave.Enabled(False)
+GUI.FAntennaMaint.cmdRefresh.Enabled(False)
+GUI.FAntennaMaint.frameParent.Enabled(False)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.ClearHeader.End
+
+Program.Sub.ClearOptions.Start
+F.Intrinsic.Control.Try
+
+GUI.FAntennaMaint.chkJ52.Value(0)
+GUI.FAntennaMaint.txtToBinJ52.Text("")
+GUI.FAntennaMaint.chkPrintJ52.Value(0)
+GUI.FAntennaMaint.txtPrinterJ52.Text("")
+GUI.FAntennaMaint.chkNotifyJ52.Value(0)
+GUI.FAntennaMaint.txtNotifyJ52.Text("")
+GUI.FAntennaMaint.txtSenderJ52.Text("")
+GUI.FAntennaMaint.chkDefaultBin.Value(False)
+GUI.FAntennaMaint.chkStockingBin.Value(False)
+GUI.FAntennaMaint.frameJ52.Enabled(False)
+
+GUI.FAntennaMaint.chkJ55.Value(0)
+GUI.FAntennaMaint.txtWCJ55.Text("")
+GUI.FAntennaMaint.chkPrintJ55.Value(0)
+GUI.FAntennaMaint.txtPrinterJ55.Text("")
+GUI.FAntennaMaint.chkNotifyJ55.Value(0)
+GUI.FAntennaMaint.txtNotifyJ55.Text("")
+GUI.FAntennaMaint.txtSenderJ55.Text("")
+GUI.FAntennaMaint.frameJ55.Enabled(False)
+
+GUI.FAntennaMaint.chkO90.Value(0)
+GUI.FAntennaMaint.txtToBinO90.Text("")
+GUI.FAntennaMaint.chkPrintO90.Value(0)
+GUI.FAntennaMaint.txtPrinterO90.Text("")
+GUI.FAntennaMaint.chkNotifyO90.Value(0)
+GUI.FAntennaMaint.txtNotifyO90.Text("")
+GUI.FAntennaMaint.txtSenderO90.Text("")
+GUI.FAntennaMaint.frameO90.Enabled(False)
+
+GUI.FAntennaMaint.chkL01.Value(0)
+GUI.FAntennaMaint.txtL01Workcenter.Text("")
+GUI.FAntennaMaint.chkNotifyL01.Value(0)
+GUI.FAntennaMaint.txtNotifyL01.Text("")
+GUI.FAntennaMaint.txtSenderL01.Text("")
+GUI.FAntennaMaint.txtL01Employee.Text("")
+GUI.FAntennaMaint.ddlClose.ListIndex(0)
+GUI.FAntennaMaint.chkPORequest.Value(0)
+GUI.FAntennaMaint.frameL01.Enabled(False)
+
+GUI.FAntennaMaint.chkP10.Value(0)
+GUI.FAntennaMaint.chkNotifyP10.Value(0)
+GUI.FAntennaMaint.txtNotifyP10.Text("")
+GUI.FAntennaMaint.txtSenderP10.Text("")
+GUI.FAntennaMaint.optP10Default.Value(1)
+GUI.FAntennaMaint.frameP10.Enabled(False)
+
+GUI.FAntennaMaint.cmdRefresh.Enabled(False)
+F.Intrinsic.Control.CallSub(HideWarnings)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.ClearOptions.End
+
+Program.Sub.SetIcon.Start
+F.Intrinsic.Control.Try
+
+V.Local.sForm.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sIcon.Declare(String)
+V.Local.iCounter.Declare(Long)
+
+F.Intrinsic.String.Build("{0}\ART\gss2.ico",V.Caller.GlobalDir,V.Local.sIcon)
+F.Intrinsic.File.Exists(V.Local.sIcon, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.String.Build("{0}\GAB\GAS\gss2.ico",V.Caller.PluginsDir,V.Local.sIcon)
+	F.Intrinsic.File.Exists(V.Local.sIcon, V.Local.bExists)
+	F.Intrinsic.Control.If(V.Local.bExists.Not)
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.UI.GetFormList(V.Local.sForm)
+F.Intrinsic.String.Split(V.Local.sForm, "*!*", V.Local.sForm)
+
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.Local.sForm.UBound, 1)
+	GUI.[V.Local.sForm(V.Local.iCounter)]..Icon(V.Local.sIcon)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.SetIcon.End
+
+Program.Sub.ToggleTransactionEnabled.Start
+F.Intrinsic.Control.Try
+
+V.Local.sFrame.Declare(String)
+
+GUI.FAntennaMaint.cmdSave.Enabled(True)
+GUI.FAntennaMaint.cmdRefresh.Enabled(True)
+
+'get frame name
+F.Intrinsic.String.Replace(V.Args.ControlName, "chk", "frame", V.Local.sFrame)
+GUI.FAntennaMaint.[V.Local.sFrame].Enabled(V.Screen.FAntennaMaint![V.Args.ControlName].CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.ToggleTransactionEnabled.End
+
+Program.Sub.chkNotifyL01_Click.Start
+F.Intrinsic.Control.Try
+
+GUI.FAntennaMaint.cmdSave.Enabled(True)
+GUI.FAntennaMaint.cmdRefresh.Enabled(True)
+
+GUI.FAntennaMaint.txtNotifyL01.Enabled(V.Screen.FAntennaMaint!chkNotifyL01.CheckedAsBoolean)
+GUI.FAntennaMaint.txtSenderL01.Enabled(V.Screen.FAntennaMaint!chkNotifyL01.CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkNotifyL01_Click.End
+
+Program.Sub.chkNotifyP10_Click.Start
+F.Intrinsic.Control.Try
+
+GUI.FAntennaMaint.cmdSave.Enabled(True)
+GUI.FAntennaMaint.cmdRefresh.Enabled(True)
+
+GUI.FAntennaMaint.txtNotifyP10.Enabled(V.Screen.FAntennaMaint!chkNotifyP10.CheckedAsBoolean)
+GUI.FAntennaMaint.txtSenderP10.Enabled(V.Screen.FAntennaMaint!chkNotifyP10.CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkNotifyP10_Click.End
+
+Program.Sub.cmdWorkcenterBrowserL01_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sError.Declare(String)
+V.Local.sSql.Declare(String)
+V.local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+V.Local.iOpt.Declare(Long)
+V.Local.sRet.Declare(String)
+
+'create browser
+V.Local.sSql.Set("select MACHINE, WC_DEPT AS DEPARTMENT, WC_NAME AS DESCRIPTION FROM WORKCENTERS")
+F.Intrinsic.String.Split("MACHINE*!*DEPARTMENT*!*DESCRIPTION","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("300*!*300*!*600","*!*",V.Local.iWidths)
+F.Intrinsic.UI.Browser("Select WC","CON",V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+
+'handle return
+F.Intrinsic.Control.If(V.Local.sRet,=,"***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No Work Center Selected")
+F.Intrinsic.Control.else
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.local.sRet)
+	GUI.FAntennaMaint.txtL01Workcenter.Text(V.Local.sRet(0))
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdWorkcenterBrowserL01_Click.End
+
+Program.Sub.ErrorMessage.Start
+'basic error message for replacing catch block
+'this is really just for when printing the message and ending program
+'pass error number, error description, current subroutine
+'optional callback sub, this will be called before ending
+'optional unattended parameters, those subs may not exist if not using them but won't be called
+F.Intrinsic.Control.Try
+
+V.Local.iError.Declare(Long)
+V.Local.sErrorDescription.Declare(String)
+V.Local.sSubroutine.Declare(String)
+V.Local.sError.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sCallback.Declare(String)
+
+V.Local.iError.Set(V.Args.ErrorNumber)
+V.Local.sErrorDescription.Set(V.Args.ErrorDescription)
+V.Local.sSubroutine.Set(V.Args.Subroutine)
+
+'make sure we aren't in an error loop
+F.Intrinsic.Control.If(V.Global.bError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndIf
+V.Global.bError.Set(True)
+
+F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", V.Caller.ScriptFile, V.Ambient.Newline, V.Local.sSubroutine, V.Local.iError, V.Local.sErrorDescription, V.Ambient.GABVersion, V.Local.sError)
+
+F.Intrinsic.Variable.ArgExists("UNATTENDED", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.Control.If(V.Args.UNATTENDED)
+		F.Intrinsic.Control.CallSub(UnattendedErrorMessage, "MESSAGE", V.Local.sError, "PROJECT", V.Args.PROJECT, "PROJECTTITLE", V.Args.PROJECTTITLE)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Variable.ArgExists("Callback", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	V.Local.sCallback.Set(V.Args.Callback.Trim)
+	F.Intrinsic.Control.CallSub(V.Local.sCallback)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Caller.ScriptFile,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.ErrorMessage.End
+
+Program.Sub.cmdEmployeeBrowserL01_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sRet.Declare(String)
+V.Local.sSql.Declare(String)
+V.local.sTitles.Declare(String)
+V.Local.iWidths.Declare(Long)
+
+'create browser, exclude salaried employess
+V.Local.sSql.Set("select EMPLOYEE, NAME from V_EMPLOYEE_MSTR where DATE_TERMINATION = '1900-01-01' and PAY_TYPE <> 'S'")
+F.Intrinsic.String.Split("Employee ID*!*Name","*!*",V.Local.sTitles)
+F.Intrinsic.String.Split("300*!*600","*!*",V.Local.iWidths)
+F.Intrinsic.UI.Browser("Select Employee", "Con", V.Local.sSql, V.Local.sTitles, V.Local.iWidths, V.Local.sRet)
+
+F.Intrinsic.Control.If(V.Local.sRet.IsCancel)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.String.Split(V.Local.sRet, "*!*", V.Local.sRet)
+GUI.FAntennaMaint.txtL01Employee.Text(V.Local.sRet(0).Trim)
+F.Intrinsic.Control.CallSub(ChangesMade)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdEmployeeBrowserL01_Click.End
+
+Program.Sub.txtL01Employee_LostFocus.Start
+F.Intrinsic.Control.Try
+
+V.Local.sID.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sRet.Declare(String)
+
+V.Local.sID.Set(V.Screen.FAntennaMaint!txtL01Employee.Text.Trim)
+
+F.Intrinsic.Control.If(V.Local.sID.Trim, =, "")
+	GUI.FAntennaMaint.txtL01Employee.Text("")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.String.LPad(V.Local.sID, "0", 5, V.Local.sID)
+F.Intrinsic.String.Build("select NAME from V_EMPLOYEE_MSTR where EMPLOYEE = '{0}'", V.Local.sID.PSQLFriendly, V.Local.sSQL)
+
+F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF)
+	F.Intrinsic.UI.Msgbox("Invalid Employee Entered.")
+	GUI.FAntennaMaint.txtL01Employee.Text("")
+F.Intrinsic.Control.Else
+	GUI.FAntennaMaint.txtL01Employee.Text(V.Local.sID)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.txtL01Employee_LostFocus.End
+
+Program.Sub.LoadCloseDropDown.Start
+F.Intrinsic.Control.Try
+
+GUI.FAntennaMaint.ddlClose.AddItem("Always Close")
+GUI.FAntennaMaint.ddlClose.AddItem("When Run Quantity is Completed")
+GUI.FAntennaMaint.ddlClose.AddItem("Do Not Close")
+GUI.FAntennaMaint.ddlClose.ListIndex(0)
+
+GUI.FAntennaMaint.ddlCloseJ52.AddItem("Always Close")
+GUI.FAntennaMaint.ddlCloseJ52.AddItem("When Run Quantity is Completed")
+GUI.FAntennaMaint.ddlCloseJ52.AddItem("Do Not Close")
+GUI.FAntennaMaint.ddlCloseJ52.ListIndex(0)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadCloseDropDown.End
+
+Program.Sub.chkStockingBin_Click.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(ChangesMade)
+
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkStockingBin.CheckedAsBoolean)
+	GUI.FAntennaMaint.chkDefaultBin.Value(0)
+	GUI.FAntennaMaint.txtToBinJ52.Text("")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkStockingBin_Click.End
+
+Program.Sub.chkDefaultBin_Click.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(ChangesMade)
+
+F.Intrinsic.Control.If(V.Screen.FAntennaMaint!chkDefaultBin.CheckedAsBoolean)
+	GUI.FAntennaMaint.chkStockingBin.Value(0)
+	GUI.FAntennaMaint.txtToBinJ52.Text("")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkDefaultBin_Click.End
+
+Program.Sub.chkOverrideLabelQuantity_Click.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(ChangesMade)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkOverrideLabelQuantity_Click.End
+
+Program.Sub.FormLockNotifications_UnLoad.Start
+F.Intrinsic.Control.Try
+
+GUI.FormLockNotifications..Visible(False)
+GUI.FAntennaMaint..Enabled(True)
+GUI.FAntennaMaint..SetFocus(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.FormLockNotifications_UnLoad.End
+
+Program.Sub.chkLockNotifications_Click.Start
+F.Intrinsic.Control.Try
+
+GUI.FormLockNotifications.txtSender.Enabled(V.Screen.FormLockNotifications!chkLockNotifications.CheckedAsBoolean)
+GUI.FormLockNotifications.txtRecipientAddresses.Enabled(V.Screen.FormLockNotifications!chkLockNotifications.CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkLockNotifications_Click.End
+
+Program.Sub.cmdSaveLockNotifications_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.sContents.Declare(String)
+V.Local.sFile.Declare(String)
+
+'check path
+F.Intrinsic.String.Build("{0}\Custom\5235\{1}\Work Order Lock Notifications", V.Caller.GlobalDir, V.Caller.CompanyCode, V.Local.sPath)
+F.Intrinsic.Control.CallSub(CheckDirectories, "Directories", V.Local.sPath)
+
+F.Intrinsic.String.Build("{0}-{1}-{2}", V.Screen.FormLockNotifications!txtAntenna.Text.Trim, V.Screen.FormLockNotifications!txtReader.Text.Trim, V.Screen.FormLockNotifications!txtTransaction.Text.Trim, V.Local.sFile)
+F.Intrinsic.File.MakeFilenameFriendly(V.Local.sFile, V.Local.sFile)
+
+'build filename
+F.Intrinsic.String.Build("{0}\{1}.dat", V.Local.sPath, V.Local.sFile, V.Local.sPath)
+
+'build file contents
+F.Intrinsic.String.Build("{0}{1}{2}{1}{3}", V.Screen.FormLockNotifications!chkLockNotifications.CheckedAsBoolean, V.Ambient.NewLine, V.Screen.FormLockNotifications!txtSender.Text.Trim, V.Screen.FormLockNotifications!txtRecipientAddresses.Text.Trim, V.Local.sContents)
+
+'save to file
+F.Intrinsic.File.String2File(V.Local.sPath, V.Local.sContents)
+
+F.Intrinsic.Control.CallSub(FormLockNotifications_UnLoad)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdSaveLockNotifications_Click.End
+
+Program.Sub.cmdJ52LockNotifications_Click.Start
+F.Intrinsic.Control.Try
+
+GUI.FormLockNotifications.txtAntenna.Text(V.Screen.FAntennaMaint!txtAntName.Text.Trim)
+GUI.FormLockNotifications.txtReader.Text(V.Screen.FAntennaMaint!txtReader.Text.Trim)
+GUI.FormLockNotifications.txtTransaction.Text("J52")
+
+F.Intrinsic.Control.CallSub(LoadLockNotifications, "Antenna", V.Screen.FAntennaMaint!txtAntName.Text.Trim, "Reader", V.Screen.FAntennaMaint!txtReader.Text.Trim, "Transaction", "J52")
+
+GUI.FAntennaMaint..Enabled(False)
+GUI.FormLockNotifications..Show
+GUI.FormLockNotifications..SetFocus
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdJ52LockNotifications_Click.End
+
+Program.Sub.cmdJ55WOLockNotifications_Click.Start
+F.Intrinsic.Control.Try
+
+GUI.FormLockNotifications.txtAntenna.Text(V.Screen.FAntennaMaint!txtAntName.Text.Trim)
+GUI.FormLockNotifications.txtReader.Text(V.Screen.FAntennaMaint!txtReader.Text.Trim)
+GUI.FormLockNotifications.txtTransaction.Text("J55")
+
+F.Intrinsic.Control.CallSub(LoadLockNotifications, "Antenna", V.Screen.FAntennaMaint!txtAntName.Text.Trim, "Reader", V.Screen.FAntennaMaint!txtReader.Text.Trim, "Transaction", "J55")
+
+GUI.FAntennaMaint..Enabled(False)
+GUI.FormLockNotifications..Show
+GUI.FormLockNotifications..SetFocus
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdJ55WOLockNotifications_Click.End
+
+Program.Sub.LoadLockNotifications.Start
+'pass ANTENNA, READER, TRANSACTION
+
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.sContents.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sFileName.Declare(String)
+
+F.Intrinsic.String.Build("{0}-{1}-{2}", V.Args.Antenna, V.Args.Reader, V.Args.Transaction, V.Local.sFileName)
+F.Intrinsic.File.MakeFilenameFriendly(V.Local.sFileName, V.Local.sFileName)
+
+F.Intrinsic.String.Build("{0}\Custom\5235\{1}\Work Order Lock Notifications\{2}.dat", V.Caller.GlobalDir, V.Caller.CompanyCode, V.Local.sFileName, V.Local.sPath)
+F.Intrinsic.File.Exists(V.Local.sPath, V.Local.bExists)
+
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.File.File2String(V.Local.sPath, V.Local.sContents)
+	F.Intrinsic.String.Split(V.Local.sContents, V.Ambient.NewLine, V.Local.sContents)
+	F.Intrinsic.Control.If(V.Local.sContents.UBound, =, 2)
+		GUI.FormLockNotifications.chkLockNotifications.Value(V.Local.sContents(0))
+		GUI.FormLockNotifications.txtSender.Text(V.Local.sContents(1))
+		GUI.FormLockNotifications.txtRecipientAddresses.Text(V.Local.sContents(2))
+	F.Intrinsic.Control.Else
+		GUI.FormLockNotifications.chkLockNotifications.Value(False)
+		GUI.FormLockNotifications.txtSender.Text("")
+		GUI.FormLockNotifications.txtRecipientAddresses.Text("")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	GUI.FormLockNotifications.chkLockNotifications.Value(False)
+	GUI.FormLockNotifications.txtSender.Text("")
+	GUI.FormLockNotifications.txtRecipientAddresses.Text("")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadLockNotifications.End
+
+Program.Sub.CheckDirectories.Start
+'check if the given import directories exist
+'create them if they don't
+'pass directories delimited with *!*
+
+F.Intrinsic.Control.Try
+
+V.Local.sDirectories.Declare(String)
+V.Local.sPath.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.iCounter.Declare(Long)
+
+V.Local.sDirectories.Set(V.Args.Directories)
+F.Intrinsic.String.Split(V.Local.sDirectories, "*!*", V.Local.sDirectories)
+
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.Local.sDirectories.UBound, 1)
+	V.Local.sPath.Set(V.Local.sDirectories(V.Local.iCounter))
+	F.Intrinsic.File.DirExists(V.Local.sPath, V.Local.bExists)
+	F.Intrinsic.Control.If(V.Local.bExists.Not)
+		F.Intrinsic.File.CreateDir(V.Local.sPath)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FAntennaMaint_Unload")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckDirectories.End
