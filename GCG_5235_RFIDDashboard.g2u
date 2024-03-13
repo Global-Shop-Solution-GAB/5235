@@ -1,0 +1,1802 @@
+Program.Sub.ScreenSU.Start
+Gui.FormRFIDDashboard..Create
+Gui.FormRFIDDashboard..Caption("RFID Dashboard")
+Gui.FormRFIDDashboard..Size(15480,10515)
+Gui.FormRFIDDashboard..MinX(0)
+Gui.FormRFIDDashboard..MinY(0)
+Gui.FormRFIDDashboard..Position(0,0)
+Gui.FormRFIDDashboard..BackColor(-2147483633)
+Gui.FormRFIDDashboard..MousePointer(0)
+Gui.FormRFIDDashboard..Event(UnLoad,FormRFIDDashboard_UnLoad)
+Gui.FormRFIDDashboard.lblReader.Create(Label,"Reader Filter :",True,1185,255,0,60,120,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDDashboard.ddlReader.Create(DropDownList)
+Gui.FormRFIDDashboard.ddlReader.Size(1935,330)
+Gui.FormRFIDDashboard.ddlReader.Position(60,330)
+Gui.FormRFIDDashboard.ddlReader.Event(Click,ddlReader_Click)
+Gui.FormRFIDDashboard.ddlReader.Event(Change,ddlReader_Change)
+Gui.FormRFIDDashboard.lblAntenna.Create(Label,"Antenna Filter :",True,1305,255,0,2190,120,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDDashboard.ddlAntenna.Create(DropDownList)
+Gui.FormRFIDDashboard.ddlAntenna.Size(1935,330)
+Gui.FormRFIDDashboard.ddlAntenna.Position(2190,330)
+Gui.FormRFIDDashboard.ddlAntenna.Event(Click,ddlAntenna_Click)
+Gui.FormRFIDDashboard.ddlAntenna.Event(Change,ddlAntenna_Change)
+Gui.FormRFIDDashboard.timerRefresh.Create(Timer)
+Gui.FormRFIDDashboard.timerRefresh.Size(495,495)
+Gui.FormRFIDDashboard.timerRefresh.Position(11865,30)
+Gui.FormRFIDDashboard.timerRefresh.Event(Timer,timerRefresh_Timer)
+Gui.FormRFIDDashboard.timerRefresh.Enabled(False)
+Gui.FormRFIDDashboard.cmdRefresh.Create(Button)
+Gui.FormRFIDDashboard.cmdRefresh.Size(855,375)
+Gui.FormRFIDDashboard.cmdRefresh.Position(14325,300)
+Gui.FormRFIDDashboard.cmdRefresh.Anchor(9)
+Gui.FormRFIDDashboard.cmdRefresh.Caption("Refresh")
+Gui.FormRFIDDashboard.cmdRefresh.Event(Click,cmdRefresh_Click)
+Gui.FormRFIDDashboard.gsgcTags.Create(GsGridControl)
+Gui.FormRFIDDashboard.gsgcTags.Size(15360,9495)
+Gui.FormRFIDDashboard.gsgcTags.Position(0,750)
+Gui.FormRFIDDashboard.gsgcTags.Anchor(15)
+Gui.FormRFIDDashboard.gsgcTags.Event(RowCellClick,gsgcTags_RowCellClick)
+Gui.FormRFIDDashboard.chkAutoRefresh.Create(CheckBox)
+Gui.FormRFIDDashboard.chkAutoRefresh.Size(1395,360)
+Gui.FormRFIDDashboard.chkAutoRefresh.Position(9870,315)
+Gui.FormRFIDDashboard.chkAutoRefresh.Caption("Auto Refresh")
+Gui.FormRFIDDashboard.chkAutoRefresh.Event(Click,chkAutoRefresh_Click)
+Gui.FormRFIDDashboard.chkAutoRefresh.Anchor(9)
+Gui.FormRFIDDashboard.txtSeconds.Create(TextBox,"",True,540,300,0,11235,330,False,1,"Arial",8,-2147483643,1)
+Gui.FormRFIDDashboard.txtSeconds.NumericOnly(2)
+Gui.FormRFIDDashboard.txtSeconds.Anchor(9)
+Gui.FormRFIDDashboard.txtSeconds.Event(Change,txtSeconds_Change)
+Gui.FormRFIDDashboard.txtSeconds.Event(LostFocus,txtSeconds_LostFocus)
+Gui.FormRFIDDashboard.lblSeconds.Create(Label,"Seconds",True,780,255,0,11805,420,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDDashboard.lblSeconds.Anchor(9)
+Gui.FormRFIDDashboard.txtMinutes.Create(TextBox,"",True,540,300,0,8355,330,False,1,"Arial",8,-2147483643,1)
+Gui.FormRFIDDashboard.txtMinutes.NumericOnly(2)
+Gui.FormRFIDDashboard.txtMinutes.Anchor(9)
+Gui.FormRFIDDashboard.txtMinutes.Event(LostFocus,txtMinutes_LostFocus)
+Gui.FormRFIDDashboard.lblMinutes.Create(Label,"Minutes",True,735,255,0,8970,420,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDDashboard.lblMinutes.Anchor(9)
+Gui.FormRFIDDashboard.chkMinutes.Create(CheckBox)
+Gui.FormRFIDDashboard.chkMinutes.Size(1890,360)
+Gui.FormRFIDDashboard.chkMinutes.Position(6465,315)
+Gui.FormRFIDDashboard.chkMinutes.Caption("Tags read in the last")
+Gui.FormRFIDDashboard.chkMinutes.Event(Click,chkMinutes_Click)
+Gui.FormRFIDDashboard.chkMinutes.Zorder(1)
+Gui.FormRFIDDashboard.chkMinutes.Anchor(9)
+Gui.FormRFIDDashboard.chkMinutes.Value(1)
+Gui.FormRFIDDashboard.lblTransactionFilter.Create(Label,"Transaction Filter :",True,1455,255,0,4335,120,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDDashboard.ddlTransaction.Create(DropDownList)
+Gui.FormRFIDDashboard.ddlTransaction.Size(1935,330)
+Gui.FormRFIDDashboard.ddlTransaction.Position(4335,330)
+Gui.FormRFIDDashboard.ddlTransaction.Event(Click,ddlTransaction_Click)
+Gui.FormRFIDDashboard.ddlTransaction.Event(Change,ddlTransaction_Change)
+Gui.FormRFIDDashboard.lblLoading.Create(Label,"Loading...",False,900,255,0,13395,420,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDDashboard.lblLoading.ForeColor(32768)
+Gui.FormRFIDDashboard.lblLoading.Anchor(9)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+V.Global.sFilter.Declare(String, "")
+V.Global.bError.Declare(Boolean, False)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'GCG_5235_RFIDDashboard.g2u
+'Trey S
+'September 20th, 2019
+'For King Machine
+'This script will be a dashboard to view RFID tag reads and info about them
+'Ticket KIN030-31520191022-1
+'Quote 11202
+
+F.Intrinsic.Control.Try
+
+GUI.FormRFIDDashboard.txtSeconds.Text("30")
+GUI.FormRFIDDashboard.txtMinutes.Text("5")
+
+F.Intrinsic.Control.CallSub(SetIcon)
+F.Intrinsic.Control.CallSub(SetContextMenu)
+F.Intrinsic.Control.CallSub(LoadTransactionDropDown)
+F.Intrinsic.Control.CallSub(LoadHardWareDropDowns)
+F.Intrinsic.Control.CallSub(CheckSettingsFile)
+F.Intrinsic.Control.CallSub(cmdRefresh_Click)
+
+GUI.FormRFIDDashboard..Show
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.FormRFIDDashboard_UnLoad.Start
+
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.BlockEvents
+GUI.FormRFIDDashboard.timerRefresh.Enabled(False)
+
+F.Intrinsic.Control.CallSub(Connection, "CONNECT", False)
+
+F.Intrinsic.Control.If(V.DataTable.dtTags.Exists)
+	F.Intrinsic.Control.CallSub(Serialize, "FORM", "FormRFIDDashboard", "GRIDCONTROL", "gsgcTags", "GRIDVIEW", "gvTags", "REGID", "52351")
+	
+	F.Intrinsic.Control.If(V.DataView.dtTags!dvTags.Exists)
+		F.Data.DataView.Close("dtTags", "dvTags")
+	F.Intrinsic.Control.EndIf
+	F.Data.DataTable.Close("dtTags")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.CallSub(SaveSettingsFile)
+
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.FormRFIDDashboard_UnLoad.End
+
+Program.Sub.LoadHardWareDropDowns.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(Connection, "CONNECT", True)
+F.Data.DataTable.CreateFromSQL("dtHardware", "Con", "select RTRIM(READER) READER, RTRIM(ANTENNA) ANTENNA from GCG_5235_RFID_HDWR")
+F.Intrinsic.Control.CallSub(Connection, "CONNECT", False)
+
+F.Data.DataView.Create("dtHardware", "dvHardware", 22)
+F.Data.DataView.ToDataTableDistinct("dtHardware", "dvHardware", "dtAntennas", "ANTENNA")
+F.Data.DataView.ToDataTableDistinct("dtHardware", "dvHardware", "dtReaders", "READER")
+F.Data.DataView.Close("dtHardware", "dvHardware")
+F.Data.DataTable.Close("dtHardware")
+
+GUI.FormRFIDDashboard.ddlAntenna.AddItem("")
+GUI.FormRFIDDashboard.ddlAntenna.AddItems("DataTable", "dtAntennas", "ANTENNA", "ANTENNA")
+GUI.FormRFIDDashboard.ddlReader.AddItem("")
+GUI.FormRFIDDashboard.ddlReader.AddItems("DataTable", "dtReaders", "READER", "READER")
+
+F.Data.DataTable.Close("dtAntennas")
+F.Data.DataTable.Close("dtReaders")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadHardWareDropDowns.End
+
+Program.Sub.ddlReader_Click.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.If(V.Caller.GSSVersion, <, "2020.1")
+	F.Intrinsic.Control.CallSub(ddlReader_Change)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ddlReader_Click.End
+
+Program.Sub.ddlAntenna_Click.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.If(V.Caller.GSSVersion, <, "2020.1")
+	F.Intrinsic.Control.CallSub(ddlAntenna_Change)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ddlAntenna_Click.End
+
+Program.Sub.timerRefresh_Timer.Start
+F.Intrinsic.Control.Try
+
+GUI.FormRFIDDashboard.timerRefresh.Enabled(False)
+F.Intrinsic.Control.CallSub(cmdRefresh_Click)
+GUI.FormRFIDDashboard.timerRefresh.Enabled(V.Screen.FormRFIDDashboard!chkAutoRefresh.CheckedAsBoolean)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.timerRefresh_Timer.End
+
+Program.Sub.cmdRefresh_Click.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.BlockEvents
+GUI.FormRFIDDashboard.lblLoading.Visible(True)
+
+F.Intrinsic.Control.If(V.DataTable.dtTags.Exists, =, False)
+	F.Intrinsic.Control.CallSub(LoadBlankDataTable)
+	F.Intrinsic.Control.CallSub(BuildFilter)
+	F.Data.DataView.Create("dtTags", "dvTags", 22, V.Global.sFilter, "")
+	F.Intrinsic.Control.CallSub(LoadGrid)
+F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.CallSub(LoadData)
+
+GUI.FormRFIDDashboard.lblLoading.Visible(False)
+F.Intrinsic.Control.UnBlockEvents
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdRefresh_Click.End
+
+Program.Sub.chkAutoRefresh_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.bChecked.Declare(Boolean)
+
+V.Local.bChecked.Set(V.Screen.FormRFIDDashboard!chkAutoRefresh.CheckedAsBoolean)
+GUI.FormRFIDDashboard.cmdRefresh.Enabled(V.Local.bChecked.Not)
+GUI.FormRFIDDashboard.txtSeconds.Enabled(V.Local.bChecked)
+
+F.Intrinsic.Control.CallSub(txtSeconds_Change)
+GUI.FormRFIDDashboard.timerRefresh.Enabled(V.Local.bChecked)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkAutoRefresh_Click.End
+
+Program.Sub.txtSeconds_Change.Start
+F.Intrinsic.Control.Try
+
+V.Local.iInterval.Declare(Long)
+
+F.Intrinsic.Math.Mult(V.Screen.FormRFIDDashboard!txtSeconds.Text.Trim, 1000, V.Local.iInterval)
+GUI.FormRFIDDashboard.timerRefresh.Interval(V.Local.iInterval)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.txtSeconds_Change.End
+
+Program.Sub.LoadBlankDataTable.Start
+F.Intrinsic.Control.Try
+
+F.Data.DataTable.Create("dtTags", True)
+F.Data.DataTable.AddColumn("dtTags", "EPC", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "TID", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "OUTPUT_RFID_VALUE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "LOG_RFID_VALUE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "OUTPUT_ANTENNA", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "LOG_ANTENNA", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "OUTPUT_READER", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "LOG_READER", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "TIME_READ", "Date", "1900-01-01")
+F.Data.DataTable.AddColumn("dtTags", "PROCESSED", "Boolean", False)
+F.Data.DataTable.AddColumn("dtTags", "FAILED", "Boolean", False)
+F.Data.DataTable.AddColumn("dtTags", "OUTPUT_TRANSACTION_TYPE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "LOG_TRANSACTION_TYPE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "WIRELESS_ID", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "TRANSACTION_SEQUENCE", "Long", 0)
+F.Data.DataTable.AddColumn("dtTags", "TIME_TRANSACTION", "Date", "1900-01-01")
+F.Data.DataTable.AddColumn("dtTags", "JOB", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "SUFFIX", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "SEQ", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "CLOSE", "Boolean", False)
+F.Data.DataTable.AddColumn("dtTags", "PRINT", "Boolean", False)
+F.Data.DataTable.AddColumn("dtTags", "QUANTITY", "Float", 0)
+F.Data.DataTable.AddColumn("dtTags", "BIN", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "LOT", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "PO", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "PO_LINE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "INSPECTION", "Boolean", False)
+F.Data.DataTable.AddColumn("dtTags", "PRICE", "Float", 0)
+F.Data.DataTable.AddColumn("dtTags", "EMPLOYEE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "WORKCENTER", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "OUTSIDE_REQUEST", "Boolean", False)
+F.Data.DataTable.AddColumn("dtTags", "PART", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "LOC", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "FROM_LOT", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "FROM_BIN", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "FROM_HEAT", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "FROM_SERIAL", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "MATERIAL_SEQUENCE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "TO_HEAT", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "TO_SERIAL", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "TO_LOC", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "OUTSIDE_SEQUENCE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "WIRELESS_SEQUENCE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "FAIL_REASON", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "RESULT", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "MATCH_TYPE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "PALLET", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "CARTON", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "LOAD", "Long", 0)
+F.Data.DataTable.AddColumn("dtTags", "LOAD_SEQUENCE", "Long", 0)
+F.Data.DataTable.AddColumn("dtTags", "ORDER_NUMBER", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "ORDER_LINE", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "ORDER_SUFFIX", "String", "")
+F.Data.DataTable.AddColumn("dtTags", "PACKING_LIST", "String", "")
+
+F.Data.DataTable.AddExpressionColumn("dtTags", "READER", "String", "IIF(IsNull([OUTPUT_READER], '') = '', [LOG_READER], [OUTPUT_READER])")
+F.Data.DataTable.AddExpressionColumn("dtTags", "ANTENNA", "String", "IIF(IsNull([OUTPUT_ANTENNA], '') = '', [LOG_ANTENNA], [OUTPUT_ANTENNA])")
+F.Data.DataTable.AddExpressionColumn("dtTags", "TRANSACTION_TYPE", "String", "IIF(IsNull([OUTPUT_TRANSACTION_TYPE], '') = '', [LOG_TRANSACTION_TYPE], [OUTPUT_TRANSACTION_TYPE])")
+F.Data.DataTable.AddExpressionColumn("dtTags", "RFID_VALUE", "String", "IIF(IsNull([OUTPUT_RFID_VALUE], '') = '', [LOG_RFID_VALUE], [OUTPUT_RFID_VALUE])")
+
+F.Data.DataTable.AddColumn("dtTags", "TAG", "Long", 0)
+F.Data.DataTable.SetSeries("dtTags", "TAG", 1, 1)
+
+F.Data.DataTable.DeleteRow("dtTags")
+F.Data.DataTable.AcceptChanges("dtTags")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadBlankDataTable.End
+
+Program.Sub.BuildFilter.Start
+'build the dataview filter from the selections in the drop downs
+
+F.Intrinsic.Control.Try
+
+V.Local.sFilter.Declare(String, "")
+V.Local.sTransaction.Declare(String)
+
+F.Intrinsic.Control.If(V.Screen.FormRFIDDashboard!ddlAntenna.Text.Trim, !=, "")
+	F.Intrinsic.String.Build("[ANTENNA] = '{0}'", V.Screen.FormRFIDDashboard!ddlAntenna.Text.Trim, V.Local.sFilter)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Screen.FormRFIDDashboard!ddlReader.Text.Trim, !=, "")
+	F.Intrinsic.Control.If(V.Local.sFilter.Trim, =, "")
+		F.Intrinsic.String.Build("[READER] = '{0}'", V.Screen.FormRFIDDashboard!ddlReader.Text.Trim, V.Local.sFilter)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("{0} and [READER] = '{1}'", V.Local.sFilter, V.Screen.FormRFIDDashboard!ddlReader.Text.Trim, V.Local.sFilter)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Screen.FormRFIDDashboard!ddlTransaction.Text.Trim, !=, "")
+	F.Intrinsic.String.Split(V.Screen.FormRFIDDashboard!ddlTransaction.Text.Trim, " - ", V.Local.sTransaction)
+	F.Intrinsic.Control.If(V.Local.sFilter.Trim, =, "")
+		F.Intrinsic.String.Build("[TRANSACTION_TYPE] = '{0}'", V.Local.sTransaction(0).Trim, V.Local.sFilter)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("{0} and [TRANSACTION_TYPE] = '{1}'", V.Local.sFilter, V.Local.sTransaction(0).Trim, V.Local.sFilter)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+V.Global.sFilter.Set(V.Local.sFilter)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.BuildFilter.End
+
+Program.Sub.LoadGrid.Start
+F.Intrinsic.Control.Try
+
+GUI.FormRFIDDashboard.gsgcTags.AddGridviewFromDataView("gvTags", "dtTags", "dvTags")
+
+GUI.FormRFIDDashboard.gsgcTags.SetGridviewProperty("gvTags", "EnableAppearanceOddRow", True)
+GUI.FormRFIDDashboard.gsgcTags.SetGridviewProperty("gvTags", "OptionsViewColumnAutoWidth", False)
+GUI.FormRFIDDashboard.gsgcTags.SetGridviewProperty("gvTags", "ReadOnly", True)
+GUI.FormRFIDDashboard.gsgcTags.SetGridviewProperty("gvTags", "Editable", False)
+
+F.Intrinsic.Control.CallSub(SetGridViewProperty, "FORM", "FormRFIDDashboard", "GRIDCONTROL", "gsgcTags", "GRIDVIEW", "gvTags", "DATATABLE", "dtTags", "PROPERTY", "HeaderFontBold", "Value", True)
+F.Intrinsic.Control.CallSub(SetGridViewProperty, "FORM", "FormRFIDDashboard", "GRIDCONTROL", "gsgcTags", "GRIDVIEW", "gvTags", "DATATABLE", "dtTags", "PROPERTY", "HeaderHAlignment", "Value", "Center")
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_TRANSACTION_TYPE", "Visible", False)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Caption", "EPC")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "Caption", "Tag")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Caption", "TID")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "Caption", "RFID Value")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "Caption", "Antenna")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "Caption", "Reader")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "Caption", "Time Last Read")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "Caption", "Processed")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "Caption", "Failed")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "Caption", "Transaction")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "Caption", "Wireless ID")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "Caption", "Transaction Seq.")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "Caption", "Time Processed")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "Caption", "Job")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "Caption", "Suffix")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "Caption", "Seq.")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "Caption", "Close")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "Caption", "Print")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "Caption", "Quantity")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "Caption", "Bin")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "Caption", "Lot")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "Caption", "PO")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "Caption", "PO Line")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "Caption", "Inspection")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "Caption", "Price")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "Caption", "Employee")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "Caption", "WC")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "Caption", "Outside Request")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "Caption", "Part")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "Caption", "From Loc")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "Caption", "From Lot")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "Caption", "From Bin")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "Caption", "From Heat")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "Caption", "From Serial")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "Caption", "Material Seq.")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "Caption", "Heat")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "Caption", "Serial")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "Caption", "Loc")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "Caption", "Outside Seq.")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "Caption", "Wireless Seq.")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "Caption", "Fail Reason")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RESULT", "Caption", "Result")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "Caption", "Match Type")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "Caption", "Pallet")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "Caption", "Carton")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "Caption", "Load")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "Caption", "Load Seq.")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "Caption", "Order")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "Caption", "Order Line")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "Caption", "Order Suffix")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "Caption", "Packing List")
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "MinWidth", 160)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "MinWidth", 100)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "MinWidth", 70)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "MinWidth", 70)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "MinWidth", 130)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "MinWidth", 40)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "MinWidth", 40)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "MinWidth", 40)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "MinWidth", 110)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "MinWidth", 130)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "MinWidth", 40)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "MinWidth", 40)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "MinWidth", 60)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "MinWidth", 60)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "MinWidth", 60)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "MinWidth", 60)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "MinWidth", 40)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "MinWidth", 110)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "MinWidth", 120)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "MinWidth", 60)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "MinWidth", 100)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "MinWidth", 50)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "MinWidth", 70)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "MinWidth", 70)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "MinWidth", 200)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "Result", "MinWidth", 200)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "MinWidth", 90)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "MinWidth", 90)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "MinWidth", 60)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "MinWidth", 80)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "MinWidth", 70)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "MinWidth", 60)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "MinWidth", 60)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "MinWidth", 80)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "Antenna", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "Reader", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "CellHAlignment", "Center")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "CellHAlignment", "Center")
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "DisplayCustomDateTime", "G")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "DisplayCustomDateTime", "G")
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "DisplayCustomNumeric", "#,##0.00")
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "DisplayCustomNumeric", "$#,##0.00")
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "SortOrder", "Descending")
+
+GUI.FormRFIDDashboard.gsgcTags.AddSummaryItem("gvTags", "TAG", "TAG_COUNT", "COUNT", "Tags: ")
+GUI.FormRFIDDashboard.gsgcTags.AddSummaryItem("gvTags", "QUANTITY", "QUANTITY_SUM", "SUM", "Total: ", "", "#,##0.00")
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "CellForeColor", "Blue")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "CellForeColor", "Blue")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "CellForeColor", "Blue")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "CellForeColor", "Blue")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "CellForeColor", "Blue")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "CellForeColor", "Blue")
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "CellForeColor", "Blue")
+
+GUI.FormRFIDDashboard.gsgcTags.AddStyleFormatCondition("gvTags", "FAILED", "Fail", "Equal", True)
+GUI.FormRFIDDashboard.gsgcTags.SetStyleFormatConditionProperty("gvTags", "FAILED", "Fail", "BackColor", "LightPink")
+
+GUI.FormRFIDDashboard.gsgcTags.MainView("gvTags")
+
+F.Intrinsic.Control.CallSub(Deserialize, "FORM", "FormRFIDDashboard", "GRIDCONTROL", "gsgcTags", "GRIDVIEW", "gvTags", "REGID", "52351")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadGrid.End
+
+Program.Sub.LoadData.Start
+F.Intrinsic.Control.Try
+
+V.Local.sSQL.Declare(String)
+V.Local.sFilter.Declare(String, "")
+V.Local.dDate.Declare(Date)
+V.Local.iInterval.Declare(Long)
+V.Local.sOldTags.Declare(String)
+V.Local.sNewTags.Declare(String)
+V.Local.sDate.Declare(String)
+
+F.Intrinsic.Control.If(V.Screen.FormRFIDDashboard!chkMinutes.CheckedAsBoolean)
+	F.Intrinsic.Math.Sub(0, V.Screen.FormRFIDDashboard!txtMinutes.Text.Trim, V.Local.iInterval)
+	F.Intrinsic.Date.DateAdd("N", V.Local.iInterval, V.Ambient.Now, V.Local.dDate)
+	F.Intrinsic.String.Format(V.Local.dDate, "YYYY-MM-DD HH:MM:SS", V.Local.sDate)
+	'F.Intrinsic.String.Build("where TIME_READ > '{0}'", V.Local.sDate, V.Local.sFilter)
+	F.Intrinsic.String.Build("where TIME_TRANSACTION > '{0}'", V.Local.sDate, V.Local.sFilter)
+F.Intrinsic.Control.EndIf
+
+'F.Intrinsic.String.Build("select RTRIM(A.EPC) EPC, RTRIM(A.TID) TID, RTRIM(A.USER_RFID) OUTPUT_RFID_VALUE, RTRIM(A.ANTENNA) OUTPUT_ANTENNA, RTRIM(A.READERNAME) OUTPUT_READER, A.DATEANDTIME TIME_READ, Cast(IF(RTRIM(A.PROCESSED) = '', 0, 1) as BIT) PROCESSED, RTRIM(A.TRANS_TYPE) OUTPUT_TRANSACTION_TYPE, RTRIM(A.WIRELESS_ID) WIRELESS_ID from GCG_5235_RFID_OUTPUT A {0}", V.Local.sFilter, V.Local.sSQL)
+V.Local.sSQL.Set("select RTRIM(A.EPC) EPC, RTRIM(A.TID) TID, RTRIM(A.USER_RFID) OUTPUT_RFID_VALUE, RTRIM(A.ANTENNA) OUTPUT_ANTENNA, RTRIM(A.READERNAME) OUTPUT_READER, A.DATEANDTIME TIME_READ, Cast(IF(RTRIM(A.PROCESSED) = '', 0, 1) as BIT) PROCESSED, RTRIM(A.TRANS_TYPE) OUTPUT_TRANSACTION_TYPE, RTRIM(A.WIRELESS_ID) WIRELESS_ID from GCG_5235_RFID_OUTPUT A")
+F.Intrinsic.Control.CallSub(Connection, "CONNECT", True)
+
+F.Data.DataTable.CreateFromSQL("dtReads", "Con", V.Local.sSQL)
+
+'maybe filter this?
+F.Intrinsic.String.Build("select RTRIM(B.EPC) EPC, RTRIM(B.TID) TID, B.TRANSACTION_SEQUENCE, RTRIM(B.TRANSACTION_TYPE) LOG_TRANSACTION_TYPE, RTRIM(B.ANTENNA) LOG_ANTENNA, RTRIM(B.READER) LOG_READER, RTRIM(RFID_VALUE) LOG_RFID_VALUE, B.TIME_TRANSACTION, RTRIM(B.JOB) JOB, RTRIM(B.SUFFIX) SUFFIX, RTRIM(B.SEQ) SEQ, B.CLOSE, B.PRINT, B.QUANTITY, RTRIM(B.TO_BIN) BIN, RTRIM(B.TO_LOT) LOT, RTRIM(B.PO) PO, RTRIM(B.PO_LINE) PO_LINE, B.INSPECTION, B.PRICE, RTRIM(B.EMPLOYEE) EMPLOYEE, RTRIM(B.WORKCENTER) WORKCENTER, B.OUTSIDE_REQUEST, RTRIM(B.PART) PART, RTRIM(B.LOC) LOC, RTRIM(B.FROM_LOT) FROM_LOT, RTRIM(B.FROM_BIN) FROM_BIN, RTRIM(B.FROM_HEAT) FROM_HEAT, RTRIM(B.FROM_SERIAL) FROM_SERIAL, RTRIM(B.MATERIAL_SEQUENCE) MATERIAL_SEQUENCE, RTRIM(B.TO_HEAT) TO_HEAT, RTRIM(B.TO_SERIAL) TO_SERIAL, RTRIM(B.TO_LOC) TO_LOC, RTRIM(B.OUTSIDE_SEQUENCE) OUTSIDE_SEQUENCE, RTRIM(WIRELESS_SEQUENCE) WIRELESS_SEQUENCE, RTRIM(FAIL_REASON) FAIL_REASON, FAIL FAILED, Cast(1 as BIT) LOG, RTRIM(RESULT) RESULT,  RTRIM(MATCH_TYPE) MATCH_TYPE, RTRIM(PALLET) PALLET, RTRIM(CARTON) CARTON, LOAD, LOAD_SEQUENCE, RTRIM(ORDER_NUMBER) ORDER_NUMBER, RTRIM(ORDER_LINE) ORDER_LINE, RTRIM(ORDER_SUFFIX) ORDER_SUFFIX, RTRIM(PACKING_LIST) PACKING_LIST from GCG_5235_LOG B {0}", V.Local.sfilter, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtLog", "Con", V.Local.sSQL)
+
+F.Intrinsic.Control.CallSub(Connection, "CONNECT", False)
+F.Data.Linq.Join("RightJoin", "DataTable", "dtReads*!*A", "DataTable", "dtLog*!*B", "A.EPC = B.EPC and A.OUTPUT_ANTENNA = B.LOG_ANTENNA and A.OUTPUT_READER = B.LOG_READER and A.OUTPUT_TRANSACTION_TYPE = B.LOG_TRANSACTION_TYPE", "*", "", "", "", "dtTagsTemp", True)
+F.Data.DataTable.Close("dtReads")
+F.Data.DataTable.Close("dtLog")
+
+F.Data.DataTable.AddColumn("dtTagsTemp", "TAG", "Long", 0)
+F.Data.DataTable.SetSeries("dtTagsTemp", "TAG", 1, 1)
+
+F.Data.DataView.Create("dtTags", "dvCompare", 22)
+F.Data.DataView.ToString("dtTags", "dvCompare", "EPC*!*TIME_TRANSACTION", "#$%$#", "!!*#$#*!!", V.Local.sOldTags)
+F.Data.DataView.Close("dtTags", "dvCompare")
+
+F.Data.DataView.Create("dtTagsTemp", "dvCompare", 22)
+F.Data.DataView.ToString("dtTagsTemp", "dvCompare", "EPC*!*TIME_TRANSACTION", "#$%$#", "!!*#$#*!!", V.Local.sNewTags)
+
+'fix null checkboxes
+F.Data.DataView.SetFilter("dtTagsTemp", "dvCompare", "PROCESSED is null")
+F.Data.DataView.SetValue("dtTagsTemp", "dvCompare", -1, "PROCESSED", True)
+F.Data.DataView.SetFilter("dtTagsTemp", "dvCompare", "FAILED is null")
+F.Data.DataView.SetValue("dtTagsTemp", "dvCompare", -1, "FAILED", False)
+F.Data.DataView.SetFilter("dtTagsTemp", "dvCompare", "PRINT is null")
+F.Data.DataView.SetValue("dtTagsTemp", "dvCompare", -1, "PRINT", False)
+F.Data.DataView.SetFilter("dtTagsTemp", "dvCompare", "CLOSE is null")
+F.Data.DataView.SetValue("dtTagsTemp", "dvCompare", -1, "CLOSE", False)
+
+F.Data.DataView.Close("dtTagsTemp", "dvCompare")
+
+'only load if change
+F.Intrinsic.Control.If(V.Local.sOldTags, !=, V.Local.sNewTags)
+	GUI.FormRFIDDashboard.gsgcTags.SuspendLayout
+	F.Data.DataTable.DeleteRow("dtTags")
+	F.Data.DataTable.AcceptChanges("dtTags")
+
+	F.Data.DataTable.Merge("dtTagsTemp", "dtTags", False, 2)
+	
+	GUI.FormRFIDDashboard.gsgcTags.ResumeLayout
+F.Intrinsic.Control.EndIf
+
+F.Data.DataTable.Close("dtTagsTemp")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadData.End
+
+Program.Sub.Connection.Start
+'open or close connection if necessary, keep track of all connections
+
+F.Intrinsic.Control.Try
+
+V.Static.iConnections.Declare(Long)
+
+F.Intrinsic.Control.If(V.Args.Connect)
+	F.Intrinsic.Control.If(V.Static.iConnections, =, 0)
+		F.ODBC.Connection!Con.OpenCompanyConnection
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Math.Add(V.Static.iConnections, 1, V.Static.iConnections)
+F.Intrinsic.Control.Else
+	F.Intrinsic.Control.If(V.Static.iConnections, >, 0)
+		F.Intrinsic.Math.Sub(V.Static.iConnections, 1, V.Static.iConnections)
+		
+		F.Intrinsic.Control.If(V.Static.iConnections, =, 0)
+			F.ODBC.Connection!Con.Close
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.Connection.End
+
+Program.Sub.SetIcon.Start
+F.Intrinsic.Control.Try
+
+V.Local.sForm.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sIcon.Declare(String)
+V.Local.iCounter.Declare(Long)
+
+F.Intrinsic.String.Build("{0}\ART\gss2.ico",V.Caller.GlobalDir,v.Local.sIcon)
+F.Intrinsic.File.Exists(V.Local.sIcon, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.String.Build("{0}\GAB\GAS\gss2.ico",V.Caller.PluginsDir,v.Local.sIcon)
+	F.Intrinsic.File.Exists(V.Local.sIcon, V.Local.bExists)
+	F.Intrinsic.Control.If(V.Local.bExists.Not)
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.UI.GetFormList(V.Local.sForm)
+F.Intrinsic.String.Split(V.Local.sForm, "*!*", V.Local.sForm)
+
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.Local.sForm.UBound, 1)
+	Gui.[V.Local.sForm(V.Local.iCounter)]..Icon(V.Local.sIcon)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.SetIcon.End
+
+Program.Sub.SetGridViewProperty.Start
+F.Intrinsic.Control.Try
+
+V.Local.sForm.Declare(String)
+V.Local.sGridView.Declare(String)
+V.Local.sDataTable.Declare(String)
+V.Local.sProperty.Declare(String)
+V.Local.sValue.Declare(String)
+V.Local.sColumns.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sGridControl.Declare(String)
+
+V.Local.sForm.Set(V.Args.FORM)
+V.Local.sGridView.Set(V.Args.GRIDVIEW)
+V.Local.sDataTable.Set(V.Args.DATATABLE)
+V.Local.sProperty.Set(V.Args.PROPERTY)
+V.Local.sValue.Set(V.Args.VALUE)
+V.Local.sGridControl.Set(V.Args.GRIDCONTROL)
+
+V.Local.sColumns.Set(V.DataTable.[V.Local.sDataTable].FieldNames)
+F.Intrinsic.String.Split(V.Local.sColumns, "*!*", V.Local.sColumns)
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.Local.sColumns.UBound, 1)
+	GUI.[V.Local.sForm].[V.Local.sGridControl].SetColumnProperty(V.Local.sGridView, V.Local.sColumns(V.Local.iCounter), V.Local.sProperty, V.Local.sValue)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.SetGridViewProperty.End
+
+Program.Sub.chkMinutes_Click.Start
+F.Intrinsic.Control.Try
+
+V.Local.bChecked.Declare(Boolean)
+
+V.Local.bChecked.Set(V.Screen.FormRFIDDashboard!chkMinutes.CheckedAsBoolean)
+GUI.FormRFIDDashboard.txtMinutes.Enabled(V.Local.bChecked)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.chkMinutes_Click.End
+
+Program.Sub.txtMinutes_LostFocus.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.If(V.Screen.FormRFIDDashboard!txtMinutes.Text.Trim, =, "")
+	GUI.FormRFIDDashboard.txtMinutes.Text(5)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.txtMinutes_LostFocus.End
+
+Program.Sub.txtSeconds_LostFocus.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.If(V.Screen.FormRFIDDashboard!txtSeconds.Text.Trim, =, "")
+	GUI.FormRFIDDashboard.txtSeconds.Text(30)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.txtSeconds_LostFocus.End
+
+Program.Sub.ddlTransaction_Click.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.If(V.Caller.GSSVersion, <, "2020.1")
+	F.Intrinsic.Control.CallSub(ddlTransaction_Change)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ddlTransaction_Click.End
+
+Program.Sub.LoadTransactionDropDown.Start
+F.Intrinsic.Control.Try
+
+GUI.FormRFIDDashboard.ddlTransaction.AddItem("")
+GUI.FormRFIDDashboard.ddlTransaction.AddItem("J52 - WIP to FG")
+GUI.FormRFIDDashboard.ddlTransaction.AddItem("J55 - Issue Material")
+GUI.FormRFIDDashboard.ddlTransaction.AddItem("L01 - Labor Upload")
+GUI.FormRFIDDashboard.ddlTransaction.AddItem("O90 - Bin to Bin")
+GUI.FormRFIDDashboard.ddlTransaction.AddItem("P10 - PO Receipts")
+GUI.FormRFIDDashboard.ddlTransaction.AddItem("S99 - Load Validation")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadTransactionDropDown.End
+
+Program.Sub.Serialize.Start
+'pass FORM, GRIDCONTROL, GRIDVIEW, REGID
+
+F.Intrinsic.Control.Try
+
+V.Local.sSerialize.Declare(String)
+V.Local.sForm.Declare(String)
+V.Local.sGridControl.Declare(String)
+V.Local.sGridView.Declare(String)
+V.Local.sREGID.Declare(String)
+
+V.Local.sForm.Set(V.Args.Form.Trim)
+V.Local.sGridControl.Set(V.Args.GridControl.Trim)
+V.Local.sGridView.Set(V.Args.GridView.Trim)
+V.Local.sREGID.Set(V.Args.REGID.Trim)
+
+GUI.[V.Local.sForm].[V.Local.sGridControl].Serialize(V.Local.sGridView, V.Local.sSerialize)
+F.Global.Registry.AddValue(V.Caller.User, V.Caller.CompanyCode, V.Local.sGridView, V.Local.sREGID, 1000, False, "Serialize", False, 0, -999.0 , 1/1/1980, 12:00:00 AM, V.Local.sSerialize)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.Serialize.End
+
+Program.Sub.Deserialize.Start
+'pass FORM, GRIDCONTROL, GRIDVIEW, REGID
+
+F.Intrinsic.Control.Try
+
+V.Local.sSerialize.Declare(String)
+V.Local.sForm.Declare(String)
+V.Local.sGridControl.Declare(String)
+V.Local.sGridView.Declare(String)
+V.Local.sREGID.Declare(String)
+
+V.Local.sForm.Set(V.Args.Form.Trim)
+V.Local.sGridControl.Set(V.Args.GridControl.Trim)
+V.Local.sGridView.Set(V.Args.GridView.Trim)
+V.Local.sREGID.Set(V.Args.REGID.Trim)
+
+F.Global.Registry.ReadValue(V.Caller.User, V.Caller.CompanyCode, V.Local.sGridView, V.Local.sREGID, 1000, 6, "", V.Local.sSerialize)
+F.Intrinsic.Control.If(V.Local.sSerialize.Trim,<>,"")
+	Gui.[V.Local.sForm].[V.Local.sGridControl].Deserialize(V.Local.sSerialize)
+F.Intrinsic.Control.Else
+	F.Intrinsic.Control.CallSub(SetVisibleIndex)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.Deserialize.End
+
+Program.Sub.ResetSerialization.Start
+'pass REGID
+
+F.Intrinsic.Control.Try
+
+V.Local.sSQL.Declare(String)
+V.Local.iUserID.Declare(Long)
+V.Local.sREGID.Declare(String)
+
+V.Local.sREGID.Set(V.Args.REGID.Trim)
+
+F.Global.Security.GetUserId(V.Caller.User, V.Caller.CompanyCode, V.Local.iUserID)
+F.Intrinsic.String.Build("delete from GS_REGISTRY where REG_ID = '{0}' and USER_ID = {1}", V.Local.sREGID, V.Local.iUserID, V.Local.sSQL)
+
+F.ODBC.Connection!Comm.OpenCommonConnection
+F.ODBC.Connection!Comm.Execute(V.Local.sSQL)
+F.ODBC.Connection!Comm.Close
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ResetSerialization.End
+
+Program.Sub.Export.Start
+'generic export
+'pass Form, GridControl, and Filename base
+
+F.Intrinsic.Control.Try
+
+V.Local.sFileExport.Declare(String)
+V.Local.bExcel.Declare(Boolean)
+V.Local.bFileLocked.Declare(Boolean)
+V.Local.sMessage.Declare(String)
+V.Local.sType.Declare(String)
+V.Local.sForm.Declare(String)
+V.Local.sGridControl.Declare(String)
+V.Local.sFileName.Declare(String)
+V.Local.bExists.Declare(Boolean)
+
+V.Local.sForm.Set(V.Args.Form)
+V.Local.sGridControl.Set(V.Args.GridControl)
+V.Local.sFileName.Set(V.Args.FileName)
+
+F.Intrinsic.Variable.ArgExists("TYPE", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	V.Local.sType.Set(V.Args.TYPE.Trim)
+F.Intrinsic.Control.Else
+	F.Automation.MSExcel.CheckPresence(V.Local.bExcel)
+	F.Intrinsic.Control.If(V.Local.bExcel)
+		V.Local.sType.Set("xlsx")
+	F.Intrinsic.Control.Else
+		V.Local.sType.Set("csv")
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.File.MakeFilenameFriendly(V.Local.sFileName, V.Local.sFileName)
+F.Intrinsic.String.Build("{0}\{1}_Export_{2}.{3}", V.Caller.LocalGssTempDir, V.Local.sFileName, V.Ambient.Date.FormatMM-DD-YYYY, V.Local.sType, V.Local.sFileExport)
+F.Intrinsic.File.IsFileLocked(V.Local.sFileExport, V.Local.bFileLocked)
+
+F.Intrinsic.Control.If(V.Local.bFileLocked)
+	F.Intrinsic.String.Build("File is already open. Please close and export again.{0}File: {1}", V.Ambient.NewLine, V.Local.sFileExport, V.Local.sMessage)
+	F.Intrinsic.UI.Msgbox(V.Local.sMessage,"File In Use")
+F.Intrinsic.Control.Else
+	Gui.[V.Local.sForm].[V.Local.sGridControl].Export(V.Local.sFileExport, V.Local.sType)
+	F.Intrinsic.Task.ShellExec(0, "", V.Local.sFileExport, "", "", 1)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.Export.End
+
+Program.Sub.SetContextMenu.Start
+F.Intrinsic.Control.Try
+
+GUI.FormRFIDDashboard..ContextMenuCreate("ctxTags")
+
+GUI.FormRFIDDashboard..ContextMenuAddItem("ctxTags", "Export", 0, "Export")
+GUI.FormRFIDDashboard..ContextMenuSetItemEventHandler("ctxTags", "Export", "ContextExport")
+
+GUI.FormRFIDDashboard..ContextMenuAddItem("ctxTags", "Reset", 0, "Reset Formatting")
+GUI.FormRFIDDashboard..ContextMenuSetItemEventHandler("ctxTags", "Reset", "ContextReset")
+
+GUI.FormRFIDDashboard.gsgcTags.ContextMenuAttach("ctxTags")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.SetContextMenu.End
+
+Program.Sub.ContextExport.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(Export, "Form", "FormRFIDDashboard", "GridControl", "gsgcTags", "FileName", "RFIDDashboard")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ContextExport.End
+
+Program.Sub.ContextReset.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(ResetSerialization, "REGID", "52351")
+
+GUI.FormRFIDDashboard.gsgcTags.Visible(False)
+GUI.FormRFIDDashboard.gsgcTags.SuspendLayout
+F.Intrinsic.Control.CallSub(LoadGrid)
+GUI.FormRFIDDashboard.gsgcTags.ResumeLayout
+GUI.FormRFIDDashboard.gsgcTags.Visible(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ContextReset.End
+
+Program.Sub.CheckDirectory.Start
+'check if the given import directories exist
+'create them if they don't
+'pass PATH to check
+
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.bExists.Declare(Boolean)
+
+V.Local.sPath.Set(V.Args.Path)
+F.Intrinsic.File.DirExists(V.Local.sPath, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.File.CreateDir(V.Local.sPath)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckDirectory.End
+
+Program.Sub.SetTransactionView.Start
+F.Intrinsic.Control.Try
+
+V.Local.iRet.Declare(Long)
+V.Local.sTransaction.Declare(String)
+
+F.Intrinsic.Control.If(V.Screen.FormRFIDDashboard!ddlTransaction.Text.Trim, =, "")
+	F.Intrinsic.UI.Msgbox("Do you want to reset the column layout?", "Column Layout", 4, V.Local.iRet)
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox("Do you want to load the default column layout for this transaction?", "Column Layout", 4, V.Local.iRet)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Local.iRet, !=, V.Ambient.MsgBoxYes)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+GUI.FormRFIDDashboard.gsgcTags.Visible(False)
+GUI.FormRFIDDashboard.gsgcTags.SuspendLayout
+
+F.Intrinsic.String.Split(V.Screen.FormRFIDDashboard!ddlTransaction.Text.Trim, " - ", V.Local.sTransaction)
+F.Intrinsic.Control.SelectCase(V.Local.sTransaction(0))
+	F.Intrinsic.Control.Case("J55")
+		F.Intrinsic.Control.CallSub(LoadJ55Layout)
+	F.Intrinsic.Control.Case("J52")
+		F.Intrinsic.Control.CallSub(LoadJ52Layout)
+	F.Intrinsic.Control.Case("O90")
+		F.Intrinsic.Control.CallSub(LoadO90Layout)
+	F.Intrinsic.Control.Case("P10")
+		F.Intrinsic.Control.CallSub(LoadP10Layout)
+	F.Intrinsic.Control.Case("L01")
+		F.Intrinsic.Control.CallSub(LoadL01Layout)
+	F.Intrinsic.Control.Case("S99")
+		F.Intrinsic.Control.CallSub(LoadS99Layout)
+	F.Intrinsic.Control.CaseElse
+		F.Intrinsic.Control.CallSub(ContextReset)
+F.Intrinsic.Control.EndSelect
+GUI.FormRFIDDashboard.gsgcTags.ResumeLayout
+GUI.FormRFIDDashboard.gsgcTags.Visible(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.SetTransactionView.End
+
+Program.Sub.CheckSettingsFile.Start
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sContents.Declare(String)
+
+F.Intrinsic.String.Build("{0}\CUSTOM\5235\DASHBOARD\{1}_DASHBOARD_SETTINGS.dat", V.Caller.GlobalDir, V.Caller.Terminal, V.Local.sPath)
+
+F.Intrinsic.File.Exists(V.Local.sPath, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.File.File2String(V.Local.sPath, V.Local.sContents)
+F.Intrinsic.String.Split(V.Local.sContents, "!@#$%^^%$#@!", V.Local.sContents)
+
+F.Intrinsic.Control.BlockEvents
+GUI.FormRFIDDashboard.ddlAntenna.Text(V.Local.sContents(0))
+GUI.FormRFIDDashboard.ddlReader.Text(V.Local.sContents(1))
+GUI.FormRFIDDashboard.ddlTransaction.Text(V.Local.sContents(2))
+F.Intrinsic.Control.UnBlockEvents
+
+GUI.FormRFIDDashboard.chkMinutes.Value(V.Local.sContents(3))
+GUI.FormRFIDDashboard.txtMinutes.Text(V.Local.sContents(4))
+GUI.FormRFIDDashboard.chkAutoRefresh.Value(V.Local.sContents(5))
+GUI.FormRFIDDashboard.txtSeconds.Text(V.Local.sContents(6))
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckSettingsFile.End
+
+Program.Sub.SaveSettingsFile.Start
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.sContents.Declare(String)
+
+F.Intrinsic.String.Build("{0}{1}{2}{1}{3}{1}{4}{1}{5}{1}{6}{1}{7}", V.Screen.FormRFIDDashboard!ddlAntenna.Text.Trim, "!@#$%^^%$#@!", V.Screen.FormRFIDDashboard!ddlReader.Text.Trim, V.Screen.FormRFIDDashboard!ddlTransaction.Text.Trim, V.Screen.FormRFIDDashboard!chkMinutes.CheckedAsBoolean, V.Screen.FormRFIDDashboard!txtMinutes.Text.Trim, V.Screen.FormRFIDDashboard!chkAutoRefresh.CheckedAsBoolean, V.Screen.FormRFIDDashboard!txtSeconds.Text.Trim, V.Local.sContents)
+
+F.Intrinsic.String.Build("{0}\CUSTOM\5235\DASHBOARD", V.Caller.GlobalDir, V.Local.sPath)
+F.Intrinsic.Control.CallSub(CheckDirectory, "PATH", V.Local.sPath)
+
+F.Intrinsic.String.Build("{0}\{1}_DASHBOARD_SETTINGS.dat", V.Local.sPath, V.Caller.Terminal, V.Local.sPath)
+F.Intrinsic.File.String2File(V.Local.sPath, V.Local.sContents)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.SaveSettingsFile.End
+
+Program.Sub.SetVisibleIndex.Start
+F.Intrinsic.Control.Try
+
+V.Local.iIndex.Declare(Long, -1)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "VisibleIndex", V.Local.iIndex.++)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.SetVisibleIndex.End
+
+Program.Sub.LoadJ55Layout.Start
+F.Intrinsic.Control.Try
+
+V.Local.iIndex.Declare(Long, -1)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "Visible", False)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "Visible", True)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "VisibleIndex", V.Local.iIndex.++)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadJ55Layout.End
+
+Program.Sub.LoadJ52Layout.Start
+F.Intrinsic.Control.Try
+
+V.Local.iIndex.Declare(Long, -1)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "Visible", False)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "Visible", True)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "VisibleIndex", V.Local.iIndex.++)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadJ52Layout.End
+
+Program.Sub.LoadL01Layout.Start
+F.Intrinsic.Control.Try
+
+V.Local.iIndex.Declare(Long, -1)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "Visible", False)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "Visible", True)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "VisibleIndex", V.Local.iIndex.++)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadL01Layout.End
+
+Program.Sub.LoadP10Layout.Start
+F.Intrinsic.Control.Try
+
+V.Local.iIndex.Declare(Long, -1)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "Visible", False)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "Visible", True)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "VisibleIndex", V.Local.iIndex.++)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadP10Layout.End
+
+Program.Sub.LoadO90Layout.Start
+F.Intrinsic.Control.Try
+
+V.Local.iIndex.Declare(Long, -1)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "Visible", False)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "Visible", True)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "VisibleIndex", V.Local.iIndex.++)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadO90Layout.End
+
+Program.Sub.LoadS99Layout.Start
+F.Intrinsic.Control.Try
+
+V.Local.iIndex.Declare(Long, -1)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EPC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_ID", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TRANSACTION_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATERIAL_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WIRELESS_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "WORKCENTER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "EMPLOYEE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRINT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_REQUEST", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTSIDE_SEQUENCE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "JOB", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SUFFIX", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "SEQ", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PO_LINE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PRICE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "INSPECTION", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CLOSE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "OUTPUT_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_RFID_VALUE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_ANTENNA", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_READER", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOG_TRANSACTION_TYPE", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PART", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_LOC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "BIN", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_HEAT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TO_SERIAL", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOC", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_BIN", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_HEAT", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_SERIAL", "Visible", False)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "Visible", False)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "Visible", True)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RESULT", "Visible", True)
+
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TAG", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_READ", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "TIME_TRANSACTION", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "READER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ANTENNA", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RFID_VALUE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PROCESSED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "QUANTITY", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "MATCH_TYPE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FROM_LOT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PALLET", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "CARTON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "LOAD_SEQUENCE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_NUMBER", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_LINE", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "ORDER_SUFFIX", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "PACKING_LIST", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RESULT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "RESULT", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAILED", "VisibleIndex", V.Local.iIndex.++)
+GUI.FormRFIDDashboard.gsgcTags.SetColumnProperty("gvTags", "FAIL_REASON", "VisibleIndex", V.Local.iIndex.++)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadS99Layout.End
+
+Program.Sub.ErrorMessage.Start
+'basic error message for replacing catch block
+'this is really just for when printing the message and ending program
+'pass error number, error description, current subroutine
+'optional callback sub, this will be called before ending
+'optional unattended parameters, those subs may not exist if not using them but won't be called
+F.Intrinsic.Control.Try
+
+V.Local.iError.Declare(Long)
+V.Local.sErrorDescription.Declare(String)
+V.Local.sSubroutine.Declare(String)
+V.Local.sError.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sCallback.Declare(String)
+
+V.Local.iError.Set(V.Args.ErrorNumber)
+V.Local.sErrorDescription.Set(V.Args.ErrorDescription)
+V.Local.sSubroutine.Set(V.Args.Subroutine)
+
+'make sure we aren't in an error loop
+F.Intrinsic.Control.If(V.Global.bError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndIf
+V.Global.bError.Set(True)
+
+F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", V.Caller.ScriptFile, V.Ambient.Newline, V.Local.sSubroutine, V.Local.iError, V.Local.sErrorDescription, V.Ambient.GABVersion, V.Local.sError)
+
+F.Intrinsic.Variable.ArgExists("UNATTENDED", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.Control.If(V.Args.UNATTENDED)
+		F.Intrinsic.Control.CallSub(UnattendedErrorMessage, "MESSAGE", V.Local.sError, "PROJECT", V.Args.PROJECT, "PROJECTTITLE", V.Args.PROJECTTITLE, "TASK", V.Args.Task)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Variable.ArgExists("Callback", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	V.Local.sCallback.Set(V.Args.Callback.Trim)
+	F.Intrinsic.Control.CallSub(V.Local.sCallback)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Caller.ScriptFile,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.ErrorMessage.End
+
+Program.Sub.gsgcTags_RowCellClick.Start
+F.Intrinsic.Control.Try
+
+V.Local.sJob.Declare(String)
+V.Local.sSuffix.Declare(String)
+V.Local.sParams.Declare(String)
+V.Local.sLoc.Declare(String)
+
+F.Intrinsic.Control.If(V.Args.CellValue.Trim, =, "")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.SelectCase(V.Args.COLUMN.UCase)
+	F.Intrinsic.Control.CaseAny("JOB", "SUFFIX", "SEQ")
+		'open WO callwrapper
+		GUI.FormRFIDDashboard..Enabled(False)
+		F.Intrinsic.String.ConcatCallWrapperArgs("7", V.DataTable.dtTags(V.Args.RowIndex).JOB!FieldValTrim, V.DataTable.dtTags(V.Args.RowIndex).SUFFIX!FieldValTrim, "A", V.Local.sParams)
+		F.Global.General.CallWrapperSync(450000, V.Local.sParams)
+		GUI.FormRFIDDashboard..Enabled(True)
+		GUI.FormRFIDDashboard..SetFocus
+		
+	F.Intrinsic.Control.Case("PO", "PO_LINE")
+		
+		'open PO callwrapper
+		GUI.FormRFIDDashboard..Enabled(False)
+		F.Intrinsic.String.ConcatCallWrapperArgs("V", V.DataTable.dtTags(V.Args.RowIndex).PO!FieldValTrim, "", V.Local.sParams)
+		F.Global.General.CallWrapperSync(175200, V.Local.sParams)
+		GUI.FormRFIDDashboard..Enabled(True)
+		GUI.FormRFIDDashboard..SetFocus
+		
+	F.Intrinsic.Control.Case("PART", "LOC")
+		
+		'open supply and demand callwrapper
+		GUI.FormRFIDDashboard..Enabled(False)
+		F.Intrinsic.String.ConcatCallWrapperArgs(V.DataTable.dtTags(V.Args.RowIndex).PART!FieldValTrim, V.DataTable.dtTags(V.Args.RowIndex).LOC!FieldValTrim, "M", V.Local.sParams)
+		F.Global.General.CallWrapperSync(300011, V.Local.sParams)
+		GUI.FormRFIDDashboard..Enabled(True)
+		GUI.FormRFIDDashboard..SetFocus
+		
+F.Intrinsic.Control.EndSelect
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.gsgcTags_RowCellClick.End
+
+Program.Sub.ddlTransaction_Change.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(BuildFilter)
+
+F.Data.DataView.SetFilter("dtTags", "dvTags", V.Global.sFilter)
+
+F.Intrinsic.Control.CallSub(SetTransactionView)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ddlTransaction_Change.End
+
+Program.Sub.ddlAntenna_Change.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(BuildFilter)
+
+F.Data.DataView.SetFilter("dtTags", "dvTags", V.Global.sFilter)
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ddlAntenna_Change.End
+
+Program.Sub.ddlReader_Change.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(BuildFilter)
+
+F.Data.DataView.SetFilter("dtTags", "dvTags", V.Global.sFilter)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "FormRFIDDashboard_UnLoad")
+F.Intrinsic.Control.EndTry
+Program.Sub.ddlReader_Change.End
+
+
+
+
+
+
