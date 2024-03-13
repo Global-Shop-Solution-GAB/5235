@@ -1,0 +1,336 @@
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'GCG_5235_CloseBackflushedSequences.g2u
+'October 4th, 2019
+'Trey S
+'For King Machine
+'Ticket KIN030-31520191022-1
+'Quote 11202-0
+'King Machine uses the Custom option to backflush to flagged workcenters when pieces are claimed on a certain workcenter
+'this script is to go through and close those sequences once they've been backflushed, as currently they get left open
+'should be attached to post online update hook, 38130
+
+F.Intrinsic.Control.Try
+
+V.Local.sWorkcenter.Declare(String)
+V.Local.bOption.Declare(Boolean, False)
+V.Local.sFilter.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.iCounter.Declare(Long)
+
+'will be running on online update async, so make sure it's not already running
+F.Intrinsic.Control.CallSub(ScriptPIDCheck, "PROJECT", "5235", "TASK", "Close_Backflushed_Sequences")
+
+'check if the option is enabled, exit if not
+'System Support > Transactions > Run 1SHOT > CUSTOM
+'400790 - GUI- Charge Estimated Labor on Flagged WC when using WC
+F.Global.General.ReadOption(400790, 0, False, V.Local.bOption)
+F.Intrinsic.Control.If(V.Local.bOption.Not)
+	F.Intrinsic.Control.CallSub(Exit)
+F.Intrinsic.Control.EndIf
+
+'get the workcenter, might not need this but just in case
+F.Global.General.ReadOption(400790, 1, "", V.Local.sWorkcenter)
+F.Intrinsic.Control.If(V.Local.sWorkcenter.Trim, =, "")
+	F.Intrinsic.Control.CallSub(Exit)
+F.Intrinsic.Control.EndIf
+
+'get flagged workcenters
+F.Intrinsic.Control.CallSub(Connection, "CONNECT", True)
+F.ODBC.Connection!Con.ExecuteAndReturn("select RTRIM(MACHINE) WORKCENTER from V_WORKCENTERS where BACKFLUSH_LABOR = 1", V.Local.sFilter)
+F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF)
+	F.Intrinsic.Control.CallSub(Exit)
+F.Intrinsic.Control.EndIf
+
+'create filter, get sequences to close
+F.Intrinsic.String.Replace(V.Local.sFilter, "#$#", "','", V.Local.sFilter)
+F.Intrinsic.String.Build("select RTRIM(JOB) JOB, RTRIM(SUFFIX) SUFFIX, RTRIM(SEQ) SEQ from V_JOB_OPERATIONS where LMO = 'L' and HOURS_ACTUAL <> 0 and FLAG_CLOSED <> 'Y' and PART in ('{0}')", V.Local.sFilter, V.Local.sSQL)
+F.Data.DataTable.CreateFromSQL("dtJobs", "Con", V.Local.sSQL)
+F.Intrinsic.Control.If(V.DataTable.dtJobs.RowCount, <, 1)
+	F.Intrinsic.Control.CallSub(Exit)
+F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.CallSub(Connection, "CONNECT", False)
+
+'close sequences
+F.Global.Callwrapper.New("Close", "Manufacturing.CloseWorkOrderSequence")
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtJobs.RowCount--, 1)
+	F.Global.Callwrapper.SetProperty("Close", "BeginningWorkOrder", V.DataTable.dtJobs(V.Local.iCounter).JOB!FieldValTrim)
+	F.Global.Callwrapper.SetProperty("Close", "BeginningWorkOrderSuffix", V.DataTable.dtJobs(V.Local.iCounter).SUFFIX!FieldValTrim)
+	F.Global.Callwrapper.SetProperty("Close", "WorkOrderSequence", V.DataTable.dtJobs(V.Local.iCounter).SEQ!FieldValTrim)
+	F.Global.Callwrapper.SetProperty("Close", "CloseDate", V.Ambient.Date.FormatYYYYMMDD)
+	F.Global.Callwrapper.Run("Close")
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Intrinsic.Control.CallSub(Exit)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "UNATTENDED", True, "PROJECT", "5235", "PROJECTTITLE", "Close Backflushed Sequences", "TASK", "CloseBackflushedSequences")
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.Connection.Start
+'open or close connection if necessary, keep track of all connections
+
+F.Intrinsic.Control.Try
+
+V.Static.iConnections.Declare(Long)
+
+F.Intrinsic.Control.If(V.Args.Connect)
+	F.Intrinsic.Control.If(V.Static.iConnections, =, 0)
+		F.ODBC.Connection!Con.OpenCompanyConnection
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Math.Add(V.Static.iConnections, 1, V.Static.iConnections)
+F.Intrinsic.Control.Else
+	F.Intrinsic.Control.If(V.Static.iConnections, >, 0)
+		F.Intrinsic.Math.Sub(V.Static.iConnections, 1, V.Static.iConnections)
+		
+		F.Intrinsic.Control.If(V.Static.iConnections, =, 0)
+			F.ODBC.Connection!Con.Close
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "UNATTENDED", True, "PROJECT", "5235", "PROJECTTITLE", "Close Backflushed Sequences", "TASK", "CloseBackflushedSequences")
+F.Intrinsic.Control.EndTry
+Program.Sub.Connection.End
+
+Program.Sub.ScriptPIDCheck.Start
+'check if the process is already running
+'store PID in a text file
+'Pass folder to store in 	- PROJECT
+'what to name file			- TASK
+
+F.Intrinsic.Control.Try
+
+V.Local.bExists.Declare(Boolean)
+V.Local.sDir.Declare(String)
+V.Local.sCurrentPIDProcess.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sProject.Declare(String)
+V.Local.sTask.Declare(String)
+
+V.Local.sProject.Set(V.Args.Project)
+V.Local.sTask.Set(V.Args.Task)
+
+F.Intrinsic.String.Build("{0}\Custom\{1}\IS_RUNNING", V.Caller.GlobalDir, V.Local.sProject, V.Local.sDir)
+F.Intrinsic.Control.CallSub(CheckDirectory, "Path", V.Local.sDir)
+
+F.Intrinsic.String.Build("{0}\{1}_Running.dat", V.Local.sDir, V.Local.sTask, V.Local.sFile)
+F.Intrinsic.File.Exists(V.Local.sFile, V.Local.bExists)
+
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	'program is not running
+	'Create Program Status file to let it know its running
+	F.Intrinsic.File.String2File(V.Local.sFile, V.Ambient.PID)
+F.Intrinsic.Control.Else
+ 	'then the file exists: get the PID from the file to see if the process is still running
+	F.Intrinsic.File.File2String(V.Local.sFile, V.Local.sCurrentPIDProcess)
+	F.Intrinsic.Task.PIDRunning(V.Local.sCurrentPIDProcess, V.Local.bExists)
+	F.Intrinsic.Control.If(V.Local.bExists)
+		'the the program is running- don't start new process
+		F.Intrinsic.Control.End
+	F.Intrinsic.Control.Else
+		'the program has stopped, but did not delete the file. Delete the file and create a new file for current run
+		F.Intrinsic.File.DeleteFile(V.Local.sFile)
+		F.Intrinsic.File.String2File(V.Local.sFile, V.Ambient.PID)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "UNATTENDED", True, "PROJECT", "5235", "PROJECTTITLE", "Close Backflushed Sequences", "TASK", "CloseBackflushedSequences")
+F.Intrinsic.Control.EndTry
+Program.Sub.ScriptPIDCheck.End
+
+Program.Sub.ScriptPIDClear.Start
+'delete the is running file, so the next time the program runs it knows it isn't currently running
+'Pass folder to store in 	- PROJECT
+'filename  base				- TASK
+
+F.Intrinsic.Control.Try
+
+V.Local.bExists.Declare(Boolean)
+V.Local.sDir.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sProject.Declare(String)
+V.Local.sTask.Declare(String)
+
+V.Local.sProject.Set(V.Args.Project)
+V.Local.sTask.Set(V.Args.Task)
+
+F.Intrinsic.String.Build("{0}\Custom\{1}\IS_RUNNING", V.Caller.GlobalDir, V.Local.sProject, V.Local.sDir)
+F.Intrinsic.Control.CallSub(CheckDirectory, "Path", V.Local.sDir)
+
+F.Intrinsic.String.Build("{0}\{1}_Running.dat", V.Local.sDir, V.Local.sTask, V.Local.sFile)
+F.Intrinsic.File.Exists(V.Local.sFile, V.Local.bExists)
+
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.File.DeleteFile(V.Local.sFile)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "UNATTENDED", True, "PROJECT", "5235", "PROJECTTITLE", "Close Backflushed Sequences", "TASK", "CloseBackflushedSequences")
+F.Intrinsic.Control.EndTry
+Program.Sub.ScriptPIDClear.End
+
+Program.Sub.CheckDirectory.Start
+'check if the given import directories exist
+'create them if they don't
+'pass path to check	- PATH
+
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.bExists.Declare(Boolean)
+
+V.Local.sPath.Set(V.Args.Path)
+F.Intrinsic.File.DirExists(V.Local.sPath, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.File.CreateDir(V.Local.sPath)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "UNATTENDED", True, "PROJECT", "5235", "PROJECTTITLE", "Close Backflushed Sequences", "TASK", "CloseBackflushedSequences")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckDirectory.End
+
+Program.Sub.Exit.Start
+'clean up, close out
+
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.If(V.DataTable.dtJobs.Exists)
+	F.Data.DataTable.Close("dtJobs")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.CallSub(Connection, "CONNECT", False)
+F.Intrinsic.Control.CallSub(ScriptPIDClear, "PROJECT", "5235", "TASK", "Close_Backflushed_Sequences")
+
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "UNATTENDED", True, "PROJECT", "5235", "PROJECTTITLE", "Close Backflushed Sequences", "TASK", "CloseBackflushedSequences")
+F.Intrinsic.Control.EndTry
+Program.Sub.Exit.End
+
+Program.Sub.ErrorMessage.Start
+'basic error message for replacing catch block
+'this is really just for when printing the message and ending program
+'pass error number, error description, current subroutine
+'optional callback sub, this will be called before ending
+'optional unattended parameters, those subs may not exist if not using them but won't be called
+
+F.Intrinsic.Control.Try
+
+V.Local.iError.Declare(Long)
+V.Local.sErrorDescription.Declare(String)
+V.Local.sSubroutine.Declare(String)
+V.Local.sError.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sCallback.Declare(String)
+V.Static.bError.Declare(Boolean, False)
+
+V.Local.iError.Set(V.Args.ErrorNumber)
+V.Local.sErrorDescription.Set(V.Args.ErrorDescription)
+V.Local.sSubroutine.Set(V.Args.Subroutine)
+
+'make sure we aren't in an error loop
+F.Intrinsic.Control.If(V.Static.bError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndIf
+V.Static.bError.Set(True)
+
+F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", V.Caller.ScriptFile, V.Ambient.Newline, V.Local.sSubroutine, V.Local.iError, V.Local.sErrorDescription, V.Ambient.GABVersion, V.Local.sError)
+
+F.Intrinsic.Variable.ArgExists("UNATTENDED", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.Control.If(V.Args.UNATTENDED)
+		F.Intrinsic.Control.CallSub(UnattendedErrorMessage, "MESSAGE", V.Local.sError, "PROJECT", V.Args.PROJECT, "PROJECTTITLE", V.Args.PROJECTTITLE, "TASK", V.Args.Task)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Variable.ArgExists("Callback", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	V.Local.sCallback.Set(V.Args.Callback.Trim)
+	F.Intrinsic.Control.CallSub(V.Local.sCallback)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Caller.ScriptFile,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.ErrorMessage.End
+
+Program.Sub.AddLog.Start
+'pass a project #, and a message
+'date and time will be automatically added
+'pass PROJECT (Folder, log name)
+'MESSAGE (what to log)
+
+F.Intrinsic.Control.Try
+
+V.Local.sProject.Declare(String)
+V.Local.sMessage.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sPath.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sContents.Declare(String)
+V.Local.sTask.Declare(String)
+
+V.Local.sProject.Set(V.Args.Project.Trim)
+V.Local.sMessage.Set(V.Args.Message.Trim)
+V.Local.sTask.Set(V.Args.Task)
+
+F.Intrinsic.String.Replace(V.Local.sMessage, V.Ambient.NewLine, ", ", V.Local.sMessage)
+
+F.Intrinsic.File.MakeFilenameFriendly(V.Local.sProject, V.Local.sProject)
+F.Intrinsic.String.Build("{0}\Custom\{1}\Log\", V.Caller.GlobalDir, V.Local.sProject, V.Local.sPath)
+F.Intrinsic.Control.CallSub(CheckDirectory, "Path", V.Local.sPath)
+
+F.Intrinsic.String.Build("{0}\{1}_Log.txt", V.Local.sPath, V.Local.sTask, V.Local.sFile)
+F.Intrinsic.Control.CallSub(CheckFile, "File", V.Local.sFile)
+
+F.Intrinsic.String.Build("{0} {1}: {2}", V.Ambient.Date.FormatYYYY-MM-DD, V.Ambient.Time.Format!HH:NN:SS, V.Local.sMessage, V.Local.sContents)
+F.Intrinsic.File.Append2FileNewLine(V.Local.sFile, V.Local.sContents)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "UNATTENDED", True, "PROJECT", "5235", "PROJECTTITLE", "Close Backflushed Sequences", "TASK", "CloseBackflushedSequences")
+F.Intrinsic.Control.EndTry
+Program.Sub.AddLog.End
+
+Program.Sub.UnattendedErrorMessage.Start
+'send a short error message, add the log
+'pass project ID, project title (for message box title), and error message
+
+F.Intrinsic.Control.Try
+
+V.Local.sMessage.Declare(String)
+
+V.Local.sMessage.Set(V.Args.Message.Trim)
+F.Intrinsic.String.Replace(V.Local.sMessage, V.Ambient.NewLine, ", ", V.Local.sMessage)
+
+F.Intrinsic.UI.InvokeWaitDialog(V.Local.sMessage, V.Args.ProjectTitle)
+F.Intrinsic.UI.Sleep(10)
+F.Intrinsic.UI.CloseWaitDialog
+
+F.Intrinsic.Control.CallSub(AddLog, "Project", V.Args.Project, "TASK", V.Args.Task, "Message", V.Local.sMessage)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "UNATTENDED", True, "PROJECT", "5235", "PROJECTTITLE", "Close Backflushed Sequences", "TASK", "CloseBackflushedSequences")
+F.Intrinsic.Control.EndTry
+Program.Sub.UnattendedErrorMessage.End
+
+Program.Sub.Comments.Start
+${$5$}$3.0.0.0$}$1
+${$6$}$rseddon$}$20191004111131899$}$DkKb6sybY9hE3N0enyRwKJuHSlMGTgRbo1ZVNEpnmm4bQOFvI1yfLegbqNSbhIqCRf/bIkUm55g=
+Program.Sub.Comments.End
