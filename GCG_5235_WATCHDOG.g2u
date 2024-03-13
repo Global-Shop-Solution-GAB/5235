@@ -1,0 +1,506 @@
+Program.Sub.ScreenSU.Start
+Gui.FormRFIDWatchdog..Create
+Gui.FormRFIDWatchdog..Caption("RFID Watchdog")
+Gui.FormRFIDWatchdog..Size(7035,4020)
+Gui.FormRFIDWatchdog..MinX(0)
+Gui.FormRFIDWatchdog..MinY(0)
+Gui.FormRFIDWatchdog..Position(0,0)
+Gui.FormRFIDWatchdog..BackColor(-2147483633)
+Gui.FormRFIDWatchdog..MaxButton(False)
+Gui.FormRFIDWatchdog..MousePointer(0)
+Gui.FormRFIDWatchdog..Sizeable(False)
+Gui.FormRFIDWatchdog..Event(UnLoad,FormRFIDWatchdog_UnLoad)
+Gui.FormRFIDWatchdog.lblLastProcess.Create(Label,"Last Process:",True,1500,255,0,120,570,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblLaunched.Create(Label,"Launched at: ",True,1665,255,0,120,210,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblLaunchedTime.Create(Label,"***LaunchedTime***",True,2295,255,0,2130,210,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblProcessTime.Create(Label,"***ProcessTime***",True,2295,255,0,2130,570,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblLastTransaction.Create(Label,"Last Transaction :",True,1935,255,0,120,930,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblLastTransactionTime.Create(Label,"DD/MM/YYYY  HH:NN:SS AM",True,2295,255,0,2130,930,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.frameTransactions.Create(Frame)
+Gui.FormRFIDWatchdog.frameTransactions.Size(6630,2325)
+Gui.FormRFIDWatchdog.frameTransactions.Position(135,1185)
+Gui.FormRFIDWatchdog.frameTransactions.Caption("Transactions")
+Gui.FormRFIDWatchdog.lblPOReceipts.Create(Label,"PO Receipts:",True,1200,255,0,3600,1695,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblPOReceipts.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblWipToFG.Create(Label,"WIP To FGs:",True,1140,255,0,3600,1350,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblWipToFG.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblLaborUploads.Create(Label,"Labor Uploads:",True,1260,255,0,3600,1005,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblLaborUploads.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblO90.Create(Label,"Bin to Bins:",True,1215,255,0,3600,660,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblO90.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblJ55.Create(Label,"Material Issues:",True,1290,255,0,3600,315,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblJ55.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblP10.Create(Label,"***P10Count***",True,405,255,0,6180,1695,True,1,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblP10.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblJ52.Create(Label,"***J52Count***",True,405,255,0,6180,1350,True,1,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblJ52.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblL01s.Create(Label,"***L01Count***",True,405,255,0,6180,1005,True,1,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblL01s.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblO90Count.Create(Label,"***O90Count***",True,405,255,0,6180,660,True,1,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblO90Count.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblJ55Count.Create(Label,"***J55Count***",True,405,255,0,6180,315,True,1,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblJ55Count.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblAttempted.Create(Label,"Attempted Transactions: ",True,2460,255,0,75,315,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblAttempted.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblSuccessful.Create(Label,"Successful Transactions: ",True,2640,255,0,75,660,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblSuccessful.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblNumAtt.Create(Label,"***Attempted***",True,480,255,0,2820,315,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblNumAtt.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblNumSucc.Create(Label,"***Successful***",True,480,255,0,2820,660,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblNumSucc.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblS99s.Create(Label,"S99:",True,1200,255,0,3600,2040,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblS99s.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblS99Count.Create(Label,"***S99Count***",True,405,255,0,6180,2040,True,1,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblS99Count.Parent("frameTransactions")
+Gui.FormRFIDWatchdog.lblUpdateFrequency.Create(Label,"Seconds Between Updates :",True,2205,255,0,4620,105,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.txtSeconds.Create(TextBox,"",True,630,300,0,6135,315,True,1,"Arial",8,-2147483643,1)
+Gui.FormRFIDWatchdog.txtSeconds.NumericOnly(2)
+Gui.FormRFIDWatchdog.txtSeconds.Event(Change,txtSeconds_Change)
+Gui.FormRFIDWatchdog.lblStatus.Create(Label,"Waiting...",True,885,255,0,4620,390,True,0,"Arial",8,-2147483633,0)
+Gui.FormRFIDWatchdog.lblStatus.ForeColor(255)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+V.Global.iTransactions.Declare(Long, 0)
+V.Global.iSuccessfulTransactions.Declare(Long, 0)
+V.Global.iJ55.Declare(Long, 0)
+V.Global.iO90.Declare(Long, 0)
+V.Global.iL01.Declare(Long, 0)
+V.Global.iP10.Declare(Long, 0)
+V.Global.iJ52.Declare(Long, 0)
+V.Global.iS99.Declare(Long, 0)
+V.Global.iSeconds.Declare(Long, 5)
+V.Global.bError.Declare(Boolean, False)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.Try
+
+V.Local.dDate.Declare(Date)
+V.Local.sG2U.Declare(String)
+V.Local.sPID.Declare(String)
+V.Local.sDate.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sCaption.Declare(String)
+
+F.Intrinsic.Control.CallSub(ScriptPIDCheck, "PROJECT", "5235", "TASK", "RFID_Watchdog")
+F.Intrinsic.Control.AddEventHandler(IPMDATAIN, IPM)
+
+F.Intrinsic.String.Build("{0}\GCG_5235_RFID_TRANS.g2u", V.Ambient.ScriptPath, V.Local.sG2U)
+V.Local.dDate.Set(V.Ambient.Date)
+
+F.Intrinsic.Control.CallSub(CheckUpdateFrequencyFile)
+
+GUI.FormRFIDWatchdog.lblJ55Count.Caption("")
+GUI.FormRFIDWatchdog.lblO90Count.Caption("")
+GUI.FormRFIDWatchdog.lblNumAtt.Caption("")
+GUI.FormRFIDWatchdog.lblNumSucc.Caption("")
+GUI.FormRFIDWatchdog.lblProcessTime.Caption("")
+GUI.FormRFIDWatchdog.lblL01s.Caption("")
+GUI.FormRFIDWatchdog.lblJ52.Caption("")
+GUI.FormRFIDWatchdog.lblP10.Caption("")
+GUI.FormRFIDWatchdog.lblS99Count.Caption("")
+GUI.FormRFIDWatchdog.lblLastTransactionTime.Caption("")
+
+F.Intrinsic.String.Format(V.Ambient.Now, "MM/DD/YYYY  HH:NN:SS AMPM", V.Local.sDate)
+GUI.FormRFIDWatchdog.lblLaunchedTime.Caption(V.Local.sDate)
+
+F.Intrinsic.Control.CallSub(SetIcon)
+
+F.Intrinsic.String.Build("RFID Watchdog ({0})", V.Caller.CompanyCode, V.Local.sCaption)
+GUI.FormRFIDWatchdog..Caption(V.Local.sCaption)
+GUI.FormRFIDWatchdog..Show
+
+F.Intrinsic.Control.DoUntil(V.Ambient.Date, >, V.Local.dDate)
+	GUI.FormRFIDWatchdog.lblStatus.Caption("Processing...")
+	GUI.FormRFIDWatchdog.lblStatus.ForeColor(V.Color.Green)
+	
+	F.Global.General.CallSyncGAS(V.Local.sG2U, V.Ambient.MyIPMh)
+	GUI.FormRFIDWatchdog.lblAttempted.SetFocus
+	
+	F.Intrinsic.String.Format(V.Ambient.Now, "MM/DD/YYYY  HH:NN:SS AMPM", V.Local.sDate)
+	GUI.FormRFIDWatchdog.lblProcessTime.Caption(V.Local.sDate)
+	
+	GUI.FormRFIDWatchdog.lblStatus.Caption("Waiting...")
+	GUI.FormRFIDWatchdog.lblStatus.ForeColor(V.Color.Red)
+	
+	'this stops the screen from being locked up for the whole waiting time
+	F.Intrinsic.Control.For(V.Local.iCounter, 0, V.Global.iSeconds, 1)
+		F.Intrinsic.UI.Sleep(1)
+	F.Intrinsic.Control.Next(V.Local.iCounter)
+	
+F.Intrinsic.Control.Loop
+
+F.Intrinsic.Control.CallSub(Exit)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.ScriptPIDCheck.Start
+'check if the process is already running
+'store PID in a text file
+'Pass PROJECT (folder to store in), TASK (what to name text file)
+
+F.Intrinsic.Control.Try
+
+V.Local.bExists.Declare(Boolean)
+V.Local.sDir.Declare(String)
+V.Local.sCurrentPIDProcess.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sProject.Declare(String)
+V.Local.sTask.Declare(String)
+
+V.Local.sProject.Set(V.Args.Project)
+V.Local.sTask.Set(V.Args.Task)
+
+F.Intrinsic.String.Build("{0}\Custom\{1}\IS_RUNNING", V.Caller.GlobalDir, V.Local.sProject, V.Local.sDir)
+F.Intrinsic.Control.CallSub(CheckDirectory, "Path", V.Local.sDir)
+
+F.Intrinsic.String.Build("{0}\{1}_Running.dat", V.Local.sDir, V.Local.sTask, V.Local.sFile)
+F.Intrinsic.File.Exists(V.Local.sFile, V.Local.bExists)
+
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	'program is not running
+	'Create Program Status file to let it know its running
+	F.Intrinsic.File.String2File(V.Local.sFile, V.Ambient.PID)
+F.Intrinsic.Control.Else
+ 	'then the file exists: get the PID from the file to see if the process is still running
+	F.Intrinsic.File.File2String(V.Local.sFile, V.Local.sCurrentPIDProcess)
+	F.Intrinsic.Task.PIDRunning(V.Local.sCurrentPIDProcess, V.Local.bExists)
+	F.Intrinsic.Control.If(V.Local.bExists)
+		'the the program is running- don't start new process
+		F.Intrinsic.Control.End
+	F.Intrinsic.Control.Else
+		'the program has stopped, but did not delete the file. Delete the file and create a new file for current run
+		F.Intrinsic.File.DeleteFile(V.Local.sFile)
+		F.Intrinsic.File.String2File(V.Local.sFile, V.Ambient.PID)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.ScriptPIDCheck.End
+
+Program.Sub.ScriptPIDClear.Start
+'delete the is running file, so the next time the program runs it knows it isn't currently running
+'Pass PROJECT (folder to store in), TASK (what to name text file)
+
+F.Intrinsic.Control.Try
+
+V.Local.bExists.Declare(Boolean)
+V.Local.sDir.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sProject.Declare(String)
+V.Local.sTask.Declare(String)
+
+V.Local.sProject.Set(V.Args.Project)
+V.Local.sTask.Set(V.Args.Task)
+
+F.Intrinsic.String.Build("{0}\Custom\{1}\IS_RUNNING", V.Caller.GlobalDir, V.Local.sProject, V.Local.sDir)
+F.Intrinsic.Control.CallSub(CheckDirectory, "Path", V.Local.sDir)
+
+F.Intrinsic.String.Build("{0}\{1}_Running.dat", V.Local.sDir, V.Local.sTask, V.Local.sFile)
+F.Intrinsic.File.Exists(V.Local.sFile, V.Local.bExists)
+
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.File.DeleteFile(V.Local.sFile)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.ScriptPIDClear.End
+
+Program.Sub.FormRFIDWatchdog_UnLoad.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(Exit)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.FormRFIDWatchdog_UnLoad.End
+
+Program.Sub.Exit.Start
+F.Intrinsic.Control.Try
+
+F.Intrinsic.Control.CallSub(SaveUpdateFrequencyFile)
+F.Intrinsic.Control.CallSub(ScriptPIDClear, "PROJECT", "5235", "TASK", "RFID_Watchdog")
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.Exit.End
+
+Program.Sub.IPM.Start
+F.Intrinsic.Control.Try
+
+V.Local.sMsg.Declare(String)
+V.Local.iOldTransactions.Declare(Long, 0)
+V.Local.sDate.Declare(String)
+
+F.Intrinsic.String.Split(V.Args.MESSAGE, "::", V.Local.sMsg)
+
+V.Local.iOldTransactions.Set(V.Global.iTransactions)
+F.Intrinsic.Math.Add(V.Global.iTransactions, V.Local.sMsg(0), V.Global.iTransactions)
+F.Intrinsic.Math.Add(V.Global.iSuccessfulTransactions, V.Local.sMsg(1), V.Global.iSuccessfulTransactions)
+F.Intrinsic.Math.Add(V.Global.iJ55, V.Local.sMsg(2), V.Global.iJ55)
+F.Intrinsic.Math.Add(V.Global.iO90, V.Local.sMsg(3), V.Global.iO90)
+F.Intrinsic.Math.Add(V.Global.iJ52, V.Local.sMsg(4), V.Global.iJ52)
+F.Intrinsic.Math.Add(V.Global.iL01, V.Local.sMsg(5), V.Global.iL01)
+F.Intrinsic.Math.Add(V.Global.iP10, V.Local.sMsg(6), V.Global.iP10)
+F.Intrinsic.Math.Add(V.Global.iS99, V.Local.sMsg(7), V.Global.iS99)
+
+GUI.FormRFIDWatchdog.lblNumAtt.Caption(V.Global.iTransactions)
+GUI.FormRFIDWatchdog.lblNumSucc.Caption(V.Global.iSuccessfulTransactions)
+GUI.FormRFIDWatchdog.lblJ55Count.Caption(V.Global.iJ55)
+GUI.FormRFIDWatchdog.lblO90Count.Caption(V.Global.iO90)
+GUI.FormRFIDWatchdog.lblJ52.Caption(V.Global.iJ52)
+GUI.FormRFIDWatchdog.lblL01s.Caption(V.Global.iL01)
+GUI.FormRFIDWatchdog.lblP10.Caption(V.Global.iP10)
+GUI.FormRFIDWatchdog.lblS99Count.Caption(V.Global.iS99)
+
+F.Intrinsic.Control.If(V.Local.iOldTransactions, !=, V.Global.iTransactions)
+	F.Intrinsic.String.Format(V.Ambient.Now, "MM/DD/YYYY  HH:NN:SS AMPM", V.Local.sDate)
+	GUI.FormRFIDWatchdog.lblLastTransactionTime.Caption(V.Local.sDate)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.IPM.End
+
+Program.Sub.SetIcon.Start
+F.Intrinsic.Control.Try
+
+V.Local.sForm.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sIcon.Declare(String)
+V.Local.iCounter.Declare(Long)
+
+F.Intrinsic.String.Build("{0}\ART\gss2.ico",V.Caller.GlobalDir,v.Local.sIcon)
+F.Intrinsic.File.Exists(V.Local.sIcon, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.String.Build("{0}\GAB\GAS\gss2.ico",V.Caller.PluginsDir,v.Local.sIcon)
+	F.Intrinsic.File.Exists(V.Local.sIcon, V.Local.bExists)
+	F.Intrinsic.Control.If(V.Local.bExists.Not)
+		F.Intrinsic.Control.ExitSub
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.UI.GetFormList(V.Local.sForm)
+F.Intrinsic.String.Split(V.Local.sForm, "*!*", V.Local.sForm)
+
+F.Intrinsic.Control.For(V.Local.iCounter, 0, V.Local.sForm.UBound, 1)
+	Gui.[V.Local.sForm(V.Local.iCounter)]..Icon(V.Local.sIcon)
+F.Intrinsic.Control.Next(V.Local.iCounter)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.SetIcon.End
+
+Program.Sub.txtSeconds_Change.Start
+F.Intrinsic.Control.Try
+
+V.Global.iSeconds.Set(V.Screen.FormRFIDWatchdog!txtSeconds.Text.Trim)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.txtSeconds_Change.End
+
+Program.Sub.CheckUpdateFrequencyFile.Start
+F.Intrinsic.Control.Try
+
+V.Local.sFile.Declare(String)
+V.Local.bExists.Declare(Boolean)
+
+F.Intrinsic.String.Build("{0}\CUSTOM\5235\WATCHDOG\UPDATE_FREQUENCY.dat", V.Caller.GlobalDir, V.Local.sFile)
+F.Intrinsic.File.Exists(V.Local.sFile, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.File.File2String(V.Local.sFile, V.Local.sFile)
+	GUI.FormRFIDWatchdog.txtSeconds.Text(V.Local.sFile.Long)
+F.Intrinsic.Control.Else
+	GUI.FormRFIDWatchdog.txtSeconds.Text(10)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog", "Task", "RFID_Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckUpdateFrequencyFile.End
+
+Program.Sub.SaveUpdateFrequencyFile.Start
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+
+F.Intrinsic.String.Build("{0}\CUSTOM\5235\WATCHDOG", V.Caller.GlobalDir, V.Local.sPath)
+F.Intrinsic.Control.CallSub(CheckDirectory, "PATH", V.Local.sPath)
+
+F.Intrinsic.String.Build("{0}\UPDATE_FREQUENCY.dat", V.Local.sPath, V.Local.sPath)
+F.Intrinsic.File.String2File(V.Local.sPath, V.Screen.FormRFIDWatchdog!txtSeconds.Text.Trim)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.SaveUpdateFrequencyFile.End
+
+Program.Sub.CheckDirectory.Start
+'check if the given import directories exist
+'create them if they don't
+'pass PATH to check
+
+F.Intrinsic.Control.Try
+
+V.Local.sPath.Declare(String)
+V.Local.bExists.Declare(Boolean)
+
+V.Local.sPath.Set(V.Args.Path)
+F.Intrinsic.File.DirExists(V.Local.sPath, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.File.CreateDir(V.Local.sPath)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckDirectory.End
+
+Program.Sub.ErrorMessage.Start
+'basic error message for replacing catch block
+'this is really just for when printing the message and ending program
+'pass error number, error description, current subroutine
+'optional callback sub, this will be called before ending
+'optional unattended parameters, those subs may not exist if not using them but won't be called
+F.Intrinsic.Control.Try
+
+V.Local.iError.Declare(Long)
+V.Local.sErrorDescription.Declare(String)
+V.Local.sSubroutine.Declare(String)
+V.Local.sError.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sCallback.Declare(String)
+
+V.Local.iError.Set(V.Args.ErrorNumber)
+V.Local.sErrorDescription.Set(V.Args.ErrorDescription)
+V.Local.sSubroutine.Set(V.Args.Subroutine)
+
+'make sure we aren't in an error loop
+F.Intrinsic.Control.If(V.Global.bError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndIf
+V.Global.bError.Set(True)
+
+F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", V.Caller.ScriptFile, V.Ambient.Newline, V.Local.sSubroutine, V.Local.iError, V.Local.sErrorDescription, V.Ambient.GABVersion, V.Local.sError)
+
+F.Intrinsic.Variable.ArgExists("UNATTENDED", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	F.Intrinsic.Control.If(V.Args.UNATTENDED)
+		F.Intrinsic.Control.CallSub(UnattendedErrorMessage, "MESSAGE", V.Local.sError, "PROJECT", V.Args.PROJECT, "PROJECTTITLE", V.Args.PROJECTTITLE, "TASK", V.Args.Task)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Variable.ArgExists("Callback", V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists)
+	V.Local.sCallback.Set(V.Args.Callback.Trim)
+	F.Intrinsic.Control.CallSub(V.Local.sCallback)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Caller.ScriptFile,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+F.Intrinsic.Control.EndTry
+Program.Sub.ErrorMessage.End
+
+Program.Sub.UnattendedErrorMessage.Start
+'send a short error message, add the log
+'pass project ID, project title (for message box title), and error message
+
+F.Intrinsic.Control.Try
+
+V.Local.sMessage.Declare(String)
+
+V.Local.sMessage.Set(V.Args.Message.Trim)
+F.Intrinsic.String.Replace(V.Local.sMessage, V.Ambient.NewLine, ", ", V.Local.sMessage)
+
+F.Intrinsic.UI.InvokeWaitDialog(V.Local.sMessage, V.Args.ProjectTitle)
+F.Intrinsic.UI.Sleep(10)
+F.Intrinsic.UI.CloseWaitDialog
+
+F.Intrinsic.Control.CallSub(AddLog, "Project", V.Args.Project, "TASK", V.Args.Task, "Message", V.Local.sMessage)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.UnattendedErrorMessage.End
+
+Program.Sub.AddLog.Start
+'pass a project #, and a message
+'date and time will be automatically added
+'pass PROJECT (Folder, log name), MESSAGE (what to log)
+
+F.Intrinsic.Control.Try
+
+V.Local.sProject.Declare(String)
+V.Local.sMessage.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sPath.Declare(String)
+V.Local.sFile.Declare(String)
+V.Local.sContents.Declare(String)
+V.Local.sTask.Declare(String)
+
+V.Local.sProject.Set(V.Args.Project.Trim)
+V.Local.sMessage.Set(V.Args.Message.Trim)
+V.Local.sTask.Set(V.Args.Task)
+
+F.Intrinsic.String.Replace(V.Local.sMessage, V.Ambient.NewLine, ", ", V.Local.sMessage)
+
+F.Intrinsic.File.MakeFilenameFriendly(V.Local.sProject, V.Local.sProject)
+F.Intrinsic.String.Build("{0}\Custom\{1}\Log\", V.Caller.GlobalDir, V.Local.sProject, V.Local.sPath)
+F.Intrinsic.Control.CallSub(CheckDirectory, "Path", V.Local.sPath)
+
+F.Intrinsic.String.Build("{0}\{1}_Log.txt", V.Local.sPath, V.Local.sTask, V.Local.sFile)
+F.Intrinsic.Control.CallSub(CheckFile, "File", V.Local.sFile)
+
+F.Intrinsic.String.Build("{0} {1}: {2}", V.Ambient.Date.FormatYYYY-MM-DD, V.Ambient.Time.Format!HH:NN:SS, V.Local.sMessage, V.Local.sContents)
+F.Intrinsic.File.Append2FileNewLine(V.Local.sFile, V.Local.sContents)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.AddLog.End
+
+Program.Sub.CheckFile.Start
+'check if the given file exists
+'create it if it doesn't
+'pass FILE to check
+
+F.Intrinsic.Control.Try
+
+V.Local.sFile.Declare(String)
+V.Local.bExists.Declare(Boolean)
+V.Local.sContents.Declare(String)
+
+V.Local.sFile.Set(V.Args.File)
+F.Intrinsic.File.Exists(V.Local.sFile, V.Local.bExists)
+F.Intrinsic.Control.If(V.Local.bExists.Not)
+	F.Intrinsic.String.Build("{0} {1}: Log Start", V.Ambient.Date.FormatYYYY-MM-DD, V.Ambient.Time.Format!HH:NN:SS, V.Local.sContents)
+	F.Intrinsic.File.String2File(V.Local.sFile, V.Local.sContents)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(ErrorMessage, "ErrorNumber", V.Ambient.ErrorNumber, "ErrorDescription", V.Ambient.ErrorDescription, "Subroutine", V.Ambient.CurrentSubroutine, "Callback", "Exit", "Unattended", True, "Project", "5235", "ProjectTitle", "RFID Watchdog")
+F.Intrinsic.Control.EndTry
+Program.Sub.CheckFile.End
