@@ -1,0 +1,407 @@
+Program.Sub.ScreenSU.Start
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+v.Global.sPart.Declare
+v.Global.sPartloc.Declare
+v.Global.fQty.Declare
+V.Global.sTransID.Declare
+v.Global.sPOReqNo.Declare
+v.Global.iPOReqNonext.Declare
+v.Global.sBay.Declare
+v.Global.sURL.Declare
+v.Global.sDeviceID.Declare
+v.Global.iRed_GPO.Declare(Long)
+v.Global.iYellow_GPO.Declare(Long)
+v.Global.iGreen_GPO.Declare(Long)
+v.Global.iBuzzer_GPO.Declare(Long)
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.Try
+
+'Programmed for GS Mobile
+'by Brady Stevens
+'10/11/21
+'activate to custom mobile transaction hook 39001-39005
+'Load Management - start or stop load validation through RFID zone (dock/bay)
+
+
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+	
+Function.ODBC.Connection!Conx.Opencompanyconnection
+Function.ODBC.Connection!Cony.Opencommonconnection
+
+V.Local.sUID.Declare(String)
+V.Local.sUPID.Declare(String)
+V.Local.sUserid.Declare(String)
+V.Local.sPrinter.Declare(String)
+V.Local.sReportName.Declare(String)
+V.Local.sTransID.Declare(String)
+V.Local.sTransSfx.Declare(String)
+V.Local.sTransType.Declare(String)
+V.Local.dateyyyymmdd.Declare(String)
+V.Local.dateyyyymmddnnss.Declare(String)
+V.Local.timemmnnss.Declare(String)
+V.Local.timehhnnss.Declare(String)
+V.Local.year.Declare(String)
+V.Local.month.Declare(String)
+V.Local.day.Declare(String)
+V.Local.hour.Declare(String)
+V.Local.minute.Declare(String)
+F.Intrinsic.Date.Year(V.Ambient.Date,V.Local.year)
+F.Intrinsic.Date.Month(V.Ambient.Date,V.Local.month)
+F.Intrinsic.String.LPad(V.Local.month,0,2,V.Local.MONTH)
+F.Intrinsic.Date.Day(V.Ambient.Date,V.Local.day)
+F.Intrinsic.String.LPad(V.Local.day,0,2,V.Local.day)
+F.Intrinsic.DATE.Hour(V.Ambient.Time,V.LOCAL.HOUR)
+F.Intrinsic.String.LPad(V.Local.hour,0,2,V.Local.hour)
+F.Intrinsic.DATE.MINUTE(V.Ambient.Time,V.LOCAL.MINUTE)
+F.Intrinsic.String.LPad(V.Local.minute,0,2,V.Local.minute)
+F.Intrinsic.String.Concat(V.Local.year,V.Local.month,V.Local.day,V.Local.dateyyyymmdd)
+F.Intrinsic.String.Concat(V.Local.hour,V.Local.minute,"0000",V.Local.timehhnnss)
+V.Local.seqkey.Declare(String)
+V.Local.sGSUser.Declare(String)
+V.Local.sGUserid.Declare(String)
+V.Local.sResults.Declare(String)
+V.Local.icounter.Declare(Long,0)
+V.Local.stransIDnew.Declare(String)
+V.Local.sSql.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.fQty.Declare(Float)
+V.Local.sDesc.Declare(String)
+V.Local.sCustPO.Declare(String)
+V.Local.dDate_Due.Declare(Date)
+V.Local.sDateDue.Declare(String)
+V.Local.dDate_Created.Declare(Date)
+V.Local.sPUREQ.Declare(String)
+V.Local.bFileExist.Declare(Boolean)
+V.Local.bFileDir.Declare(Boolean)
+V.Local.sFileDir.Declare(String)
+V.Local.sPurchParts.Declare(String)
+V.Local.sLen.Declare(String)
+V.Local.iLen.Declare(Long)
+V.Local.sAlign.Declare(String)
+V.Local.iAlign.Declare(Long)
+v.Local.sUMPur.Declare(string)
+v.Local.sUMInv.Declare(string)
+v.Local.fCost.Declare(Float)
+v.Local.sPL.Declare
+v.Local.iLoad.Declare(Long)
+v.Local.sStartStop.Declare
+V.Local.iload1.Declare(Long)
+V.Local.sBay1.Declare
+v.Local.bListLoads.Declare(Boolean,False)
+v.Local.stempResults.Declare
+
+'execute GAB if for custom mobile transaction id 1-5 (39001-39020)
+'Function.Intrinsic.Debug.InvokeDebugger
+
+V.global.sTransID.Set(V.Passed.DATA-TRANSID)
+V.Local.sTransSfx.Set("0000")
+V.Local.sPrinter.Set("")
+
+F.Intrinsic.String.Concat("Select * from WIRELESS_LINE where TRANS_ID = '",V.global.sTransID,"'",V.Local.sSql)
+Function.ODBC.Connection!Conx.OpenRecordsetRO("rstWIR",V.Local.sSql)
+V.Local.sTransType.Set(V.ODBC.Conx!rstWIR.FieldValTrim!Trans_Type)
+V.Local.iLoad.Set(V.ODBC.Conx!rstWIR.FieldValTrim!Field_1)
+V.global.sBay.Set(V.ODBC.Conx!rstWIR.FieldValTrim!Field_2)
+V.Local.sStartStop.Set(V.ODBC.Conx!rstWIR.FieldValTrim!Field_3)
+f.Intrinsic.Control.If(V.ODBC.Conx!rstWIR.FieldValTrim!Field_4,=,"on")
+	v.Local.bListLoads.Set(True)
+f.Intrinsic.Control.EndIf
+
+'retrieve URL and device ID and GPO ports
+f.Intrinsic.String.Build("select RTRIM(ANTENNA) as ANTENNA, RTRIM(READER) as READER, RTRIM(TX_CODE) as TRANS, RTRIM(API_URl) AS API_URl, RTRIM(DEVICE_ID) AS DEVICE_ID,YELLOW_PORT,RED_PORT,GREEN_PORT,BUZZER_PORT from GCG_5235_RFID_MAINT WHERE TRANS = 'S99' AND READER = '{0}'",V.Global.sBay,V.Local.sSql)
+Function.ODBC.Connection!Conx.OpenRecordsetRO("rstRFID",V.Local.sSql)
+F.Intrinsic.Control.If(V.ODBC.Conx!rstRFID.EOF,=,"FALSE")
+V.Global.sURl.Set(v.ODBC.Conx!rstRFID.FieldValTrim!API_URl)
+F.IntrinsiC.String.Build("{0}/device",V.Global.sURL,v.Global.sURL)
+V.Global.sDeviceID.Set(v.ODBC.Conx!rstRFID.FieldValTrim!DEVICE_ID)
+V.Global.iRed_GPO.Set(v.ODBC.Conx!rstRFID.FieldValTrim!RED_PORT)
+V.Global.iYellow_GPO.Set(v.ODBC.Conx!rstRFID.FieldValTrim!YELLOW_PORT)
+V.Global.iGreen_GPO.Set(v.ODBC.Conx!rstRFID.FieldValTrim!GREEN_PORT)
+V.Global.iBuzzer_GPO.Set(v.ODBC.Conx!rstRFID.FieldValTrim!BUZZER_PORT)
+f.Intrinsic.Control.EndIf
+F.odbc.conX!rstRFID.close
+
+'---------------------------------------------------------------------------------------------------------------------------------
+'return list of open loads and docks
+f.Intrinsic.Control.If(v.Local.bListLoads,=,True)
+	v.Local.sSql.set("Select Load,Dock,StartDate,Mobileuser from GCG_5235_RFID_LOAD where ACTIVE = 1")
+	F.ODBC.Connection!Conx.OpenRecordsetRO("rstLOAD",V.LOCAL.sSql)
+		F.Intrinsic.Control.If(V.ODBC.Conx!rstLOAD.EOF,=,"FALSE")
+		
+			f.Data.DataTable.CreateFromSQL("Openloads","Conx",V.Local.sSql,True)
+			
+			'set form title
+			v.Local.stempResults.Set("<tr><td style=color:Blue;font-weight:bold;><center>Active Loads</tr></td></center>")
+			
+			'create html table
+			f.data.datatable.exportHTML("Openloads","LOAD*!*DOCK*!*STARTDATE*!*MOBILEUSER","LOAD*!*DOCK*!*STARTDATE*!*MOBILEUSER","t01",true,v.Local.sResults)
+			F.INTRINSIC.STRING.BUILD("<!DOCTYPE html><html><style>table {  width:100%;}table, td {  height: 15px; font-size: 11px; border: 1px solid black;  border-collapse: collapse;}table#t01 tr:nth-child(even) {  background-color: #D3D3D3;}table#t01 tr:nth-child(odd) { background-color: #FFFFFF;}table#t01 th {  background-color: #95C26C;  color: black;}</style><body>{0}</body></html>",V.Local.sResults,V.Local.sResults)
+			f.Intrinsic.String.Build({0}{1},v.Local.stempResults,v.Local.sResults,v.Local.sResults)
+			'post results in form of a table
+			F.Intrinsic.String.Build("<table cellpadding = {0}0{0} cellspacing={0}1{0} border = {0}1{0}>{1}",v.Ambient.DblQuote,V.local.sresults,V.Local.sResults)
+			F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)
+			F.odbc.conX!rstLOAD.close
+			F.Data.Datatable.Close("Openloads")			
+		f.Intrinsic.Control.CallSub("close")
+	f.Intrinsic.Control.Else
+			'fail status
+			V.Local.sResults.Set("<tr><td style=color:Red;font-weight:bold;><center>No active Loads</tr></center></td>")
+			F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)		
+			F.Intrinsic.Control.CallSub("close")
+			F.odbc.conX!rstLOAD.close
+			F.Data.Datatable.Close("Openloads")	
+	f.Intrinsic.Control.EndIf
+f.Intrinsic.Control.EndIf
+'-------------------------------------------------------------------------------------------------------------------------------
+
+v.Local.dateyyyymmddnnss.Set(v.Ambient.Time)
+'f.Intrinsic.String.Mid(v.Local.dateyyyymmddnnss,10,15,v.Local.dateyyyymmddnnss)
+
+f.Intrinsic.String.Concat(v.Ambient.Date.PSQLFriendly," ",v.Ambient.Time.PSQLFriendly,v.Local.dateyyyymmddnnss)
+f.Intrinsic.String.Format(v.Local.dateyyyymmddnnss,"YYYY-MM-DD HH:NN:SS.000",v.Local.dateyyyymmddnnss)
+
+F.ODBC.Conx!rstWIR.Close
+
+'get mobile user label printer
+F.Intrinsic.String.Concat("Select DEFAULT_PRINTER,LABEL_PRINTER,USER_ID  from WIRELESS_HDR where TRANS_ID = '",V.global.sTransID,"'",V.Local.sSql)
+	Function.ODBC.Connection!Conx.OpenRecordsetRO("rstWIR1",V.Local.sSql)
+	V.Local.sPrinter.Set(V.ODBC.Conx!rstWIR1.FieldVal!LABEL_PRINTER)
+	V.Local.sUID.Set(V.ODBC.Conx!rstWIR1.FieldVal!USER_ID)
+	
+'get GS user ID from mobile user
+F.Intrinsic.String.Build("Select GSUSERNAME FROM MOBILE_USER_INFO WHERE USERID = '{0}'",V.Local.sUID,V.Local.sSql)
+	Function.ODBC.Connection!ConY.OpenRecordsetRO("rstUSER",V.Local.sSql)
+	V.Local.sGSUser.Set(V.ODBC.Cony!rstUSER.FieldValtrim!GSUSERNAME)
+
+'validate RFID reader to bay value passed in form
+F.Intrinsic.Control.SelectCase(v.global.sBay)
+	F.Intrinsic.Control.Case("[Assign]")
+		F.Intrinsic.String.Build("Select Load,Dock from GCG_5235_RFID_LOAD where Load = '{0}' AND ACTIVE = 1",V.Local.iLoad,V.Local.sSql)
+		F.ODBC.Connection!Conx.OpenRecordsetRO("rstLOAD",V.LOCAL.sSql)
+			F.Intrinsic.Control.If(V.ODBC.Conx!rstLOAD.EOF,=,"FALSE")
+			V.Local.sBay1.Set(V.ODBC.Conx!rstLOAD.FieldValTrim!dock)
+				'status of load#
+				F.Intrinsic.String.Build("<tr><td style=color:Black;font-weight:bold;><center>Load {0} is active in Dock {1}.</tr></center></td>",V.Local.iLoad,V.Local.sBay1,V.Local.sResults)
+			f.Intrinsic.Control.Else
+				'status of load# not active at any Dock
+				F.Intrinsic.String.Build("<tr><td style=color:Black;font-weight:bold;><center>Load {0} is not active at any Dock.</tr></center></td>",V.Local.iLoad,V.Local.sResults)
+			F.Intrinsic.Control.EndIf	
+			F.ODBC.Conx!rstLOAD.Close
+		F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)		
+		F.Intrinsic.Control.CallSub("close")
+	f.Intrinsic.Control.CaseElse
+		F.Intrinsic.String.Build("Select READER from GCG_5235_RFID_HDWR where READER = '{0}'",V.global.sBay,V.Local.sSql)
+			F.ODBC.Connection!Conx.OpenRecordsetRO("rstReader",V.LOCAL.sSql)
+			F.Intrinsic.Control.If(V.ODBC.Conx!rstReader.EOF,=,"TRUE")
+				'fail status
+				F.Intrinsic.String.Build("<tr><td style=color:Red;font-weight:bold;><center>Bay {0} is an invalid RFID Reader name.</tr></center></td>",V.global.sBay,V.Local.sResults)
+				F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)		
+				F.Intrinsic.Control.CallSub("close")
+			F.Intrinsic.Control.EndIf
+			F.ODBC.Conx!rstReader.Close
+F.Intrinsic.Control.EndSelect
+
+'validate load number to Load_Plan table
+F.Intrinsic.String.Build("Select Load_No from LOAD_PLAN where Load_No = {0}",V.Local.iLoad,V.Local.sSql)
+	F.ODBC.Connection!Conx.OpenRecordsetRO("rstLoad",V.LOCAL.sSql)
+	F.Intrinsic.Control.If(V.ODBC.Conx!rstLoad.EOF,=,"TRUE")
+		'fail status
+		F.Intrinsic.String.Build("<tr><td style=color:Red;font-weight:bold;><center>Load {0} is an invalid Load Number.</tr></center></td>",V.Local.iLoad,V.Local.sResults)
+		F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)		
+		F.Intrinsic.Control.CallSub("close")
+	F.Intrinsic.Control.EndIf
+	F.ODBC.Conx!rstLoad.Close
+
+'Start or stop load validation
+F.Intrinsic.Control.SelectCase(v.Local.sStartStop)
+	F.Intrinsic.Control.Case("Start")
+			'validate load/dock combination isn't already in active status
+				F.Intrinsic.String.Build("Select Load, DOCK from GCG_5235_RFID_LOAD where Load = {0} and Dock = '{1}' AND ACTIVE = 1",V.Local.iLoad,V.global.sBay,V.Local.sSql)
+				F.ODBC.Connection!Conx.OpenRecordsetRO("rstLoaddock",V.LOCAL.sSql)
+				F.Intrinsic.Control.If(V.ODBC.Conx!rstLoaddock.EOF,=,"FALSE")
+					'fail status
+					F.Intrinsic.String.Build("<tr><td style=color:Red;font-weight:bold;><center>Load {0} in Dock {1} is already active.</tr></center></td>",V.Local.iLoad,v.global.sBay,V.Local.sResults)
+					F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)		
+				F.Intrinsic.Control.CallSub("close")
+			F.Intrinsic.Control.EndIf
+			F.ODBC.Conx!rstLoaddock.Close
+			'validate dock doesn't have other active load
+			F.Intrinsic.String.Build("Select Load, DOCK from GCG_5235_RFID_LOAD where Dock = '{1}' AND Load <> {0} AND ACTIVE = 1",V.Local.iLoad,V.global.sBay,V.Local.sSql)
+				F.ODBC.Connection!Conx.OpenRecordsetRO("rstLoaddock",V.LOCAL.sSql)
+				F.Intrinsic.Control.If(V.ODBC.Conx!rstLoaddock.EOF,=,"FALSE")
+				V.Local.iload1.Set(V.ODBC.Conx!rstLoaddock.FieldValTrim!LOAD)
+					'fail status
+					F.Intrinsic.String.Build("<tr><td style=color:Red;font-weight:bold;><center>Load {0} in Dock {1} is already active. Please close first or choose another Dock.</tr></center></td>",V.Local.iLoad1,v.global.sBay,V.Local.sResults)
+					F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)		
+				F.Intrinsic.Control.CallSub("close")
+			F.Intrinsic.Control.EndIf
+			F.ODBC.Conx!rstLoaddock.Close
+			'validate load is not already active at another dock
+			F.Intrinsic.String.Build("Select Load, DOCK from GCG_5235_RFID_LOAD where Dock <> '{1}' AND Load = {0} AND ACTIVE = 1",V.Local.iLoad,V.global.sBay,V.Local.sSql)
+				F.ODBC.Connection!Conx.OpenRecordsetRO("rstLoaddock",V.LOCAL.sSql)
+				F.Intrinsic.Control.If(V.ODBC.Conx!rstLoaddock.EOF,=,"FALSE")
+				V.Local.sBay1.Set(V.ODBC.Conx!rstLoaddock.FieldValTrim!DOCK)
+					'fail status
+					F.Intrinsic.String.Build("<tr><td style=color:Red;font-weight:bold;><center>Load {0} is active at Dock {1}. Please close first or choose another Load.</tr></center></td>",V.Local.iLoad,v.Local.sBay1,V.Local.sResults)
+					F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)		
+				F.Intrinsic.Control.CallSub("close")
+			F.Intrinsic.Control.EndIf
+			F.ODBC.Conx!rstLoaddock.Close			
+		F.Intrinsic.String.Build("INSERT INTO GCG_5235_RFID_LOAD (LOAD,DOCK,ACTIVE,mobileuser) VALUES ({0},'{1}',{2},'{3}')",V.Local.iLoad,V.global.sBay,1,v.Local.sUID,V.Local.sSql)
+		F.ODBC.Connection!Conx.Execute(V.Local.sSQL)
+		'start success status
+		F.Intrinsic.String.Build("<tr><td style=color:Green;font-weight:bold;><center>Load {0} in Dock {1} set to active.</tr></center></td>",V.Local.iLoad,v.global.sBay,V.Local.sResults)
+		F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)
+		'start reader
+		f.Intrinsic.Control.CallSub("Start_Reader")
+		'start light stack
+		f.Intrinsic.Control.CallSub("Load_Start_lightstack")
+	F.Intrinsic.Control.Case("Stop")
+		F.Intrinsic.String.Build("UPDATE GCG_5235_RFID_LOAD SET ACTIVE = 0, ENDDATE = '{2}' WHERE LOAD = {0} AND Dock = '{1}' AND ACTIVE = 1",V.Local.iLoad,V.global.sBay,v.Local.dateyyyymmddnnss,V.Local.sSql)
+		F.ODBC.Connection!Conx.Execute(V.Local.sSQL)
+		'stop success status
+		F.Intrinsic.String.Build("<tr><td style=color:Green;font-weight:bold;><center>Load {0} in Dock {1} closed.</tr></center></td>",V.Local.iLoad,v.global.sBay,V.Local.sResults)
+		F.Global.Mobile.setcustomresult(v.Caller.CompanyCode,v.global.sTransID,v.Local.sResults)
+		'stop light stack
+		f.Intrinsic.Control.CallSub("Load_Stop_lightstack")
+		F.Intrinsic.UI.Sleep(5)
+		'stop reader
+		f.Intrinsic.Control.CallSub("Stop_Reader")
+F.Intrinsic.Control.EndSelect
+
+F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.CallSub("close")
+	F.Intrinsic.Control.EndTry
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.CallSub(Catching,"Sub",V.Ambient.CurrentSubroutine,"ErrorNo",V.Ambient.ErrorNumber,"ErrorDesc",V.Ambient.ErrorDescription) 
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+
+Program.Sub.Start_Reader.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+'v.Local.sURL.Declare
+v.Local.sMSG.Declare
+v.Local.sRet.Declare
+'v.Local.sURL.Set("http://gss2k16rfid:4405/device")
+'v.Local.sDeviceID.Declare(Long,2)
+
+
+F.Intrinsic.String.Concat("{",v.Ambient.DblQuote,"devices",v.Ambient.DblQuote,":[{",v.Ambient.DblQuote,"start",v.Ambient.DblQuote,":true",", ",v.Ambient.DblQuote,"index",v.Ambient.DblQuote,":",v.Global.sDeviceID,"}]}",v.Local.sMSG)
+F.Communication.REST.SetProperty ("PostData",V.Local.sMSG)
+F.Communication.REST.Post(v.global.sURl)
+
+F.Intrinsic.Control.Catch
+F.Communication.REST.GetProperty("TransferredData",V.local.sRet)
+f.Intrinsic.Control.If(v.Ambient.ErrorNumber,=,999000)
+	f.Intrinsic.Control.ExitSub
+	F.Intrinsic.UI.Msgbox(V.Local.sRet)
+f.Intrinsic.Control.EndIf
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub("Exit")
+F.Intrinsic.Control.EndTry
+Program.Sub.Start_Reader.End
+
+Program.Sub.Stop_Reader.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+'v.Local.sURL.Declare
+v.Local.sMSG.Declare
+v.Local.sRet.Declare
+'v.Local.sURL.Set("http://gss2k16rfid:4405/device")
+'v.Local.sDeviceID.Declare(Long,2)
+
+'lookup DeviceID by Bay
+
+
+
+F.Intrinsic.String.Concat("{",v.Ambient.DblQuote,"devices",v.Ambient.DblQuote,":[{",v.Ambient.DblQuote,"start",v.Ambient.DblQuote,":false",", ",v.Ambient.DblQuote,"index",v.Ambient.DblQuote,":",v.Global.sDeviceID,"}]}",v.Local.sMSG)
+F.Communication.REST.SetProperty ("PostData",V.Local.sMSG)
+F.Communication.REST.Post(v.global.sURl)
+
+F.Intrinsic.Control.Catch
+F.Communication.REST.GetProperty("TransferredData",V.local.sRet)
+f.Intrinsic.Control.If(v.Ambient.ErrorNumber,=,999000)	
+	f.Intrinsic.Control.ExitSub
+	F.Intrinsic.UI.Msgbox(V.Local.sRet)
+f.Intrinsic.Control.EndIf
+
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub("Exit")
+F.Intrinsic.Control.EndTry
+Program.Sub.Stop_Reader.End
+
+Program.Sub.Load_Start_lightstack.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+v.Local.sURl.Declare
+v.Local.sMSG.Declare
+v.Local.sRet.Declare
+'v.Local.sURL.Set("http://gss2k16rfid:4405/device/2/gpo")
+F.Intrinsic.String.Build("{0}/{1}/gpo",V.Global.sURl,V.Global.sDeviceID,V.Local.sURl)
+'F.Intrinsic.String.Concat("{",v.Ambient.DblQuote,"gpos",v.Ambient.DblQuote,":[{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":1",", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true},{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":2",", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true},{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":3",", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true}]}",v.Local.sMSG)
+F.Intrinsic.String.Concat("{",v.Ambient.DblQuote,"gpos",v.Ambient.DblQuote,":[{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":",V.Global.iRed_GPO,", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true},{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":",V.Global.iYellow_GPO,", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true},{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":",V.Global.iGreen_GPO,", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true}]}",v.Local.sMSG)
+F.Communication.REST.SetProperty ("PostData",V.Local.sMSG)
+F.Communication.REST.Post(V.Local.sURl)
+
+F.Intrinsic.Control.Catch
+F.Communication.REST.GetProperty("TransferredData",V.local.sRet)
+f.Intrinsic.Control.If(v.Ambient.ErrorNumber,=,999000)
+	f.Intrinsic.Control.ExitSub
+f.Intrinsic.Control.EndIf
+
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub("Exit")
+F.Intrinsic.Control.EndTry
+Program.Sub.Load_start_lightstack.End
+
+Program.Sub.Load_stop_lightstack.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+v.Local.sURL.Declare
+v.Local.sMSG.Declare
+v.Local.sRet.Declare
+'v.Local.sURL.Set("http://gss2k16rfid:4405/device/2/gpo")
+F.Intrinsic.String.Build("{0}/{1}/gpo",V.Global.sURl,V.Global.sDeviceID,V.Local.sURl)
+'F.Intrinsic.String.Concat("{",v.Ambient.DblQuote,"gpos",v.Ambient.DblQuote,":[{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":1",", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true},{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":2",", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true}]}",v.Local.sMSG)
+F.Intrinsic.String.Concat("{",v.Ambient.DblQuote,"gpos",v.Ambient.DblQuote,":[{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":",V.Global.iRed_GPO,", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true},{",v.Ambient.DblQuote,"port",v.Ambient.DblQuote,":",V.Global.iYellow_GPO,", ",v.Ambient.DblQuote,"on",v.Ambient.DblQuote,":true}]}",v.Local.sMSG)
+F.Communication.REST.SetProperty ("PostData",V.Local.sMSG)
+F.Communication.REST.Post(V.Local.sURl)
+
+F.Intrinsic.Control.Catch
+F.Communication.REST.GetProperty("TransferredData",V.local.sRet)
+f.Intrinsic.Control.If(v.Ambient.ErrorNumber,=,999000)
+	f.Intrinsic.Control.ExitSub
+f.Intrinsic.Control.EndIf
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub("Exit")
+F.Intrinsic.Control.EndTry
+Program.Sub.Load_stop_lightstack.End
+
+Program.Sub.close.Start
+F.ODBC.Connection!Conx.Close
+F.ODBC.Connection!Cony.Close
+F.Intrinsic.Control.End
+Program.Sub.close.End
+
+Program.Sub.Comments.Start
+${$0$}$ATG-Transactions-ADD_CONTACT$}$TSP$}$08/27/12
+${$3$}$0$}$$}$0$}$-1$}$$}$12:00:00 AM$}$Quote Number: 4796
+${$4$}$0$}$$}$0$}$-1$}$Brady$}$03/31/16 9:07:06 PM$}$Modified script to support document control item links for J55 return to stock.  Copies links from item record of original lot/bin to the new bin returned to from Job
+${$5$}$2.0.0.0$}$2
+${$6$}$bstevens$}$20211118105104815$}$3Pg7+K2MGztoXyjxMVZqWaM5g3GOUsSN8rGTkvL6bqmOMrFJpeisJrcuOjmvI7legyHH1StqvyvnH8dRkQC2tA==
+Program.Sub.Comments.End
+
