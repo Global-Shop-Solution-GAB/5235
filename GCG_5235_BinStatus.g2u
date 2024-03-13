@@ -1,0 +1,897 @@
+﻿Program.Sub.ScreenSU.Start
+Gui.FormBinStatus..Create(BaseForm)
+Gui.FormBinStatus..Caption("Sawmill Dashboard")
+Gui.FormBinStatus..Size(20475,13890)
+Gui.FormBinStatus..MinX(0)
+Gui.FormBinStatus..MinY(0)
+Gui.FormBinStatus..Position(0,0)
+Gui.FormBinStatus..BackColor(-2147483633)
+Gui.FormBinStatus..MousePointer(0)
+Gui.FormBinStatus..Event(UnLoad,FormBinStatus_UnLoad)
+Gui.FormBinStatus..AlwaysOnTop(False)
+Gui.FormBinStatus..FontName("Tahoma")
+Gui.FormBinStatus..FontSize(8.25)
+Gui.FormBinStatus..ControlBox(True)
+Gui.FormBinStatus..MaxButton(True)
+Gui.FormBinStatus..MinButton(True)
+Gui.FormBinStatus..Moveable(True)
+Gui.FormBinStatus..Sizeable(True)
+Gui.FormBinStatus..ShowInTaskBar(True)
+Gui.FormBinStatus..TitleBar(True)
+Gui.FormBinStatus.cboBin.Create(ComboBox)
+Gui.FormBinStatus.cboBin.Size(2430,300)
+Gui.FormBinStatus.cboBin.Position(645,75)
+Gui.FormBinStatus.cboBin.Enabled(True)
+Gui.FormBinStatus.cboBin.Visible(True)
+Gui.FormBinStatus.cboBin.Zorder(0)
+Gui.FormBinStatus.cboBin.FontName("Tahoma")
+Gui.FormBinStatus.cboBin.FontSize(8.25)
+Gui.FormBinStatus.cboBin.Event(SelectedIndexChanged,cboBin_Click)
+Gui.FormBinStatus.lblBin.Create(Label,"Bin:",True,270,210,0,90,165,True,0,"Arial",8,-2147483633,0,0)
+Gui.FormBinStatus.lblBin.BorderStyle(0)
+Gui.FormBinStatus.gsgcBinContents.Create(GsGridControl)
+Gui.FormBinStatus.gsgcBinContents.Size(20475,12315)
+Gui.FormBinStatus.gsgcBinContents.Position(0,1260)
+Gui.FormBinStatus.gsgcBinContents.Anchor(15)
+Gui.FormBinStatus.gsgcBinContents.Event(RowCellClick,gsgcBinContents_RowCellClick)
+Gui.FormBinStatus.gsgcBinContents.Enabled(True)
+Gui.FormBinStatus.gsgcBinContents.Visible(True)
+Gui.FormBinStatus.gsgcBinContents.Zorder(0)
+Gui.FormBinStatus.cmdRefresh.Create(Button)
+Gui.FormBinStatus.cmdRefresh.Size(1290,375)
+Gui.FormBinStatus.cmdRefresh.Position(3210,45)
+Gui.FormBinStatus.cmdRefresh.Caption("Refresh")
+Gui.FormBinStatus.cmdRefresh.Event(Click,cmdRefresh_Click)
+Gui.FormBinStatus.cmdRefresh.Enabled(True)
+Gui.FormBinStatus.cmdRefresh.Visible(True)
+Gui.FormBinStatus.cmdRefresh.Zorder(0)
+Gui.FormBinStatus.cmdRefresh.FontName("Tahoma")
+Gui.FormBinStatus.cmdRefresh.FontSize(8.25)
+Gui.FormBinStatus.chkAutoRefresh.Create(CheckBox)
+Gui.FormBinStatus.chkAutoRefresh.Size(1665,300)
+Gui.FormBinStatus.chkAutoRefresh.Position(17745,90)
+Gui.FormBinStatus.chkAutoRefresh.Caption("Auto Refresh")
+Gui.FormBinStatus.chkAutoRefresh.Event(Click,chkAutoRefresh_Click)
+Gui.FormBinStatus.chkAutoRefresh.Anchor(9)
+Gui.FormBinStatus.chkAutoRefresh.Enabled(True)
+Gui.FormBinStatus.chkAutoRefresh.Visible(True)
+Gui.FormBinStatus.chkAutoRefresh.Zorder(0)
+Gui.FormBinStatus.chkAutoRefresh.FontName("Tahoma")
+Gui.FormBinStatus.chkAutoRefresh.FontSize(8.25)
+Gui.FormBinStatus.lblSeconds.Create(Label,"Seconds",True,645,210,0,19665,150,True,0,"Arial",8,-2147483633,0,0)
+Gui.FormBinStatus.lblSeconds.Anchor(9)
+Gui.FormBinStatus.lblSeconds.BorderStyle(0)
+Gui.FormBinStatus.txtRefresh.Create(TextBox,"30",True,570,300,0,19050,90,True,0,"Arial",8,-2147483643,1)
+Gui.FormBinStatus.txtRefresh.NumericOnly(2)
+Gui.FormBinStatus.txtRefresh.Event(LostFocus,txtRefresh_LostFocus)
+Gui.FormBinStatus.txtRefresh.Anchor(9)
+Gui.FormBinStatus.lblLastLot.Create(Label,"Last Issue From        :",True,1560,210,0,12615,795,True,0,"Arial",8,-2147483633,0,0)
+Gui.FormBinStatus.lblLastLot.Anchor(9)
+Gui.FormBinStatus.lblLastLot.BorderStyle(0)
+Gui.FormBinStatus.lblLastIssueLot.Create(Label," ",True,60,285,0,14625,750,True,0,"Arial",12,-2147483633,0,0)
+Gui.FormBinStatus.lblLastIssueLot.ForeColor(32768)
+Gui.FormBinStatus.lblLastIssueLot.FontStyle(True,False,False,False,False)
+Gui.FormBinStatus.lblLastIssueLot.Anchor(9)
+Gui.FormBinStatus.lblLastIssueLot.BorderStyle(0)
+Gui.FormBinStatus.lblQueue.Create(Label,"Log Queue:",True,840,210,0,90,615,True,0,"Arial",8,-2147483633,0,0)
+Gui.FormBinStatus.lblQueue.BorderStyle(0)
+Gui.FormBinStatus.lblQueueCount.Create(Label," ",True,90,360,0,1260,555,True,0,"Arial",16,-2147483633,0,0)
+Gui.FormBinStatus.lblQueueCount.BorderStyle(0)
+Gui.FormBinStatus.pic1.Create(PictureBox)
+Gui.FormBinStatus.pic1.Size(4590,1170)
+Gui.FormBinStatus.pic1.Position(7935,45)
+Gui.FormBinStatus.pic1.Anchor(13)
+Gui.FormBinStatus.pic1.Enabled(True)
+Gui.FormBinStatus.pic1.Visible(True)
+Gui.FormBinStatus.pic1.Zorder(0)
+Gui.FormBinStatus.lblRefreshing.Create(Label,"Refreshing...",False,930,210,0,5880,135,True,0,"Arial",8,-2147483633,0,0)
+Gui.FormBinStatus.lblRefreshing.BorderStyle(0)
+Gui.FormBinStatus.lblWO.Create(Label,"Active WO:",True,825,210,0,13035,240,True,0,"Arial",8,-2147483633,0,0)
+Gui.FormBinStatus.lblWO.BorderStyle(0)
+Gui.FormBinStatus.lblActiveWO.Create(Label," ",True,60,240,0,13965,225,True,0,"Arial",10,-2147483633,0,0)
+Gui.FormBinStatus.lblActiveWO.BorderStyle(0)
+Gui.FormBinStatus.cmd1.Create(Button)
+Gui.FormBinStatus.cmd1.Enabled(True)
+Gui.FormBinStatus.cmd1.Visible(True)
+Gui.FormBinStatus.cmd1.Zorder(0)
+Gui.FormBinStatus.cmd1.Size(1125,345)
+Gui.FormBinStatus.cmd1.Position(4680,60)
+Gui.FormBinStatus.cmd1.Caption("Issue Button")
+Gui.FormBinStatus.cmd1.FontName("Tahoma")
+Gui.FormBinStatus.cmd1.FontSize(8.25)
+Gui.FormBinStatus.cmd1.Event(Click,cmd1_Click)
+Gui.FormBinStatus.lblLastLog.Create(Label,"Last Scan: ",True,825,210,0,2250,615,True,0,"Arial",8,-2147483633,0,0)
+Gui.FormBinStatus.lblLastLog.BorderStyle(0)
+Gui.FormBinStatus.txtLastScan.Create(TextBox,"",True,4680,480,0,3210,570,False,0,"Tahoma",16,,1)
+Gui.FormBinStatus.timer1.Create(Timer)
+Gui.FormBinStatus.timer1.Size(300,240)
+Gui.FormBinStatus.timer1.Position(4710,60)
+Gui.FormBinStatus.timer1.Event(Timer,timer1_Timer)
+Gui.FormBinStatus.timer1.Interval(30000)
+Gui.FormBinStatus.timer1.Enabled(False)
+Gui.Form..Create(BaseForm)
+Gui.Form..Caption("Form")
+Gui.Form..Size(15360,10800)
+Gui.Form..MinX(0)
+Gui.Form..MinY(0)
+Gui.Form..Position(0,0)
+Gui.Form..AlwaysOnTop(False)
+Gui.Form..FontName("Tahoma")
+Gui.Form..FontSize(80)
+Gui.Form..ControlBox(True)
+Gui.Form..MaxButton(True)
+Gui.Form..MinButton(True)
+Gui.Form..MousePointer(0)
+Gui.Form..Moveable(True)
+Gui.Form..Sizeable(True)
+Gui.Form..ShowInTaskBar(True)
+Gui.Form..TitleBar(True)
+Gui.Form..Event(UnLoad,FormClose)
+Gui.Form.cmd1.Create(Button)
+Gui.Form.cmd1.Enabled(True)
+Gui.Form.cmd1.Visible(True)
+Gui.Form.cmd1.Zorder(0)
+Gui.Form.cmd1.Size(11850,6105)
+Gui.Form.cmd1.Position(1650,3720)
+Gui.Form.cmd1.Caption("")
+Gui.Form.cmd1.FontName("Tahoma")
+Gui.Form.cmd1.FontSize(80)
+Gui.Form.cmd1.BackColor(255)
+Gui.Form.cmd1.Anchor(14)
+Gui.Form.cmd1.Event(Click,cmd1_Click1)
+Gui.Form.cmd1.ForeColor(16777215)
+Gui.Form.lbl1.Create(Label,"text",True,2715,1935,0,4635,765,True,0,"Tahoma",80,,0,0)
+Gui.Form.lbl1.BorderStyle(0)
+Gui.Form.lbl1.Anchor(15)
+Program.Sub.ScreenSU.End
+Program.Sub.Preflight.Start
+V.Global.bReady.Declare(Boolean, False)
+V.Global.bVal.Declare
+V.Global.bVal.Set(True)
+V.Global.sLogCheck.Declare
+Program.Sub.Preflight.End
+Program.Sub.Main.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+'GCG_5235_BinStatus.g2utxtLastScan
+'Trey S
+'12/6/2018
+'For Winesburg Chair, to monitor the status of bins used for RFID transactions
+
+V.Local.sIcon.Declare(String)
+V.Local.sGssLogo.Declare(String)
+
+GUI.FormBinStatus..ContextMenuCreate("ctxBinData")
+GUI.FormBinStatus.gsgcBinContents.ContextMenuAttach("ctxBinData")
+GUI.FormBinStatus..ContextMenuAddItem("ctxBinData", "Reset", 0, "Reset Formatting")
+GUI.FormBinStatus..ContextMenuSetItemEventHandler("ctxBinData", "Reset", "ctxReset")
+
+F.Intrinsic.String.Build("{0}\GAB\GAS\gss2.ico",V.Caller.PluginsDir,v.Local.sIcon)
+F.Intrinsic.String.Build("{0}\GAB\GAS\GAB_GSS_Logo_Green_Dash.png",V.Caller.PluginsDir,V.Local.sGssLogo)
+Gui.FormBinStatus..Icon(V.Local.sIcon)
+Gui.FormBinStatus.pic1.Picture(V.Local.sGssLogo)
+
+F.Intrinsic.Control.CallSub(CreateDT)
+
+F.ODBC.Connection!Con.OpenCompanyConnection
+F.Intrinsic.Control.CallSub(LoadDropDown)
+F.ODBC.Connection!Con.Close
+V.Global.bReady.Set(True)
+'GUI.FormBinStatus.timer1.Interval(30000)
+GUI.FormBinStatus.timer1.Enabled(False)
+GUI.FormBinStatus..Show
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.CreateDT.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+F.Intrinsic.Control.If(V.DataTable.dtBinData.Exists)
+	F.Data.DataTable.Close("dtBinData")
+F.Intrinsic.Control.EndIf
+
+F.Data.DataTable.Create("dtBinData", True)
+F.Data.DataTable.AddColumn("dtBinData", "PART", "String")
+F.Data.DataTable.AddColumn("dtBinData", "LOCATION", "String")
+F.Data.DataTable.AddColumn("dtBinData", "LOT", "String")
+F.Data.DataTable.AddColumn("dtBinData", "BIN", "String")
+F.Data.DataTable.AddColumn("dtBinData", "HEAT", "String")
+F.Data.DataTable.AddColumn("dtBinData", "SERIAL", "String")
+F.Data.DataTable.AddColumn("dtBinData", "QUANTITY", "Float")
+F.Data.DataTable.AddColumn("dtBinData", "USER_FIELD_2", "String")
+F.Data.DataTable.AddColumn("dtBinData", "USER_FIELD_3", "String")
+F.Data.DataTable.AddColumn("dtBinData", "Date", "Date")
+F.Data.DataTable.AddColumn("dtBinData", "Time", "Date")
+F.Data.DataTable.AddColumn("dtBinData", "Issue Material", "String")
+F.Data.DataTable.AddColumn("dtBinData", "Print Label", "String")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.CreateDT.End
+
+Program.Sub.LoadData.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.sSQL.Declare(String)
+V.Local.iCounter.Declare(Long)
+V.Local.sFilter.Declare(String)
+V.Local.sTemp.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.sLabel.Declare(String)
+V.Local.sTime.Declare(String)
+V.Local.sDate.Declare(String)
+V.Local.sTimeFinal.Declare(String)
+V.Local.bDiff.Declare(Boolean)
+
+
+F.Intrinsic.Control.If(V.DataTable.dtBinDataTemp.Exists)
+	F.Data.DataTable.Close("dtBinDataTemp")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.String.Build("select RTRIM(PART) as PART, RTRIM(LOCATION) as LOCATION, RTRIM(LOT) as LOT, RTRIM(BIN) as BIN, RTRIM(HEAT) as HEAT, RTRIM(SERIAL_NUMBER) as SERIAL, QUANTITY, USER_FIELD_2, USER_FIELD_3 from V_ITEM_MASTER where BIN = '{0}' and QUANTITY > 0", V.Screen.FormBinStatus!cboBin.Text.Trim, V.Local.sSQL)
+
+F.Data.DataTable.CreateFromSQL("dtBinDataTemp", "Con", V.Local.sSQL, True)
+F.Data.DataTable.AddColumn("dtBinDataTemp", "Date", "Date")
+F.Data.DataTable.AddColumn("dtBinDataTemp", "Time", "Date")
+
+F.Intrinsic.Control.If(V.DataTable.dtBinDataTemp.RowCount, >, 0)
+	F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtBinDataTemp.RowCount--, 1)
+		F.Intrinsic.Control.If(V.Local.iCounter, =, 0)
+			F.Intrinsic.String.Build("LOT = '{0}'", V.DataTable.dtBinDataTemp(V.Local.iCounter).LOT!FieldValTrim, V.Local.sFilter)
+		F.Intrinsic.Control.Else
+			F.Intrinsic.String.Build("{0} or LOT = '{1}'", V.Local.sFilter, V.DataTable.dtBinDataTemp(V.Local.iCounter).LOT!FieldValTrim, V.Local.sFilter)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Next(V.Local.iCounter)
+
+	F.Intrinsic.String.Build("Select RTRIM(LOT) as LOT, DATE_HISTORY from V_ITEM_HISTORY where {0} order by DATE_HISTORY DESC, TIME_ITEM_HISTORY desc", V.Local.sFilter, V.Local.sSQL)
+	F.Data.Dictionary.CreateFromSQL("dictDates", "Con", V.Local.sSQL)
+	F.Data.Dictionary.SetDefaultReturn("dictDates", "01/01/1900")
+	F.Data.DataTable.FillFromDictionary("dtBinDataTemp", "dictDates", "LOT", "Date")
+	F.Data.Dictionary.Close("dictDates")
+	
+	F.Intrinsic.String.Build("Select RTRIM(LOT) as LOT, TIME_ITEM_HISTORY from V_ITEM_HISTORY where {0} order by DATE_HISTORY DESC, TIME_ITEM_HISTORY desc", V.Local.sFilter, V.Local.sSQL)
+	F.Data.Dictionary.CreateFromSQL("dictTimes", "Con", V.Local.sSQL)
+	F.Data.Dictionary.SetDefaultReturn("dictTimes", "12:00:00 AM")
+	F.Data.DataTable.FillFromDictionary("dtBinDataTemp", "dictTimes", "LOT", "Time")
+	F.Data.Dictionary.Close("dictTimes")
+F.Intrinsic.Control.EndIf
+
+F.Data.DataTable.AddColumn("dtBinDataTemp", "Print Label", "String")
+F.Data.DataTable.AddColumn("dtBinDataTemp", "Issue Material", "String")
+
+V.Local.bDiff.Set(False)
+F.Intrinsic.Control.If(V.DataTable.dtBinData.Exists)
+	F.Intrinsic.Control.If(V.DataTable.dtBinData.RowCount, !=, V.DataTable.dtBinDataTemp.RowCount)
+		V.Local.bDiff.Set(True)
+		GUI.FormBinStatus.gsgcBinContents.Visible(False)
+		F.Intrinsic.Control.CallSub(CreateDT)
+		F.Data.DataTable.Merge("dtBinDataTemp", "dtBinData", False, 2)
+	F.Intrinsic.Control.Else
+		F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtBinData.RowCount--, 1)
+			F.Intrinsic.Control.If(V.DataTable.dtBinData(V.Local.iCounter).LOT!FieldValTrim, !=, V.DataTable.dtBinDataTemp(V.Local.iCounter).LOT!FieldValTrim)
+				V.Local.bDiff.Set(True)
+				'F.Intrinsic.Control.ExitFor
+			F.Intrinsic.Control.EndIf
+		F.Intrinsic.Control.Next(V.Local.iCounter)
+		
+		F.Intrinsic.Control.If(V.Local.bDiff)
+			GUI.FormBinStatus.gsgcBinContents.Visible(False)
+			F.Intrinsic.Control.CallSub(CreateDT)
+			F.Data.DataTable.Merge("dtBinDataTemp", "dtBinData", False, 2)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Else
+	V.Local.bDiff.Set(True)
+	GUI.FormBinStatus.gsgcBinContents.Visible(False)
+	F.Intrinsic.Control.CallSub(CreateDT)
+	F.Data.DataTable.Merge("dtBinDataTemp", "dtBinData", False, 2)
+F.Intrinsic.Control.EndIf
+
+F.Data.DataTable.Close("dtBinDataTemp")
+
+'V.Local.sSQL.Set("select top 1 LOT, DATE_HISTORY, TIME_ITEM_HISTORY from V_ITEM_HISTORY where BIN = 'DECK' and CODE_TRANSACTION = 'J55' order by DATE_HISTORY desc, TIME_ITEM_HISTORY desc")
+F.Intrinsic.String.Build("select top 1 LOT, DATE_HISTORY, TIME_ITEM_HISTORY from V_ITEM_HISTORY where BIN = '{0}' and CODE_TRANSACTION = 'J55' order by DATE_HISTORY desc, TIME_ITEM_HISTORY desc", V.Screen.FormBinStatus!cboBin.Text.Trim, V.Local.sSQL)
+F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+
+F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF)
+	GUI.FormBinStatus.lblLastIssueLot.Caption("NA")
+F.Intrinsic.Control.Else
+	F.Intrinsic.String.Split(V.Local.sRet, "*!*", V.Local.sRet)
+	F.Intrinsic.String.Split(V.Local.sRet(1), " ", V.Local.sDate)
+	F.Intrinsic.String.Split(V.Local.sRet(2), " ", V.Local.sTime)
+	F.Intrinsic.String.Build("{0} {1}", V.Local.sTime(1), V.Local.sTime(2), V.Local.sTimeFinal)
+	
+	F.Intrinsic.String.Build("{0}, {1}, {2}", V.Local.sRet(0), V.Local.sDate(0), V.Local.sTimeFinal, V.Local.sLabel)
+	F.Intrinsic.Control.If(V.Local.sRet(1).Trim, =, "OOB")
+		V.Local.sLabel.Set("NA")
+	F.Intrinsic.Control.EndIf
+	
+	GUI.FormBinStatus.lblLastIssueLot.Caption(V.Local.sLabel)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.String.Build("Last Issue From {0}:", V.Screen.FormBinStatus!cboBin.Text.Trim, V.Local.sLabel)
+GUI.FormBinStatus.lblLastLot.Text(V.Local.sLabel)
+
+V.Local.sSQL.Set("Select top 1 JOB + '-' + SUFFIX + '-' + SEQ from V_JOBS_IN_PROCESS_G where WORKCENTER = 'SWM' and JOB_DESC <> 'SUSPENDED'")
+F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+
+F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF)
+	GUI.FormBinStatus.lblActiveWO.Text("NONE")
+	GUI.FormBinStatus.lblActiveWO.ForeColor(V.Color.Red)
+F.Intrinsic.Control.Else
+	GUI.FormBinStatus.lblActiveWO.Text(V.Local.sRet.Trim)
+	GUI.FormBinStatus.lblActiveWO.ForeColor(V.Color.Green)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.DataTable.dtBinData.Exists)
+	GUI.FormBinStatus.lblQueueCount.Caption(V.DataTable.dtBinData.RowCount)
+F.Intrinsic.Control.Else
+	GUI.FormBinStatus.lblQueueCount.Caption("0")
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.If(V.Local.bDiff)
+	F.Intrinsic.Control.CallSub(LoadGrid)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.Control.If(V.Caller.User.UCase, =, "SUPERVSR")
+		Function.Intrinsic.Debug.InvokeDebugger
+		Function.Intrinsic.Debug.Stop
+	F.Intrinsic.Control.EndIf
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadData.End
+
+Program.Sub.LoadGrid.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.iCounter.Declare(Long)
+GUI.FormBinStatus.gsgcBinContents.SuspendLayout
+GUI.FormBinStatus.gsgcBinContents.AddGridviewFromDatatable("gvBinData", "dtBinData")
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "PART", "Caption", "Part")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOCATION", "Caption", "Location")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOT", "Caption", "Lot")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "BIN", "Caption", "Bin")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "HEAT", "Caption", "Heat")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "SERIAL", "Caption", "Serial")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "QUANTITY", "Caption", "Quantity")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_2", "Caption", "Length")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_3", "Caption", "Diameter")
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "PART", "HeaderFontBold", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOCATION", "HeaderFontBold", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOT", "HeaderFontBold", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "BIN", "HeaderFontBold", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "HEAT", "HeaderFontBold", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "SERIAL", "HeaderFontBold", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "QUANTITY", "HeaderFontBold", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_2", "HeaderFontBold", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_3", "HeaderFontBold", "True")
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "PART", "ReadOnly", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOCATION", "ReadOnly", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOT", "ReadOnly", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "BIN", "ReadOnly", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "HEAT", "ReadOnly", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "SERIAL", "ReadOnly", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "QUANTITY", "ReadOnly", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_2", "ReadOnly", "True")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_3", "ReadOnly", "True")
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "PART", "AllowEdit", "False")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOCATION", "AllowEdit", "False")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOT", "AllowEdit", "False")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "BIN", "AllowEdit", "False")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "HEAT", "AllowEdit", "False")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "SERIAL", "AllowEdit", "False")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "QUANTITY", "AllowEdit", "False")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_2", "AllowEdit", "False")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_3", "AllowEdit", "False")
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "QUANTITY", "DisplayCustomNumeric", "########0.00")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_2", "DisplayCustomNumeric", "########0.00")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_3", "DisplayCustomNumeric", "########0.00")
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "SERIAL", "Visible", "False")
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "DATE", "DisplayCustomDateTime", "d")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Time", "DisplayCustomDateTime", "T")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "DATE", "HeaderFontBold", True)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Time", "HeaderFontBold", True)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "DATE", "ReadOnly", True)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Time", "ReadOnly", True)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "DATE", "AllowEdit", False)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Time", "AllowEdit", False)
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Print Label", "ReadOnly", True)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Print Label", "AllowEdit", False)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Print Label", "HeaderFontBold", True)
+GUI.FormBinStatus.gsgcBinContents.ColumnEdit("gvBinData", "Print Label", "EditorButton", "Print")
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Issue Material", "ReadOnly", True)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Issue Material", "AllowEdit", False)
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Issue Material", "HeaderFontBold", True)
+GUI.FormBinStatus.gsgcBinContents.ColumnEdit("gvBinData", "Issue Material", "EditorButton", "Issue")
+
+'F.Intrinsic.Control.For(V.Local.iCounter, 0, V.DataTable.dtBinData.RowCount--, 1)
+'	GUI.FormBinStatus.gsgcBinContents.SetRowAppearance("gvBinData", V.Local.iCounter, "WordWrap", "wrap")
+'F.Intrinsic.Control.Next(V.Local.iCounter)
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_2", "CellFontBold", True)
+
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "PART", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOCATION", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "LOT", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "BIN", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "HEAT", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "SERIAL", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "QUANTITY", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_2", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "USER_FIELD_3", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Date", "CellFontSize", "12")
+GUI.FormBinStatus.gsgcBinContents.SetColumnProperty("gvBinData", "Time", "CellFontSize", "12")
+
+GUI.FormBinStatus.gsgcBinContents.SetGridviewProperty("gvBinData", "EnableAppearanceOddRow", "True")
+GUI.FormBinStatus.gsgcBinContents.SetGridviewProperty("gvBinData", "OptionsViewRowAutoHeight", "True")
+
+GUI.FormBinStatus.gsgcBinContents.MainView("gvBinData")
+GUI.FormBinStatus.gsgcBinContents.ResumeLayout
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadGrid.End
+
+Program.Sub.LoadDropDown.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.sSQL.Declare(String)
+'V.Local.sSQL.Set("select Distinct RTRIM(BIN) as BIN from V_BIN_MASTER")
+V.Local.sSQL.Set("select Distinct RTRIM(BIN) as BIN from V_BIN_MASTER where BIN <> 'YARD' and BIN <> 'LUMBER' order by BIN")
+
+F.Data.DataTable.CreateFromSQL("dtBins", "Con", V.Local.sSQL)
+GUI.FormBinStatus.cboBin.AddItems("DataTable", "dtBins", "BIN", "BIN")
+
+F.Data.DataTable.Close("dtBins")
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadDropDown.End
+
+Program.Sub.cboBin_Click.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+F.Intrinsic.Control.If(V.Global.bReady)
+	GUI.FormBinStatus.cboBin.Enabled(False)
+	F.Intrinsic.Control.CallSub(cmdRefresh_Click)
+	GUI.FormBinStatus.cboBin.Enabled(True)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.cboBin_Click.End
+
+Program.Sub.cmdRefresh_Click.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+F.Intrinsic.Control.BlockEvents
+GUI.FormBinStatus.lblRefreshing.Visible(True)
+F.Intrinsic.Control.CallSub(DisableControls)
+GUI.FormBinStatus.cmdRefresh.Enabled(False)
+F.Intrinsic.Control.If(V.DataTable.dtBinData.Exists)
+	F.Intrinsic.Control.If(V.DataTable.dtBinData.RowCount, >, 0)
+		F.Intrinsic.Control.CallSub(Serialize)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.ODBC.Connection!Con.OpenCompanyConnection
+F.Intrinsic.Control.CallSub(LoadData)
+'F.Intrinsic.Control.CallSub(LoadGrid)
+F.Intrinsic.Control.CallSub(LoadLastScan)
+F.ODBC.Connection!Con.Close
+F.Intrinsic.Control.CallSub(Deserialize)
+GUI.FormBinStatus.cmdRefresh.Enabled(True)
+F.Intrinsic.Control.CallSub(EnableControls)
+GUI.FormBinStatus.gsgcBinContents.Visible(True)
+GUI.FormBinStatus.lblRefreshing.Visible(False)
+F.Intrinsic.Control.UnBlockEvents
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.cmdRefresh_Click.End
+
+Program.Sub.FormBinStatus_UnLoad.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+F.Intrinsic.Control.If(V.DataTable.dtBinData.Exists)
+	F.Intrinsic.Control.If(V.DataTable.dtBinData.RowCount, >, 0)
+		F.Intrinsic.Control.CallSub(Serialize)
+	F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.FormBinStatus_UnLoad.End
+
+Program.Sub.chkAutoRefresh_Click.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.iTemp.Declare(Long)
+F.Intrinsic.Math.Mult(V.Screen.FormBinStatus!txtRefresh.Text.Trim, 1000, V.Local.iTemp)
+GUI.FormBinStatus.timer1.Interval(V.Local.iTemp)
+F.Intrinsic.Control.If(V.Screen.FormBinStatus!chkAutoRefresh.checkedAsBoolean)
+	GUI.FormBinStatus.timer1.Enabled(True)
+F.Intrinsic.Control.Else
+	GUI.FormBinStatus.timer1.Enabled(False)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.chkAutoRefresh_Click.End
+
+Program.Sub.timer1_Timer.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+F.Intrinsic.Control.CallSub(cmdRefresh_Click)
+
+GUI.FormBinStatus.timer1.Enabled(False)
+F.Intrinsic.Control.If(V.Screen.FormBinStatus!chkAutoRefresh.CheckedAsBoolean)
+	GUI.FormBinStatus.timer1.Enabled(True)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.timer1_Timer.End
+
+Program.Sub.txtRefresh_LostFocus.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.iTemp.Declare(Long)
+F.Intrinsic.Math.Mult(V.Screen.FormBinStatus!txtRefresh.Text.Trim, 1000, V.Local.iTemp)
+GUI.FormBinStatus.timer1.Interval(V.Local.iTemp)
+'GUI.FormBinStatus.timer1.Enabled(True)
+'GUI.FormBinStatus.timer1.Enabled(False)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.txtRefresh_LostFocus.End
+
+Program.Sub.Serialize.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.sSerialize.Declare
+F.Intrinsic.Control.If(V.DataTable.dtBinData.Exists, =, False)
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+
+Gui.FormBinStatus.gsgcBinContents.Serialize("gvBinData",V.Local.sSerialize)
+F.Global.Registry.AddValue(V.Caller.User,V.Caller.CompanyCode,"gvBinData",5235,1000,False,"Serialize",False,0,-999.0,1/1/1980,12:00:00 AM,V.Local.sSerialize)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.Serialize.End
+
+Program.Sub.Deserialize.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.sSerialize.Declare
+
+F.Global.Registry.ReadValue(V.Caller.User,V.Caller.CompanyCode,"gvBinData",5235,1000,6,"",V.Local.sSerialize)
+F.Intrinsic.Control.If(V.Local.sSerialize.Trim,<>,"")
+	Gui.FormBinStatus.gsgcBinContents.Deserialize(V.Local.sSerialize)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.Deserialize.End
+
+Program.Sub.PrintLabel.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.iTXID.Declare(Long, 0)
+V.Local.sSQL.Declare(String)
+V.Local.sLot.Declare(String)
+V.Local.sTXID.Declare(String)
+V.Local.sLot.Set(V.Args.Lot)
+
+F.ODBC.Connection!Con.OpenCompanyConnection
+
+F.ODBC.Connection!con.ExecuteAndReturn("Select top 1 trans_id from v_wireless_line order by trans_id desc", V.Local.iTXID)
+
+F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF)
+	V.Local.iTXID.Set(0)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Math.Add(V.Local.iTXID, 1, V.Local.sTXID)
+F.Intrinsic.String.LPad(V.Local.sTXID, "0", 9, V.Local.sTXID)
+
+F.Intrinsic.String.Build("Insert into WIRELESS_LINE (TRANS_ID, SEQ, TRANS_TYPE, FIELD_1) values ('{0}', '0000', 'C01', '{1}')", V.Local.sTXID, V.Local.sLot.Trim, V.Local.sSQL)
+F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+
+F.Intrinsic.String.Build("Insert into WIRELESS_HDR (TRANS_ID, TRANS_TYPE, USER_ID, DEFAULT_PRINTER, LABEL_PRINTER) values ('{0}', 'C01', 'SAWMILL', 'UPID:7', 'UPID:7')", V.Local.sTXID, V.Local.sSQL)
+F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+
+F.ODBC.Connection!Con.Close
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.PrintLabel.End
+
+Program.Sub.gsgcBinContents_RowCellClick.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+F.Intrinsic.Control.If(V.Args.Column, =, "Print Label")
+	GUI.FormBinStatus.gsgcBinContents.Enabled(False)
+	F.Intrinsic.Control.CallSub(PrintLabel, "LOT", V.DataTable.dtBinData(V.Args.RowIndex).LOT!FieldValTrim)
+	GUI.FormBinStatus.gsgcBinContents.Enabled(True)
+F.Intrinsic.Control.ElseIf(V.Args.Column, =, "Issue Material")
+	GUI.FormBinStatus.gsgcBinContents.Enabled(False)
+	F.Intrinsic.Control.CallSub(IssueMaterial, "Lot", V.DataTable.dtBinData(V.Args.RowIndex).LOT!FieldValTrim, "Quantity", V.DataTable.dtBinData(V.Args.RowIndex).Quantity!FieldValTrim)
+	GUI.FormBinStatus.gsgcBinContents.Enabled(True)
+F.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.gsgcBinContents_RowCellClick.End
+
+Program.Sub.IssueMaterial.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+V.Local.sLot.Declare(String)
+V.Local.sQuantity.Declare(Float)
+V.Local.sSQL.Declare(String)
+V.Local.sRet.Declare(String)
+V.Local.sEPC.Declare(String)
+V.Local.sTID.Declare(String)
+V.Local.sUSER_RFID.Declare(String)
+
+V.Local.sLot.Set(V.Args.Lot)
+V.Local.sQuantity.Set(V.Args.Quantity)
+
+F.ODBC.Connection!Con.OpenCompanyConnection
+
+'realistically they will have more than one choke points for this, but currently they only have one 
+V.Local.sSQL.Set("select top 1 RTRIM(ANTENNA) as ANTENNA, RTRIM(READER) as READER from GCG_5235_RFID_MAINT where TX_CODE = 'J55' and CAST(ENABLED as BIT) = 1 and WC = 'SWM'")
+F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sRet)
+
+F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF)
+	F.Intrinsic.UI.Msgbox("Error: No valid WC to issue to found in RFID Maintenance.")
+	F.ODBC.Connection!Con.Close
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+F.Intrinsic.String.Split(V.Local.sRet, "*!*", V.Local.sRet)
+
+F.Intrinsic.String.Build("E{0}{1}", V.Ambient.Date.FormatYYYYMMDD, V.Ambient.Time.FormatHHNNSS, V.Local.sTID)
+F.Intrinsic.String.Build("{0}DSHBRD{1}{2}", V.Local.sLot, V.Ambient.Date.FormatYYYYMMDD, V.Ambient.Time.FormatHHNNSS, V.Local.sEPC)
+F.Intrinsic.String.Build("T{0}:Q{1}", V.Local.sLot, V.Local.sQuantity, V.Local.sUSER_RFID)
+
+F.Intrinsic.String.Build("Insert into GCG_5235_RFID_OUTPUT (EPC, TID, USER_RFID, ANTENNA, READERNAME, TRANS_TYPE) values ('{0}', '{1}', '{2}', '{3}', '{4}', 'J55')", V.Local.sEPC, V.Local.sTID, V.Local.sUSER_RFID, V.Local.sRet(0).Trim, V.Local.sRet(1).Trim, V.Local.sSQL)
+
+F.ODBC.Connection!Con.Execute(V.Local.sSQL)
+
+F.ODBC.Connection!Con.Close
+
+F.Intrinsic.Control.CallSub(cmdRefresh_Click)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.IssueMaterial.End
+
+Program.Sub.ctxReset.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+GUI.FormBinStatus.gsgcBinContents.Visible(False)
+
+F.ODBC.Connection!Com.OpenCommonConnection
+
+F.ODBC.Connection!Com.Execute("Delete From Gs_Registry Where Reg_ID = '5235'")
+
+F.Intrinsic.Control.If(V.DataTable.dtBinData.Exists)
+	F.Data.DataTable.Close("dtBinData")
+F.Intrinsic.Control.EndIf
+F.Intrinsic.Control.CallSub(cmdRefresh_Click)
+
+F.ODBC.Connection!Com.Close
+
+GUI.FormBinStatus.gsgcBinContents.Visible(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.ctxReset.End
+
+Program.Sub.DisableControls.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+GUI.FormBinStatus.cboBin.Enabled(False)
+GUI.FormBinStatus.timer1.Enabled(False)
+GUI.FormBinStatus.cmdRefresh.Enabled(False)
+GUI.FormBinStatus.txtRefresh.Enabled(False)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.DisableControls.End
+
+Program.Sub.EnableControls.Start
+F.Intrinsic.Control.Try
+V.Local.sError.Declare
+
+GUI.FormBinStatus.cboBin.Enabled(True)
+GUI.FormBinStatus.timer1.Enabled(V.Screen.FormBinStatus!chkAutoRefresh.checkedAsBoolean)
+GUI.FormBinStatus.cmdRefresh.Enabled(True)
+GUI.FormBinStatus.txtRefresh.Enabled(True)
+
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+
+F.Intrinsic.Control.EndTry
+Program.Sub.EnableControls.End
+
+Program.Sub.LoadLastScan.Start
+V.Local.sRet.Declare(String)
+V.Local.sFinalMessage.Declare(String, "")
+V.Local.sRFID.Declare(String)
+V.Local.sSQL.Declare(String)
+V.Local.sPart.Declare(String)
+V.Local.sError.Declare(String)
+
+
+F.Intrinsic.Control.Try
+
+'F.ODBC.Connection!Con.OpenCompanyConnection
+
+'grab most recent J55
+F.ODBC.Connection!Con.ExecuteAndReturn("select top 1 RTRIM(RFID_VALUE), TIME_TRANSACTION from GCG_5235_LOG where TRANSACTION_TYPE = 'J55' and EPC not like '%DSHBRD%' order by TIME_TRANSACTION desc", V.Local.sRet)
+
+F.Intrinsic.Control.If(V.Ambient.ExecuteAndReturnEOF.Not)
+	F.Intrinsic.String.Split(V.Local.sRet, "*!*", V.Local.sRet)
+	V.Local.sRet.RedimPreserve(0, 1)
+	
+	'grab lot number
+	F.Intrinsic.String.Split(V.Local.sRet(0), ":", V.Local.sRFID)
+	V.Local.sRFID.RedimPreserve(0, 1)
+	
+	'grab part from lot
+	F.Intrinsic.String.Build("select top 1 RTRIM(PART) from V_ITEM_MASTER where LOT = '{0}'", V.Local.sRFID(0), V.Local.sSQL)
+	F.ODBC.Connection!Con.ExecuteAndReturn(V.Local.sSQL, V.Local.sPart)
+	
+	F.Intrinsic.String.Build("{0} - {1}", V.Local.sPart, V.Local.sRFID(0), V.Local.sFinalMessage)
+	V.Local.sRet.Redim(0, 0)
+	V.Local.sRFID.Redim(0, 0)
+F.Intrinsic.Control.EndIf
+
+'F.ODBC.Connection!Con.Close
+GUI.FormBinStatus.txtLastScan.Text(V.Local.sFinalMessage)
+V.Global.sLogCheck.Set(V.Local.sFinalMessage.Right6)
+F.Intrinsic.Control.Catch
+	F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}", "GCG_5235_BinStatus.g2u", V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End 
+F.Intrinsic.Control.EndTry
+Program.Sub.LoadLastScan.End
+Program.Sub.cmd1_Click.Start
+V.Local.sText.Declare
+V.Local.sValue.Declare
+
+F.Intrinsic.Control.If(V.Global.bVal,=,True)
+	F.Data.DataView.Create("dtBinData","dvBinData")
+F.Intrinsic.Control.Else
+F.Intrinsic.Control.If(V.DataView.dtBinData!dvBinData.Exists,=,True)
+F.Data.DataView.Close("dtBinData","dvBinData")
+F.Intrinsic.Control.EndIf
+F.Data.DataView.Create("dtBinData","dvBinData")
+	F.Data.Datatable.Close("dtBinData2")
+
+	F.Intrinsic.Control.EndIf
+
+V.Global.bVal.Set(False)
+F.Data.DataView.SetSort("dtBinData","dvBinData","Date ASC")
+F.Data.DataView.SetSort("dtBinData","dvBinData","Time ASC")
+F.Data.DataView.ToDataTable("dtBinData","dvBinData","dtBinData2",True)
+
+
+Gui.Form.lbl1.Caption(V.Global.sLogCheck)
+Gui.Form..Show
+Gui.Form.cmd1.Caption(V.DataTable.dtBinData2(0).Lot!fieldValTrim)
+F.Intrinsic.Control.if(V.DataTable.dtBinData2(0).Lot!fieldValTrim,=,V.Global.sLogCheck )
+Gui.Form.cmd1.BackColor(32768)
+F.Intrinsic.Control.Else
+Gui.Form.cmd1.BackColor(255)
+F.Intrinsic.Control.EndIf
+
+
+
+
+Program.Sub.cmd1_Click.End
+
+Program.Sub.FormClose.Start
+Gui.Form..Visible(False)
+Program.Sub.FormClose.End
+
+Program.Sub.cmd1_Click1.Start
+F.Intrinsic.Control.CallSub(IssueMaterial, "Lot", V.DataTable.dtBinData2(0).LOT!FieldValTrim, "Quantity", V.DataTable.dtBinData2(0).Quantity!FieldValTrim)
+F.Intrinsic.Control.CallSub(cmdRefresh_Click)
+F.Intrinsic.Control.CallSub(cmd1_Click)
+Program.Sub.cmd1_Click1.End
+
+Program.Sub.cboBin_SelectedIndexChanged.Start
+Program.Sub.cboBin_SelectedIndexChanged.End
+
+Program.Sub.Comments.Start
+${$5$}$3.0.0.0$}$1
+${$6$}$rseddon$}$20211013160405425$}$DkKb6sybY9hE3N0enyRwKJuHSlMGTgRbXdg0lLmezBmoDaoCJKfHDlE/TEM4uueo0ip/e5sHu+A=
+Program.Sub.Comments.End
